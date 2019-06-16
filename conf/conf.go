@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zoenion/micro/types"
+	"github.com/zoenion/common/types"
 )
 
 // Map wraps map type
