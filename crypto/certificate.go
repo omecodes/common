@@ -196,7 +196,7 @@ func StorePrivateKey(key crypto.PrivateKey, password []byte, file string) error 
 		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: bytes}
 
 	} else {
-		return errors.New("Not supported")
+		return errors.New(errors.NotImplemented, "key type is not supported")
 	}
 
 	if password != nil && len(password) > 0 {
