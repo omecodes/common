@@ -29,11 +29,19 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s:%s", e.Message, e.Details)
 }
 
-func New(e *Error, details string) *Error {
+func Detailed(e *Error, details string) *Error {
 	return &Error{
 		Code:    e.Code,
 		Message: e.Message,
 		Details: details,
+	}
+}
+
+func New(message string) error {
+	return &Error{
+		Code:    Internal.Code,
+		Message: Internal.Message,
+		Details: message,
 	}
 }
 
@@ -75,21 +83,21 @@ func Parse(str string) *Error {
 
 	switch head {
 	case Forbidden.Message:
-		return New(Forbidden, details)
+		return Detailed(Forbidden, details)
 	case Unauthorized.Message:
-		return New(Unauthorized, details)
+		return Detailed(Unauthorized, details)
 	case NotFound.Message:
-		return New(NotFound, details)
+		return Detailed(NotFound, details)
 	case BadRequest.Message:
-		return New(BadRequest, details)
+		return Detailed(BadRequest, details)
 	case NotImplemented.Message:
-		return New(NotImplemented, details)
+		return Detailed(NotImplemented, details)
 	case Processing.Message:
-		return New(Processing, details)
+		return Detailed(Processing, details)
 	case TimeOut.Message:
-		return New(TimeOut, details)
+		return Detailed(TimeOut, details)
 	default:
-		return New(Internal, details)
+		return Detailed(Internal, details)
 	}
 }
 
