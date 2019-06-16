@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/zoenion/onion/app/common/proto"
+	"github.com/zoenion/common/proto"
 )
 
 var schema = []string{
