@@ -11,12 +11,12 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/zoenion/utils/conf"
+	"github.com/zoenion/common/conf"
 	"gopkg.in/mgo.v2"
 	"strings"
 )
 
-func GetDB(c conf.Item) (string, interface{}, error) {
+func GetDB(c conf.Map) (string, interface{}, error) {
 	t, ok := c.GetString("type")
 	if !ok {
 		return "", nil, errors.New("not found")
@@ -110,7 +110,7 @@ func GetDB(c conf.Item) (string, interface{}, error) {
 	}
 }
 
-func GetMysql(c conf.Item) (*sql.DB, error) {
+func GetMysql(c conf.Map) (*sql.DB, error) {
 	_, dbi, err := GetDB(c)
 	if err != nil {
 		return nil, err

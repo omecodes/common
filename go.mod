@@ -9,12 +9,10 @@ require (
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.7.2
 	github.com/gorilla/sessions v1.1.3
-	github.com/jinzhu/gorm v1.9.8
+	github.com/jinzhu/gorm v1.9.9
 	github.com/manifoldco/promptui v0.3.2
 	github.com/pkg/errors v0.8.1
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644
-	github.com/zoenion/onion v0.0.0-20190610111301-afa4b60de9c4
-	github.com/zoenion/utils v0.0.0-20190606183829-9dd07080a718
 	gopkg.in/AlecAivazis/survey.v1 v1.8.5
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect

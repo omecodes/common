@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/manifoldco/promptui"
-	"github.com/zoenion/utils/conf"
+	"github.com/zoenion/common/conf"
 	"gopkg.in/AlecAivazis/survey.v1"
 )
 
@@ -144,14 +144,18 @@ func Selection(label string, values []string) (string, error) {
 	return selection(label, values)
 }
 
-func Access(defaultValue string) (conf.Item, error) {
-	cfg := conf.Item{}
-	access, err := text("Onion API access", defaultValue, false, false)
+func Access(title string, defaultValue string) (conf.Map, error) {
+	if title != "" {
+		Header(title)
+	}
+
+	cfg := conf.Map{}
+	access, err := text("Key", defaultValue, false, false)
 	if err != nil {
 		return nil, err
 	}
 
-	secret, err := text("Onion API secret", "", false, true)
+	secret, err := text("Secret", "", false, true)
 	if err != nil {
 		return nil, err
 	}
@@ -182,17 +186,21 @@ func NetworkDomain(label, defaultValue string) (string, error) {
 	return text(label, defaultValue, false, false)
 }
 
-func Registry(defaultValue string) (conf.Item, error) {
-	host, err := text("Onion registry address", defaultValue, false, false)
+func Registry(title string, defaultValue string) (conf.Map, error) {
+	if title != "" {
+		Header(title)
+	}
+
+	host, err := text("Address", defaultValue, false, false)
 	if err != nil {
 		return nil, err
 	}
-	return conf.Item{
+	return conf.Map{
 		"host": host,
 	}, nil
 }
 
-func Mysql() (conf.Item, error) {
+func Mysql() (conf.Map, error) {
 	host, err := text("host", "localhost:3306", false, false)
 	if err != nil {
 		return nil, err
@@ -219,7 +227,7 @@ func Mysql() (conf.Item, error) {
 
 	wrapper, _ := text("wrapper", "", true, false)
 
-	cfg := conf.Item{
+	cfg := conf.Map{
 		"type":     "sql",
 		"driver":   "mysql",
 		"host":     host,
@@ -236,7 +244,7 @@ func Mysql() (conf.Item, error) {
 	return cfg, nil
 }
 
-func Mongo() (conf.Item, error) {
+func Mongo() (conf.Map, error) {
 	host, err := text("host", "localhost:27017", false, false)
 	if err != nil {
 		return nil, err
@@ -256,7 +264,7 @@ func Mongo() (conf.Item, error) {
 		return nil, err
 	}
 
-	return conf.Item{
+	return conf.Map{
 		"host":     host,
 		"user":     user,
 		"password": password,
@@ -264,7 +272,7 @@ func Mongo() (conf.Item, error) {
 	}, nil
 }
 
-func Redis() (conf.Item, error) {
+func Redis() (conf.Map, error) {
 	host, err := text("host", "localhost:6379", false, false)
 	if err != nil {
 		return nil, err
@@ -275,13 +283,13 @@ func Redis() (conf.Item, error) {
 		return nil, err
 	}
 
-	return conf.Item{
+	return conf.Map{
 		"host":     host,
 		"password": password,
 	}, nil
 }
 
-func Mailer() (conf.Item, error) {
+func Mailer() (conf.Map, error) {
 	server, err := text("SMTP server", "", false, false)
 	if err != nil {
 		return nil, err
@@ -302,7 +310,7 @@ func Mailer() (conf.Item, error) {
 		return nil, err
 	}
 
-	cfg := conf.Item{
+	cfg := conf.Map{
 		"server":   server,
 		"port":     port,
 		"user":     user,
@@ -311,8 +319,8 @@ func Mailer() (conf.Item, error) {
 	return cfg, nil
 }
 
-func OnionDatabaseConfigs() (conf.Item, error) {
-	cfg := conf.Item{}
+func DatabaseConfigs() (conf.Map, error) {
+	cfg := conf.Map{}
 
 	for {
 		choice, err := selection("Set database config?", []string{"MySQL", "Mongo", "Redis", "No"})
@@ -324,7 +332,7 @@ func OnionDatabaseConfigs() (conf.Item, error) {
 			break
 		}
 
-		var dbCfg conf.Item
+		var dbCfg conf.Map
 		if choice == "MySQL" {
 			dbCfg, err = Mysql()
 		} else if choice == "Mongo" {

@@ -10,7 +10,11 @@ import (
 	"github.com/shiena/ansicolor"
 )
 
-var debug = os.Getenv("ONION_DEBUG") == "1"
+var debug bool
+
+func init() {
+	debug = os.Getenv("OE_DEBUG") == "1"
+}
 
 var logger Logger
 

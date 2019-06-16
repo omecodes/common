@@ -23,6 +23,7 @@ import (
 
 //Template specs for generating a certificate
 type Template struct {
+	Organization      string
 	Name              string
 	Domains           []string
 	IPs               []net.IP
@@ -72,7 +73,7 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 	notAfter := notBefore.Add(t.Expiry)
 	template := &x509.Certificate{
 		Subject: pkix.Name{
-			Organization: []string{"Onion"},
+			Organization: []string{t.Organization},
 			CommonName:   t.Name,
 		},
 		SerialNumber:                serialNumber(),
@@ -101,7 +102,7 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
-		return nil, errors.New("Failed to create CA certificate: " + err.Error())
+		return nil, errors.New("failed to create CA certificate: " + err.Error())
 	}
 	return x509.ParseCertificate(certBytes)
 }
@@ -113,7 +114,7 @@ func GenerateServiceCertificate(t *Template) (*x509.Certificate, error) {
 	notAfter := notBefore.Add(t.Expiry)
 	template := &x509.Certificate{
 		Subject: pkix.Name{
-			Organization: []string{"Onion"},
+			Organization: []string{t.Organization},
 			CommonName:   t.Name,
 		},
 		AuthorityKeyId: t.SignerCertificate.SubjectKeyId,
@@ -156,11 +157,11 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 
 	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		return nil, errors.New("Failed to decode the private key: " + err.Error())
+		return nil, errors.New("failed to decode the private key")
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		return nil, errors.New("Not supported key")
+		return nil, errors.New("key type not supported")
 	}
 
 	if password != nil && len(password) > 0 {

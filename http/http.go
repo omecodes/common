@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/types"
 )
 
@@ -131,7 +132,7 @@ func final(ctx context.Context, h Handler, cookieStore *sessions.CookieStore, mi
 		request := Request{r}
 		result, err := handler(httpCtx, &request)
 		if err != nil {
-			status = Parse(err).Code
+			status = errors.Parse(err.Error()).Code
 			w.WriteHeader(status)
 			return
 		}
