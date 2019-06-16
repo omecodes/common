@@ -26,7 +26,11 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s:%s", e.Message, e.Details)
+	if e.Details != "" {
+		return fmt.Sprintf("%s:%s", e.Message, e.Details)
+	} else {
+		return e.Message
+	}
 }
 
 func Detailed(e *Error, details string) *Error {
