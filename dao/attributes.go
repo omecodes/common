@@ -3,12 +3,8 @@ package dao
 import (
 	"context"
 	"database/sql"
-
-	"github.com/zoenion/micro"
-	"github.com/zoenion/onion/app/common/proto"
-
 	"fmt"
-	"github.com/zoenion/micro/log"
+	"github.com/zoenion/onion/app/common/proto"
 )
 
 var schema = []string{
@@ -94,8 +90,6 @@ func (dao *sqlAttributesDAO) GetAll(key string) ([]*proto.Attribute, error) {
 			err = rows.Scan(&(attr.Name), &(attr.Value), &(attr.Description))
 			if err == nil {
 				attrs = append(attrs, attr)
-			} else {
-				log.E(micro.GetServiceName(dao.ctx), err, "sql attr row scann failed")
 			}
 		}
 	}

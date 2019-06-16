@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zoenion/micro/log"
+	"github.com/zoenion/common/log"
 )
 
 type SQLRowScanner func(rows *sql.Rows)

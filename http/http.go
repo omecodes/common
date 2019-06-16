@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/zoenion/micro/types"
+	"github.com/zoenion/common/types"
 )
 
 const (
