@@ -2,10 +2,10 @@ package dao
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/log"
 )
 
@@ -106,7 +106,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 	st := dao.getStatement(stmt)
 	if st == nil {
 		if dao.stmt == nil {
-			return errors.New("database misconfigured")
+			return errors.New(errors.BadInput, "database misconfigured")
 		}
 		return fmt.Errorf("statement `%s` does not exist", stmt)
 	}
@@ -123,7 +123,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 func (dao *SQL) Execute(stmt string, params ...interface{}) error {
 	st := dao.getStatement(stmt)
 	if st == nil {
-		return fmt.Errorf("statement `%s` does not exist", stmt)
+		return errors.New(errors.NotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
 	}
 	_, err := st.Exec(params...)
 	return err

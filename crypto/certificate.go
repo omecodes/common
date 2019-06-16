@@ -11,8 +11,8 @@ import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
-	"errors"
 	"fmt"
+	"github.com/zoenion/common/errors"
 	"io/ioutil"
 	"math/big"
 	"net"
@@ -102,7 +102,7 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
-		return nil, errors.New("failed to create CA certificate: " + err.Error())
+		return nil, errors.New(errors.BadInput, "failed to create CA certificate: "+err.Error())
 	}
 	return x509.ParseCertificate(certBytes)
 }
@@ -157,17 +157,17 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 
 	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		return nil, errors.New("failed to decode the private key")
+		return nil, errors.New(errors.BadInput, "failed to decode the private key")
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		return nil, errors.New("key type not supported")
+		return nil, errors.New(errors.NotImplemented, "key type not supported")
 	}
 
 	if password != nil && len(password) > 0 {
 		keyBytes, err = x509.DecryptPEMBlock(block, password)
 		if err != nil {
-			return nil, errors.New("Failed to decrypt CA key: " + err.Error())
+			return nil, errors.New(errors.BadInput, "Failed to decrypt CA key: "+err.Error())
 		}
 	} else {
 		keyBytes = block.Bytes

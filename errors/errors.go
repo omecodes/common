@@ -17,6 +17,7 @@ var TimeOut = &Error{Code: 408, Message: "timeout"}
 var Duplicate = &Error{Code: 100, Message: "duplicate key"}
 var Unexpected = &Error{Code: 101, Message: "unexpected"}
 var WrongContent = &Error{Code: 102, Message: "wrong content"}
+var BadInput = &Error{Code: 103, Message: "bad input"}
 
 type Error struct {
 	Code    int
