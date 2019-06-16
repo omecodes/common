@@ -2,18 +2,17 @@ package errors
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 )
 
-var Forbidden = &Error{Code: http.StatusForbidden, Message: "forbidden"}
-var Unauthorized = &Error{Code: http.StatusUnauthorized, Message: "not allowed"}
-var NotFound = &Error{Code: http.StatusNotFound, Message: "not found"}
-var Internal = &Error{Code: http.StatusInternalServerError, Message: "internal service error"}
-var BadRequest = &Error{Code: http.StatusBadRequest, Message: "bad request"}
-var NotImplemented = &Error{Code: http.StatusNotImplemented, Message: "not implemented"}
-var Processing = &Error{Code: http.StatusProcessing, Message: "processing"}
-var TimeOut = &Error{Code: http.StatusRequestTimeout, Message: "timeout"}
+var Forbidden = &Error{Code: 403, Message: "forbidden"}
+var Unauthorized = &Error{Code: 401, Message: "not allowed"}
+var NotFound = &Error{Code: 404, Message: "not found"}
+var Internal = &Error{Code: 500, Message: "internal service error"}
+var BadRequest = &Error{Code: 400, Message: "bad request"}
+var NotImplemented = &Error{Code: 501, Message: "not implemented"}
+var Processing = &Error{Code: 502, Message: "processing"}
+var TimeOut = &Error{Code: 408, Message: "timeout"}
 
 var Duplicate = &Error{Code: 100, Message: "duplicate key"}
 var Unexpected = &Error{Code: 101, Message: "unexpected"}
