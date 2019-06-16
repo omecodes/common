@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/errors"
 	"gopkg.in/mgo.v2"
 	"strings"
 )
@@ -19,7 +19,7 @@ import (
 func GetDB(c conf.Map) (string, interface{}, error) {
 	t, ok := c.GetString("type")
 	if !ok {
-		return "", nil, errors.New("not found")
+		return "", nil, errors.NotFound
 	}
 	switch t {
 	case "mongo":
@@ -81,14 +81,14 @@ func GetDB(c conf.Map) (string, interface{}, error) {
 		if c["wrapped"].(bool) {
 			wrapper, ok := c.GetString("wrapper")
 			if !ok {
-				return "", nil, errors.New("not found")
+				return "", nil, errors.NotFound
 			}
 			switch wrapper {
 			case "gorm":
 				g, err := gorm.Open(c["driver"].(string), dsn)
 				return "gorm", g, err
 			default:
-				return "", nil, errors.New("unsupported")
+				return "", nil, errors.NotImplemented
 			}
 		} else {
 			s, err := sql.Open(c["driver"].(string), dsn)
@@ -106,7 +106,7 @@ func GetDB(c conf.Map) (string, interface{}, error) {
 		b, err := bolt.Open(path, 0600, nil)
 		return t, b, err
 	default:
-		return "", nil, errors.New("unsupported")
+		return "", nil, errors.NotImplemented
 	}
 }
 
@@ -118,7 +118,7 @@ func GetMysql(c conf.Map) (*sql.DB, error) {
 
 	db, ok := dbi.(*sql.DB)
 	if !ok {
-		return nil, errors.New("no mysql db provided")
+		return nil, errors.NotFound
 	}
 	return db, nil
 }

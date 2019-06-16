@@ -2,8 +2,8 @@ package mail
 
 import (
 	"crypto/tls"
-	"github.com/pkg/errors"
 	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/errors"
 	"gopkg.in/gomail.v2"
 	"log"
 )
@@ -11,20 +11,20 @@ import (
 func Send(cfg conf.Map, to string, subject string, html string, plain string) error {
 	server, ok := cfg.GetString("server")
 	if !ok {
-		return errors.New("wrong mailer configs")
+		return errors.New(errors.BadRequest, "missing 'server' entry in configs")
 	}
 	port, ok := cfg.GetInt32("port")
 	if !ok {
-		return errors.New("wrong mailer configs")
+		return errors.New(errors.BadRequest, "missing 'port' entry in configs")
 	}
 
 	user, ok := cfg.GetString("user")
 	if !ok {
-		return errors.New("wrong mailer configs")
+		return errors.New(errors.BadRequest, "missing 'user' entry in configs")
 	}
 	password, ok := cfg.GetString("password")
 	if !ok {
-		return errors.New("wrong mailer configs")
+		return errors.New(errors.BadRequest, "missing 'password' entry in configs")
 	}
 	return SendMail(server, int(port), user, password, to, subject, html, plain)
 }
