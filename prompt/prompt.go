@@ -22,7 +22,7 @@ func unixNumber(label string, defaultValue string, masked bool) (int64, error) {
 func unixText(label string, defaultValue string, acceptEmpty bool, masked bool) (string, error) {
 	validate := func(txt string) error {
 		if len(txt) == 0 && !acceptEmpty {
-			return errors.New(errors.BadInput, "empty value")
+			return errors.Detailed(errors.BadInput, "empty value")
 		}
 		return nil
 	}
@@ -65,7 +65,7 @@ func winText(label string, defaultValue string, acceptEmpty bool, masked bool) (
 				Validate: func(text interface{}) error {
 					str, _ := text.(string)
 					if len(str) == 0 && !acceptEmpty {
-						return errors.New(errors.BadInput, "cannot be empty")
+						return errors.Detailed(errors.BadInput, "cannot be empty")
 					}
 					return nil
 				},

@@ -1,6 +1,7 @@
 package network
 
 import (
+	"github.com/zoenion/common/log"
 	"net"
 	"sort"
 	"strconv"
@@ -40,7 +41,7 @@ func localIPV4Addresses() []string {
 				ip = v.IP
 			}
 
-			if ip.To4() != nil && !strings.Contains(ip.String(), ":") {
+			if ip != nil && ip.To4() != nil && !strings.Contains(ip.String(), ":") {
 				if addressPingTest(ip.String()) {
 					addresses = append(addresses, ip.String())
 				}
@@ -56,7 +57,11 @@ func addressPingTest(addr string) bool {
 	if err != nil {
 		return false
 	}
-	defer listener.Close()
+	defer func() {
+		if err := listener.Close(); err != nil {
+			log.E("net.ip.ping", err, "listener.close() caused error")
+		}
+	}()
 
 	listenAddr := listener.Addr().String()
 	go func() {
@@ -65,29 +70,41 @@ func addressPingTest(addr string) bool {
 			result <- false
 			return
 		}
-		defer con.Close()
+		defer func() {
+			if err := con.Close(); err != nil {
+				log.E("net.ip.ping", err, "con.close() caused error")
+			}
+		}()
 
 		buffer := make([]byte, 1)
 		_, err = con.Read(buffer)
 		if err != nil {
 			result <- false
 		}
-		con.Write(buffer[:1])
+		if _, err := con.Write(buffer[:1]); err != nil {
+			log.E("network", err)
+		}
 	}()
 	go func() {
 		con, err := net.Dial("tcp", listenAddr)
 		if err != nil {
+			log.E("net.ip.ping", err)
 			result <- false
+			return
 		}
+
 		defer con.Close()
 
-		_, err = con.Write([]byte{12}[:1])
-		if err != nil {
+		buffer := []byte{12}
+		if _, err := con.Write(buffer); err != nil {
 			result <- false
+			return
 		}
 
-		buffer := []byte{0}
-		con.Read(buffer)
+		buffer[0] = 0
+		if _, err := con.Read(buffer); err != nil {
+			log.E("net.ip.ping", err)
+		}
 		result <- buffer[0] == 12
 	}()
 

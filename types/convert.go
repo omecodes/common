@@ -25,10 +25,6 @@ func IntVal(i interface{}) (int, bool) {
 		return 0, false
 	}
 
-	if i == nil {
-		return 0, false
-	}
-
 	if val, ok := i.(int); ok {
 		return int(val), true
 	}

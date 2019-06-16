@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/types"
 )
 

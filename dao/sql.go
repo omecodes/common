@@ -26,15 +26,20 @@ func (dao *SQL) Set(name string, value string) {
 
 func (dao *SQL) TableHasIndex(table string, indexName string) bool {
 	var count = 0
-	dao.Query("has_index", func(rows *sql.Rows) {
+	err := dao.Query("has_index", func(rows *sql.Rows) {
 		if rows.Next() {
 			err := rows.Scan(&count)
 			if err != nil {
 				count = 0
 			}
 		}
-		rows.Close()
+		if err := rows.Close(); err != nil {
+			log.E("dao.index.check", err, "cursor close() caused error")
+		}
 	}, table, indexName)
+	if err != nil {
+		log.E("dao.index.check", err)
+	}
 	return count > 0
 }
 
@@ -48,7 +53,9 @@ func (dao *SQL) QuerySQL(query string, scanner SQLRowScanner, params ...interfac
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 	if scanner != nil {
 		scanner(rows)
 	}
@@ -106,7 +113,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 	st := dao.getStatement(stmt)
 	if st == nil {
 		if dao.stmt == nil {
-			return errors.New(errors.BadInput, "database misconfigured")
+			return errors.Detailed(errors.BadInput, "database misconfigured")
 		}
 		return fmt.Errorf("statement `%s` does not exist", stmt)
 	}
@@ -123,7 +130,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 func (dao *SQL) Execute(stmt string, params ...interface{}) error {
 	st := dao.getStatement(stmt)
 	if st == nil {
-		return errors.New(errors.NotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
+		return errors.Detailed(errors.NotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
 	}
 	_, err := st.Exec(params...)
 	return err
