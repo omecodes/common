@@ -48,7 +48,6 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
 	case "mysql", "sqlite3":
 		dao.dialect = d
 		dao.DB = dbi.(*sql.DB)
-
 	default:
 		return errors.New("database dialect is not supported")
 	}
@@ -59,27 +58,31 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
   	AND TABLE_NAME = ? AND INDEX_NAME LIKE ?;`).
 		RegisterScanner(StatementKeyHasIndex, NewScannerFunc(dao.scanIndex))
 
-	for _, schema := range dao.tableDefs {
-		for name, value := range dao.vars {
-			schema = strings.Replace(schema, name, value, -1)
-		}
-		_, err := dao.DB.Exec(schema)
-		if err != nil {
-			return err
+	if dao.tableDefs != nil && len(dao.tableDefs) > 0 {
+		for _, schema := range dao.tableDefs {
+			for name, value := range dao.vars {
+				schema = strings.Replace(schema, name, value, -1)
+			}
+			_, err := dao.DB.Exec(schema)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
-	for name, stmt := range dao.registeredStatements {
-		for name, value := range dao.vars {
-			stmt = strings.Replace(stmt, name, value, -1)
-		}
+	if dao.registeredStatements != nil && len(dao.registeredStatements) > 0 {
+		for name, stmt := range dao.registeredStatements {
+			for name, value := range dao.vars {
+				stmt = strings.Replace(stmt, name, value, -1)
+			}
 
-		stmt, err := dao.DB.Prepare(stmt)
-		if err != nil {
-			log.Ef("SQLv2", err, "failed to compile '%s' statement: %s", name, stmt)
-			return err
+			stmt, err := dao.DB.Prepare(stmt)
+			if err != nil {
+				log.Ef("SQLv2", err, "failed to compile '%s' statement: %s", name, stmt)
+				return err
+			}
+			dao.compiledStatements[name] = stmt
 		}
-		dao.compiledStatements[name] = stmt
 	}
 	return nil
 }
@@ -133,26 +136,28 @@ func (dao *SQLv2) TableHasIndex(table string, indexName string) (bool, error) {
 	return false, nil
 }
 
-func (dao *SQLv2) RawExec(rawQuery string) *SQlv2Result {
-	r, err := dao.DB.Exec(rawQuery)
-	result := &SQlv2Result{Error: err}
-	if err == nil {
-		result.LastInserted, _ = r.LastInsertId()
-		result.AffectedRows, _ = r.RowsAffected()
-	}
-	return result
-}
-
 func (dao *SQLv2) RawQuery(query string, scannerName string, params ...interface{}) (DBCursor, error) {
 	rows, err := dao.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
-	scanner, found := dao.scanners[scannerName]
-	if !found {
-		return nil, errors.New("not scanner found")
+	scanner, err := dao.findScanner(scannerName)
+	if err != nil {
+		return nil, err
 	}
 	return NewSQLDBCursor(rows, scanner), nil
+}
+
+func (dao *SQLv2) RawExec(rawQuery string) *SQlv2Result {
+	var r sql.Result
+	result := &SQlv2Result{}
+
+	r, result.Error = dao.DB.Exec(rawQuery)
+	if result.Error == nil {
+		result.LastInserted, _ = r.LastInsertId()
+		result.AffectedRows, _ = r.RowsAffected()
+	}
+	return result
 }
 
 func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) (DBCursor, error) {
@@ -166,9 +171,9 @@ func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) 
 		return nil, err
 	}
 
-	scanner, found := dao.scanners[scannerName]
-	if !found {
-		return nil, errors.Detailed(errors.NotFound, "not scanner found")
+	scanner, err := dao.findScanner(scannerName)
+	if err != nil {
+		return nil, err
 	}
 
 	cursor := NewSQLDBCursor(rows, scanner)
@@ -176,17 +181,19 @@ func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) 
 }
 
 func (dao *SQLv2) Exec(stmt string, params ...interface{}) *SQlv2Result {
-	st := dao.getStatement(stmt)
 	result := &SQlv2Result{}
+	var (
+		st *sql.Stmt
+		r  sql.Result
+	)
 
-	if st == nil {
-		result.Error = errors.Detailed(errors.NotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
+	st, result.Error = dao.findCompileStatement(stmt)
+	if result.Error != nil {
 		return result
 	}
 
-	r, err := st.Exec(params...)
-	result.Error = err
-	if err == nil {
+	r, result.Error = st.Exec(params...)
+	if result.Error == nil {
 		result.LastInserted, _ = r.LastInsertId()
 		result.AffectedRows, _ = r.RowsAffected()
 	}
@@ -200,6 +207,25 @@ func (dao *SQLv2) scanIndex(rows *sql.Rows) (interface{}, error) {
 		count = 0
 	}
 	return count, nil
+}
+
+func (dao *SQLv2) findCompileStatement(name string) (*sql.Stmt, error) {
+	if dao.compiledStatements == nil {
+		return nil, errors.Detailed(errors.NotFound, fmt.Sprintf("no compiled statement with name '%s' found", name))
+	}
+
+	if compiledStmt, found := dao.compiledStatements[name]; found {
+		return compiledStmt, nil
+	}
+	return nil, errors.NotFound
+}
+
+func (dao *SQLv2) findScanner(name string) (SQLv2RowScanner, error) {
+	scanner, found := dao.scanners[name]
+	if !found {
+		return nil, errors.Detailed(errors.NotFound, fmt.Sprintf("no scanner with name '%s' found", name))
+	}
+	return scanner, nil
 }
 
 func (dao *SQLv2) getStatement(name string) *sql.Stmt {
