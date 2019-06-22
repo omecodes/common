@@ -8,6 +8,7 @@ import (
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/log"
 	"strings"
+	"sync"
 )
 
 const (
@@ -38,6 +39,7 @@ type SQLIndex struct {
 
 type SQLv2 struct {
 	DB                   *sql.DB
+	mux                  *sync.RWMutex
 	dialect              string
 	compiledStatements   map[string]*sql.Stmt
 	vars                 map[string]string
@@ -62,6 +64,7 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
 			dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
 		} else {
 			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
+			dao.mux = new(sync.RWMutex)
 		}
 	default:
 		return errors.New("database dialect is not supported")
@@ -260,6 +263,8 @@ func (dao *SQLv2) RawQuery(query string, scannerName string, params ...interface
 }
 
 func (dao *SQLv2) RawExec(rawQuery string) *SQlv2Result {
+	dao.wLock()
+	defer dao.wUnlock()
 	var r sql.Result
 	result := &SQlv2Result{}
 
@@ -272,6 +277,9 @@ func (dao *SQLv2) RawExec(rawQuery string) *SQlv2Result {
 }
 
 func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) (DBCursor, error) {
+	dao.rLock()
+	defer dao.rUnLock()
+
 	st := dao.getStatement(stmt)
 	if st == nil {
 		return nil, fmt.Errorf("statement `%s` does not exist", stmt)
@@ -292,6 +300,9 @@ func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) 
 }
 
 func (dao *SQLv2) Exec(stmt string, params ...interface{}) *SQlv2Result {
+	dao.wLock()
+	defer dao.wUnlock()
+
 	result := &SQlv2Result{}
 	var (
 		st *sql.Stmt
@@ -312,6 +323,9 @@ func (dao *SQLv2) Exec(stmt string, params ...interface{}) *SQlv2Result {
 }
 
 func (dao *SQLv2) sqliteIndexScan(rows *sql.Rows) (interface{}, error) {
+	dao.rLock()
+	defer dao.rUnLock()
+
 	var index SQLIndex
 	m, err := dao.rowToMap(rows)
 	if err != nil {
@@ -397,6 +411,30 @@ func (dao *SQLv2) getStatement(name string) *sql.Stmt {
 		return nil
 	}
 	return s
+}
+
+func (dao *SQLv2) rLock() {
+	if dao.mux != nil {
+		dao.mux.RLock()
+	}
+}
+
+func (dao *SQLv2) wLock() {
+	if dao.mux != nil {
+		dao.mux.Lock()
+	}
+}
+
+func (dao *SQLv2) rUnLock() {
+	if dao.mux != nil {
+		dao.mux.RUnlock()
+	}
+}
+
+func (dao *SQLv2) wUnlock() {
+	if dao.mux != nil {
+		dao.mux.Unlock()
+	}
 }
 
 type DBCursor interface {
