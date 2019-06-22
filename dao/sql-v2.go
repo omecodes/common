@@ -13,7 +13,8 @@ import (
 const (
 	StatementKeyHasIndex = "has_index"
 
-	VarPrefix = "$prefix$"
+	VarPrefix        = "$prefix$"
+	VarAutoIncrement = "$auto_increment$"
 
 	ScannerIndex = "scanner_index"
 )
@@ -48,6 +49,11 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
 	case "mysql", "sqlite3":
 		dao.dialect = d
 		dao.DB = dbi.(*sql.DB)
+		if d == "mysql" {
+			dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
+		} else {
+			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
+		}
 	default:
 		return errors.New("database dialect is not supported")
 	}
