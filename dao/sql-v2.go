@@ -104,14 +104,26 @@ func (dao *SQLv2) SetTablePrefix(prefix string) *SQLv2 {
 }
 
 func (dao *SQLv2) SetTableDefinition(name string, schema string) *SQLv2 {
+	if dao.tableDefs == nil {
+		dao.tableDefs = map[string]string{}
+	}
+	dao.tableDefs[name] = schema
 	return dao
 }
 
 func (dao *SQLv2) AddStatement(name string, statementStr string) *SQLv2 {
+	if dao.registeredStatements == nil {
+		dao.registeredStatements = map[string]string{}
+	}
+	dao.registeredStatements[name] = statementStr
 	return dao
 }
 
 func (dao *SQLv2) RegisterScanner(name string, scanner SQLv2RowScanner) *SQLv2 {
+	if dao.scanners == nil {
+		dao.scanners = map[string]SQLv2RowScanner{}
+	}
+	dao.scanners[name] = scanner
 	return dao
 }
 
