@@ -86,17 +86,18 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
 	}
 
 	if dao.registeredStatements != nil && len(dao.registeredStatements) > 0 {
+		dao.compiledStatements = map[string]*sql.Stmt{}
 		for name, stmt := range dao.registeredStatements {
 			for name, value := range dao.vars {
 				stmt = strings.Replace(stmt, name, value, -1)
 			}
 
-			stmt, err := dao.DB.Prepare(stmt)
+			compiledStmt, err := dao.DB.Prepare(stmt)
 			if err != nil {
 				log.Ef("SQLv2", err, "failed to compile '%s' statement: %s", name, stmt)
 				return err
 			}
-			dao.compiledStatements[name] = stmt
+			dao.compiledStatements[name] = compiledStmt
 		}
 	}
 	dao.initDone = true
