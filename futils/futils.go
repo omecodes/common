@@ -5,6 +5,18 @@ import (
 	"strings"
 )
 
+var (
+	hideFile func(string) (string, error)
+)
+
+func init() {
+	if runtime.GOOS == "windows" {
+		hideFile = winHideFile
+	} else {
+		hideFile = unixHideFile
+	}
+}
+
 func NormalizePath(p string) string {
 	if runtime.GOOS != "windows" {
 		return p
@@ -21,4 +33,8 @@ func UnNormalizePath(p string) string {
 	drive := p[1:2]
 	rest := p[3:]
 	return strings.ToUpper(drive) + ":\\" + strings.Replace(rest, "/", "\\", -1)
+}
+
+func HideFile(f string) (string, error) {
+	return hideFile(f)
 }
