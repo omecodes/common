@@ -11,7 +11,7 @@ import (
 	"syscall"
 )
 
-func unixHideFile(filename string) (string, error) {
+func HideFile(filename string) (string, error) {
 	if !strings.HasPrefix(filepath.Base(filename), ".") {
 		newPath := filepath.Join(filepath.Dir(filename), "."+filepath.Base(filename))
 		err := os.Rename(filename, newPath)
@@ -20,7 +20,7 @@ func unixHideFile(filename string) (string, error) {
 	return filename, nil
 }
 
-func unixDiskStatus(path string) (disk DiskStatus, err error) {
+func DiskStatus(path string) (disk DiskUsage, err error) {
 	fs := syscall.Statfs_t{}
 	err = syscall.Statfs(path, &fs)
 	if err != nil {
@@ -32,7 +32,7 @@ func unixDiskStatus(path string) (disk DiskStatus, err error) {
 	return
 }
 
-func unixDriveList() []string {
+func DriveList() []string {
 	var drives []string
 
 	block, err := ghw.Block()

@@ -11,7 +11,7 @@ import (
 	"unsafe"
 )
 
-func winHideFile(filename string) (string, error) {
+func HideFile(filename string) (string, error) {
 	filenameW, err := syscall.UTF16PtrFromString(filename)
 	if err != nil {
 		return "", err
@@ -23,10 +23,10 @@ func winHideFile(filename string) (string, error) {
 	return filename, nil
 }
 
-func winDiskStatus(disk string) (DiskStatus, error) {
+func DiskStatus(disk string) (DiskUsage, error) {
 	kernel32, err := syscall.LoadLibrary("Kernel32.dll")
 	if err != nil {
-		return DiskStatus{}, err
+		return DiskUsage{}, err
 	}
 	defer func() {
 		_ = syscall.FreeLibrary(kernel32)
@@ -34,12 +34,12 @@ func winDiskStatus(disk string) (DiskStatus, error) {
 
 	GetDiskFreeSpaceEx, err := syscall.GetProcAddress(syscall.Handle(kernel32), "GetDiskFreeSpaceExW")
 	if err != nil {
-		return DiskStatus{}, err
+		return DiskUsage{}, err
 	}
 
 	diskNamePtr, err := syscall.UTF16PtrFromString(disk)
 	if err != nil {
-		return DiskStatus{}, err
+		return DiskUsage{}, err
 	}
 
 	lpFreeBytesAvailable := int64(0)
@@ -51,13 +51,13 @@ func winDiskStatus(disk string) (DiskStatus, error) {
 		uintptr(unsafe.Pointer(&lpTotalNumberOfBytes)),
 		uintptr(unsafe.Pointer(&lpTotalNumberOfFreeBytes)), 0, 0)
 	if e != 0 {
-		return DiskStatus{}, errors.New("failed to load disk status")
+		return DiskUsage{}, errors.New("failed to load disk status")
 	}
 
 	all := uint64(lpTotalNumberOfBytes)
 	free := uint64(lpTotalNumberOfFreeBytes)
 
-	ds := DiskStatus{
+	ds := DiskUsage{
 		All:  all,
 		Free: free,
 		Used: all - free,
@@ -69,7 +69,7 @@ func winDiskStatus(disk string) (DiskStatus, error) {
 	return ds, nil
 }
 
-func winDriveList() (drives []string) {
+func DriveList() (drives []string) {
 
 	checkDriveWithinTimeOut := func(d int32) bool {
 		driveChan := make(chan string, 1)
