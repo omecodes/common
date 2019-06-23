@@ -64,6 +64,9 @@ func (dao *SQLv2) Init(cfg conf.Map) error {
 			dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
 		} else {
 			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
+			if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
+				log.E("dao.SQLv2", err, "failed to enable foreign_key feature")
+			}
 			dao.mux = new(sync.RWMutex)
 		}
 	default:
