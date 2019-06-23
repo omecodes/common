@@ -1,3 +1,5 @@
+// +build !windows
+
 package futils
 
 import (
@@ -18,7 +20,6 @@ func unixHideFile(filename string) (string, error) {
 	return filename, nil
 }
 
-// disk usage of path/disk
 func unixDiskStatus(path string) (disk DiskStatus, err error) {
 	fs := syscall.Statfs_t{}
 	err = syscall.Statfs(path, &fs)
