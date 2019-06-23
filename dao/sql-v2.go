@@ -263,6 +263,27 @@ func (dao *SQLv2) RawQuery(query string, scannerName string, params ...interface
 	return NewSQLDBCursor(rows, scanner), nil
 }
 
+func (dao *SQLv2) RawQueryOne(query string, scannerName string, params ...interface{}) (interface{}, error) {
+	rows, err := dao.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	scanner, err := dao.findScanner(scannerName)
+	if err != nil {
+		return nil, err
+	}
+
+	cursor := NewSQLDBCursor(rows, scanner)
+	defer func() {
+		_ = cursor.Close()
+	}()
+
+	if !cursor.HasNext() {
+		return nil, errors.NotFound
+	}
+	return cursor.Next()
+}
+
 func (dao *SQLv2) RawExec(rawQuery string) *SQlv2Result {
 	dao.wLock()
 	defer dao.wUnlock()
@@ -298,6 +319,36 @@ func (dao *SQLv2) Query(stmt string, scannerName string, params ...interface{}) 
 
 	cursor := NewSQLDBCursor(rows, scanner)
 	return cursor, nil
+}
+
+func (dao *SQLv2) QueryOne(stmt string, scannerName string, params ...interface{}) (interface{}, error) {
+	dao.rLock()
+	defer dao.rUnLock()
+
+	st := dao.getStatement(stmt)
+	if st == nil {
+		return nil, fmt.Errorf("statement `%s` does not exist", stmt)
+	}
+
+	rows, err := st.Query(params...)
+	if err != nil {
+		return nil, err
+	}
+
+	scanner, err := dao.findScanner(scannerName)
+	if err != nil {
+		return nil, err
+	}
+
+	cursor := NewSQLDBCursor(rows, scanner)
+	defer func() {
+		_ = cursor.Close()
+	}()
+
+	if !cursor.HasNext() {
+		return nil, errors.NotFound
+	}
+	return cursor.Next()
 }
 
 func (dao *SQLv2) Exec(stmt string, params ...interface{}) *SQlv2Result {
