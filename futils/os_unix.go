@@ -1,9 +1,12 @@
 package futils
 
 import (
+	"fmt"
+	"github.com/jaypipes/ghw"
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 func unixHideFile(filename string) (string, error) {
@@ -13,4 +16,31 @@ func unixHideFile(filename string) (string, error) {
 		return newPath, err
 	}
 	return filename, nil
+}
+
+// disk usage of path/disk
+func unixDiskStatus(path string) (disk DiskStatus, err error) {
+	fs := syscall.Statfs_t{}
+	err = syscall.Statfs(path, &fs)
+	if err != nil {
+		return
+	}
+	disk.All = fs.Blocks * uint64(fs.Bsize)
+	disk.Free = fs.Bfree * uint64(fs.Bsize)
+	disk.Used = disk.All - disk.Free
+	return
+}
+
+func unixDriveList() []string {
+	var drives []string
+
+	block, err := ghw.Block()
+	if err != nil {
+		fmt.Printf("Error getting block storage info: %v", err)
+	}
+
+	for _, disk := range block.Disks {
+		drives = append(drives, disk.Name)
+	}
+	return drives
 }
