@@ -282,7 +282,7 @@ func (dao *SQLv2) RawQueryOne(query string, scannerName string, params ...interf
 	}()
 
 	if !cursor.HasNext() {
-		return nil, errors.NotFound
+		return nil, errors.HttpNotFound
 	}
 	return cursor.Next()
 }
@@ -349,7 +349,7 @@ func (dao *SQLv2) QueryOne(stmt string, scannerName string, params ...interface{
 	}()
 
 	if !cursor.HasNext() {
-		return nil, errors.NotFound
+		return nil, errors.HttpNotFound
 	}
 	return cursor.Next()
 }
@@ -440,19 +440,19 @@ func (dao *SQLv2) rowToMap(rows *sql.Rows) (map[string]interface{}, error) {
 
 func (dao *SQLv2) findCompileStatement(name string) (*sql.Stmt, error) {
 	if dao.compiledStatements == nil {
-		return nil, errors.Detailed(errors.NotFound, fmt.Sprintf("no compiled statement with name '%s' found", name))
+		return nil, errors.Detailed(errors.HttpNotFound, fmt.Sprintf("no compiled statement with name '%s' found", name))
 	}
 
 	if compiledStmt, found := dao.compiledStatements[name]; found {
 		return compiledStmt, nil
 	}
-	return nil, errors.NotFound
+	return nil, errors.HttpNotFound
 }
 
 func (dao *SQLv2) findScanner(name string) (SQLv2RowScanner, error) {
 	scanner, found := dao.scanners[name]
 	if !found {
-		return nil, errors.Detailed(errors.NotFound, fmt.Sprintf("no scanner with name '%s' found", name))
+		return nil, errors.Detailed(errors.HttpNotFound, fmt.Sprintf("no scanner with name '%s' found", name))
 	}
 	return scanner, nil
 }

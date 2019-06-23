@@ -130,7 +130,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 func (dao *SQL) Execute(stmt string, params ...interface{}) error {
 	st := dao.getStatement(stmt)
 	if st == nil {
-		return errors.Detailed(errors.NotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
+		return errors.Detailed(errors.HttpNotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
 	}
 	_, err := st.Exec(params...)
 	return err

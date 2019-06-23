@@ -161,7 +161,7 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		return nil, errors.Detailed(errors.NotImplemented, "key type not supported")
+		return nil, errors.Detailed(errors.HttpNotImplemented, "key type not supported")
 	}
 
 	if password != nil && len(password) > 0 {
@@ -196,7 +196,7 @@ func StorePrivateKey(key crypto.PrivateKey, password []byte, file string) error 
 		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: bytes}
 
 	} else {
-		return errors.Detailed(errors.NotImplemented, "key type is not supported")
+		return errors.Detailed(errors.HttpNotImplemented, "key type is not supported")
 	}
 
 	if password != nil && len(password) > 0 {

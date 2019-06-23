@@ -11,20 +11,20 @@ import (
 func Send(cfg conf.Map, to string, subject string, html string, plain string) error {
 	server, ok := cfg.GetString("server")
 	if !ok {
-		return errors.Detailed(errors.BadRequest, "missing 'server' entry in configs")
+		return errors.Detailed(errors.HttpBadRequest, "missing 'server' entry in configs")
 	}
 	port, ok := cfg.GetInt32("port")
 	if !ok {
-		return errors.Detailed(errors.BadRequest, "missing 'port' entry in configs")
+		return errors.Detailed(errors.HttpBadRequest, "missing 'port' entry in configs")
 	}
 
 	user, ok := cfg.GetString("user")
 	if !ok {
-		return errors.Detailed(errors.BadRequest, "missing 'user' entry in configs")
+		return errors.Detailed(errors.HttpBadRequest, "missing 'user' entry in configs")
 	}
 	password, ok := cfg.GetString("password")
 	if !ok {
-		return errors.Detailed(errors.BadRequest, "missing 'password' entry in configs")
+		return errors.Detailed(errors.HttpBadRequest, "missing 'password' entry in configs")
 	}
 	return SendMail(server, int(port), user, password, to, subject, html, plain)
 }

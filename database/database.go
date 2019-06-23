@@ -19,7 +19,7 @@ import (
 func GetDB(c conf.Map) (string, interface{}, error) {
 	t, ok := c.GetString("type")
 	if !ok {
-		return "", nil, errors.NotFound
+		return "", nil, errors.HttpNotFound
 	}
 	switch t {
 	case "mongo":
@@ -81,14 +81,14 @@ func GetDB(c conf.Map) (string, interface{}, error) {
 		if c["wrapped"].(bool) {
 			wrapper, ok := c.GetString("wrapper")
 			if !ok {
-				return "", nil, errors.NotFound
+				return "", nil, errors.HttpNotFound
 			}
 			switch wrapper {
 			case "gorm":
 				g, err := gorm.Open(c["driver"].(string), dsn)
 				return "gorm", g, err
 			default:
-				return "", nil, errors.NotImplemented
+				return "", nil, errors.HttpNotImplemented
 			}
 		} else {
 			s, err := sql.Open(c["driver"].(string), dsn)
@@ -106,7 +106,7 @@ func GetDB(c conf.Map) (string, interface{}, error) {
 		b, err := bolt.Open(path, 0600, nil)
 		return t, b, err
 	default:
-		return "", nil, errors.NotImplemented
+		return "", nil, errors.HttpNotImplemented
 	}
 }
 
@@ -118,7 +118,7 @@ func GetMysql(c conf.Map) (*sql.DB, error) {
 
 	db, ok := dbi.(*sql.DB)
 	if !ok {
-		return nil, errors.NotFound
+		return nil, errors.HttpNotFound
 	}
 	return db, nil
 }

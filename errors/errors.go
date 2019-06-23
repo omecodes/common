@@ -5,19 +5,23 @@ import (
 	"strings"
 )
 
-var Forbidden = &Error{Code: 403, Message: "forbidden"}
-var Unauthorized = &Error{Code: 401, Message: "not allowed"}
-var NotFound = &Error{Code: 404, Message: "not found"}
-var Internal = &Error{Code: 500, Message: "internal service error"}
-var BadRequest = &Error{Code: 400, Message: "bad request"}
-var NotImplemented = &Error{Code: 501, Message: "not implemented"}
-var Processing = &Error{Code: 502, Message: "processing"}
-var TimeOut = &Error{Code: 408, Message: "timeout"}
-
-var Duplicate = &Error{Code: 100, Message: "duplicate key"}
-var Unexpected = &Error{Code: 101, Message: "unexpected"}
-var WrongContent = &Error{Code: 102, Message: "wrong content"}
-var BadInput = &Error{Code: 103, Message: "bad input"}
+var (
+	HttpForbidden      = &Error{Code: 403, Message: "forbidden"}
+	HttpUnauthorized   = &Error{Code: 401, Message: "not allowed"}
+	HttpNotFound       = &Error{Code: 404, Message: "not found"}
+	HttpInternal       = &Error{Code: 500, Message: "internal service error"}
+	HttpBadRequest     = &Error{Code: 400, Message: "bad request"}
+	HttpNotImplemented = &Error{Code: 501, Message: "not implemented"}
+	HttpProcessing     = &Error{Code: 502, Message: "processing"}
+	HttpTimeOut        = &Error{Code: 408, Message: "timeout"}
+	NotFound           = &Error{Code: 1, Message: "not found"}
+	Unauthorized       = &Error{Code: 2, Message: "unauthorized"}
+	NotSupported       = &Error{Code: 3, Message: "not supported"}
+	Duplicate          = &Error{Code: 4, Message: "duplicate key"}
+	Unexpected         = &Error{Code: 5, Message: "unexpected"}
+	WrongContent       = &Error{Code: 6, Message: "wrong content"}
+	BadInput           = &Error{Code: 7, Message: "bad input"}
+)
 
 type Error struct {
 	Code    int
@@ -43,37 +47,9 @@ func Detailed(e *Error, details string) *Error {
 
 func New(message string) error {
 	return &Error{
-		Code:    Internal.Code,
-		Message: Internal.Message,
+		Code:    HttpInternal.Code,
+		Message: HttpInternal.Message,
 		Details: message,
-	}
-}
-
-func GetErrorCode(e error) int {
-	eObject, ok := e.(*Error)
-	if ok {
-		return eObject.Code
-	}
-
-	msg := e.Error()
-
-	switch msg {
-	case Forbidden.Message:
-		return Forbidden.Code
-	case Unauthorized.Message:
-		return Unauthorized.Code
-	case NotFound.Message:
-		return NotFound.Code
-	case BadRequest.Message:
-		return BadRequest.Code
-	case NotImplemented.Message:
-		return NotImplemented.Code
-	case Processing.Message:
-		return Processing.Code
-	case TimeOut.Message:
-		return TimeOut.Code
-	default:
-		return Internal.Code
 	}
 }
 
@@ -86,26 +62,33 @@ func Parse(str string) *Error {
 	}
 
 	switch head {
-	case Forbidden.Message:
-		return Detailed(Forbidden, details)
-	case Unauthorized.Message:
-		return Detailed(Unauthorized, details)
-	case NotFound.Message:
-		return Detailed(NotFound, details)
-	case BadRequest.Message:
-		return Detailed(BadRequest, details)
-	case NotImplemented.Message:
-		return Detailed(NotImplemented, details)
-	case Processing.Message:
-		return Detailed(Processing, details)
-	case TimeOut.Message:
-		return Detailed(TimeOut, details)
+	case HttpForbidden.Message:
+		return Detailed(HttpForbidden, details)
+	case HttpUnauthorized.Message:
+		return Detailed(HttpUnauthorized, details)
+	case HttpNotFound.Message:
+		return Detailed(HttpNotFound, details)
+	case HttpBadRequest.Message:
+		return Detailed(HttpBadRequest, details)
+	case HttpNotImplemented.Message:
+		return Detailed(HttpNotImplemented, details)
+	case HttpProcessing.Message:
+		return Detailed(HttpProcessing, details)
+	case HttpTimeOut.Message:
+		return Detailed(HttpTimeOut, details)
 	default:
-		return Detailed(Internal, details)
+		return Detailed(HttpInternal, details)
 	}
 }
 
-func Is(err error, e *Error) bool {
-	er := Parse(err.Error())
-	return er.Code == e.Code
+func IsHttpNotFound(e error) bool {
+	return Parse(e.Error()).Code == HttpNotFound.Code
+}
+
+func IsHttpUnauthorized(e error) bool {
+	return Parse(e.Error()).Code == Unauthorized.Code
+}
+
+func IsNotFound(e error) bool {
+	return Parse(e.Error()).Code == NotFound.Code
 }
