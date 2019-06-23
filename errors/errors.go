@@ -1,19 +1,14 @@
 package errors
 
-import (
-	"fmt"
-	"strings"
-)
-
 var (
-	HttpForbidden      = &Error{Code: 403, Message: "forbidden"}
-	HttpUnauthorized   = &Error{Code: 401, Message: "not allowed"}
-	HttpNotFound       = &Error{Code: 404, Message: "not found"}
-	HttpInternal       = &Error{Code: 500, Message: "internal service error"}
-	HttpBadRequest     = &Error{Code: 400, Message: "bad request"}
-	HttpNotImplemented = &Error{Code: 501, Message: "not implemented"}
-	HttpProcessing     = &Error{Code: 502, Message: "processing"}
-	HttpTimeOut        = &Error{Code: 408, Message: "timeout"}
+	HttpForbidden      = &Error{Code: 403, Message: "HTTP forbidden"}
+	HttpUnauthorized   = &Error{Code: 401, Message: "HTTP not allowed"}
+	HttpNotFound       = &Error{Code: 404, Message: "HTTP not found"}
+	HttpInternal       = &Error{Code: 500, Message: "HTTP internal service error"}
+	HttpBadRequest     = &Error{Code: 400, Message: "HTTP bad request"}
+	HttpNotImplemented = &Error{Code: 501, Message: "HTTP not implemented"}
+	HttpProcessing     = &Error{Code: 502, Message: "HTTP processing"}
+	HttpTimeOut        = &Error{Code: 408, Message: "HTTP timeout"}
 	NotFound           = &Error{Code: 1, Message: "not found"}
 	Unauthorized       = &Error{Code: 2, Message: "unauthorized"}
 	NotSupported       = &Error{Code: 3, Message: "not supported"}
@@ -21,74 +16,82 @@ var (
 	Unexpected         = &Error{Code: 5, Message: "unexpected"}
 	WrongContent       = &Error{Code: 6, Message: "wrong content"}
 	BadInput           = &Error{Code: 7, Message: "bad input"}
+	TimeOut            = &Error{Code: 8, Message: "time out"}
 )
 
 type Error struct {
 	Code    int
 	Message string
-	Details string
 }
 
 func (e *Error) Error() string {
-	if e.Details != "" {
-		return fmt.Sprintf("%s:%s", e.Message, e.Details)
-	} else {
-		return e.Message
-	}
-}
-
-func Detailed(e *Error, details string) *Error {
-	return &Error{
-		Code:    e.Code,
-		Message: e.Message,
-		Details: details,
-	}
+	return e.Message
 }
 
 func New(message string) error {
 	return &Error{
 		Code:    HttpInternal.Code,
-		Message: HttpInternal.Message,
-		Details: message,
+		Message: message,
 	}
 }
 
-func Parse(str string) *Error {
-	parts := strings.Split(str, ":")
-	head := parts[0]
-	details := ""
-	if len(parts) > 1 {
-		details = parts[1]
-	}
+func Parse(e error) *Error {
+	return ParseString(e.Error())
+}
 
-	switch head {
+func ParseString(str string) *Error {
+	switch str {
 	case HttpForbidden.Message:
-		return Detailed(HttpForbidden, details)
+		return HttpForbidden
 	case HttpUnauthorized.Message:
-		return Detailed(HttpUnauthorized, details)
+		return HttpUnauthorized
 	case HttpNotFound.Message:
-		return Detailed(HttpNotFound, details)
+		return HttpNotFound
 	case HttpBadRequest.Message:
-		return Detailed(HttpBadRequest, details)
+		return HttpBadRequest
 	case HttpNotImplemented.Message:
-		return Detailed(HttpNotImplemented, details)
+		return HttpNotImplemented
 	case HttpProcessing.Message:
-		return Detailed(HttpProcessing, details)
+		return HttpProcessing
 	case HttpTimeOut.Message:
-		return Detailed(HttpTimeOut, details)
+		return HttpTimeOut
+	case NotFound.Message:
+		return NotFound
+	case Unauthorized.Message:
+		return NotFound
+	case Unexpected.Message:
+		return NotFound
+	case Duplicate.Message:
+		return Duplicate
+	case NotSupported.Message:
+		return NotSupported
+	case WrongContent.Message:
+		return WrongContent
+	case TimeOut.Message:
+		return TimeOut
+	case BadInput.Message:
+		return BadInput
 	default:
-		return Detailed(HttpInternal, details)
+		return HttpInternal
 	}
 }
 
 func IsHttpNotFound(e error) bool {
-	return Parse(e.Error()).Code == HttpNotFound.Code
+	return Parse(e) == HttpNotFound
 }
 
 func IsHttpUnauthorized(e error) bool {
-	return Parse(e.Error()).Code == Unauthorized.Code
+	return Parse(e) == HttpUnauthorized
 }
 
 func IsNotFound(e error) bool {
-	return Parse(e.Error()).Code == NotFound.Code
+	return Parse(e) == NotFound
+}
+
+func IsTimeOut(e error) bool {
+	return Parse(e) == TimeOut
+}
+
+func IsDuplicate(e error) bool {
+	return Parse(e) == Duplicate
 }

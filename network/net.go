@@ -93,7 +93,9 @@ func addressPingTest(addr string) bool {
 			return
 		}
 
-		defer con.Close()
+		defer func() {
+			_ = con.Close()
+		}()
 
 		buffer := []byte{12}
 		if _, err := con.Write(buffer); err != nil {
@@ -193,7 +195,10 @@ func getOutboundIP() (net.IP, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
+
+	defer func() {
+		_ = conn.Close()
+	}()
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	return localAddr.IP, nil
 }

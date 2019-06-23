@@ -13,6 +13,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/log"
 	"io/ioutil"
 	"math/big"
 	"net"
@@ -102,7 +103,8 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
-		return nil, errors.Detailed(errors.BadInput, "failed to create CA certificate: "+err.Error())
+		log.E("Certificate Generator", err, "failed to create CA certificate")
+		return nil, errors.BadInput
 	}
 	return x509.ParseCertificate(certBytes)
 }
@@ -157,17 +159,20 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 
 	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		return nil, errors.Detailed(errors.BadInput, "failed to decode the private key")
+		log.E("Certificate Generator", err, "failed to decode the private key")
+		return nil, errors.BadInput
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		return nil, errors.Detailed(errors.HttpNotImplemented, "key type not supported")
+		log.E("Certificate Generator", err, "key type not supported")
+		return nil, errors.NotSupported
 	}
 
 	if password != nil && len(password) > 0 {
 		keyBytes, err = x509.DecryptPEMBlock(block, password)
 		if err != nil {
-			return nil, errors.Detailed(errors.BadInput, "Failed to decrypt CA key: "+err.Error())
+			log.E("Certificate Generator", err, "Failed to decrypt CA key")
+			return nil, errors.BadInput
 		}
 	} else {
 		keyBytes = block.Bytes
@@ -189,14 +194,15 @@ func StorePrivateKey(key crypto.PrivateKey, password []byte, file string) error 
 		block = &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(rp)}
 
 	} else if ep, ok := key.(*ecdsa.PrivateKey); ok {
-		bytes, err := x509.MarshalECPrivateKey(ep)
+		privateKeyBytes, err := x509.MarshalECPrivateKey(ep)
 		if err != nil {
 			return err
 		}
-		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: bytes}
+		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: privateKeyBytes}
 
 	} else {
-		return errors.Detailed(errors.HttpNotImplemented, "key type is not supported")
+		log.E("Certificate Generator", err, "key type is not supported")
+		return errors.NotSupported
 	}
 
 	if password != nil && len(password) > 0 {

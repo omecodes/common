@@ -113,7 +113,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 	st := dao.getStatement(stmt)
 	if st == nil {
 		if dao.stmt == nil {
-			return errors.Detailed(errors.BadInput, "database misconfigured")
+			return errors.BadInput
 		}
 		return fmt.Errorf("statement `%s` does not exist", stmt)
 	}
@@ -130,7 +130,7 @@ func (dao *SQL) Query(stmt string, scanner SQLRowScanner, params ...interface{})
 func (dao *SQL) Execute(stmt string, params ...interface{}) error {
 	st := dao.getStatement(stmt)
 	if st == nil {
-		return errors.Detailed(errors.HttpNotFound, fmt.Sprintf("statement `%s` does not exist", stmt))
+		return errors.NotFound
 	}
 	_, err := st.Exec(params...)
 	return err

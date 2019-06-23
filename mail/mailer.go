@@ -4,27 +4,31 @@ import (
 	"crypto/tls"
 	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/log"
 	"gopkg.in/gomail.v2"
-	"log"
 )
 
 func Send(cfg conf.Map, to string, subject string, html string, plain string) error {
 	server, ok := cfg.GetString("server")
 	if !ok {
-		return errors.Detailed(errors.HttpBadRequest, "missing 'server' entry in configs")
+		log.E("Mailer", errors.BadInput, "missing 'server' entry in configs")
+		return errors.BadInput
 	}
 	port, ok := cfg.GetInt32("port")
 	if !ok {
-		return errors.Detailed(errors.HttpBadRequest, "missing 'port' entry in configs")
+		log.E("Mailer", errors.BadInput, "missing 'port' entry in configs")
+		return errors.BadInput
 	}
 
 	user, ok := cfg.GetString("user")
 	if !ok {
-		return errors.Detailed(errors.HttpBadRequest, "missing 'user' entry in configs")
+		log.E("Mailer", errors.BadInput, "missing 'user' entry in configs")
+		return errors.BadInput
 	}
 	password, ok := cfg.GetString("password")
 	if !ok {
-		return errors.Detailed(errors.HttpBadRequest, "missing 'password' entry in configs")
+		log.E("Mailer", errors.BadInput, "missing 'password' entry in configs")
+		return errors.BadInput
 	}
 	return SendMail(server, int(port), user, password, to, subject, html, plain)
 }
@@ -50,7 +54,6 @@ func SendMail(server string, port int, user string, password string, to string, 
 	}
 
 	if err := d.DialAndSend(m); err != nil {
-		log.Println("email", err.Error())
 		return err
 	}
 	return nil

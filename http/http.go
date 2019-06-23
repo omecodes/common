@@ -132,7 +132,7 @@ func final(ctx context.Context, h Handler, cookieStore *sessions.CookieStore, mi
 		request := Request{r}
 		result, err := handler(httpCtx, &request)
 		if err != nil {
-			status = errors.Parse(err.Error()).Code
+			status = errors.Parse(err).Code
 			w.WriteHeader(status)
 			return
 		}
