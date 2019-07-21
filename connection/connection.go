@@ -17,7 +17,7 @@ type Info struct {
 	TLS     *tls.Config
 }
 
-type manager struct {
+type Manager struct {
 	sync.Mutex
 	info                      *Info
 	conn                      net.Conn
@@ -28,7 +28,7 @@ type manager struct {
 	tokenCounter              int
 }
 
-func (m *manager) Get() (net.Conn, error) {
+func (m *Manager) Get() (net.Conn, error) {
 	if m.conn != nil && m.lastMasterConnectionError == nil {
 		return m.conn, nil
 	}
@@ -54,14 +54,14 @@ func (m *manager) Get() (net.Conn, error) {
 			return m.conn, m.onConnect()
 		}
 	}
-	return nil, errors.New("failed to connect, manager closed")
+	return nil, errors.New("failed to connect, Manager closed")
 }
 
-func (m *manager) SetMaxFailureAttempts(maxFailureAttempts int) {
+func (m *Manager) SetMaxFailureAttempts(maxFailureAttempts int) {
 	m.maxFailureAttempts = maxFailureAttempts
 }
 
-func (m *manager) Close() error {
+func (m *Manager) Close() error {
 	if err := m.conn.Close(); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (m *manager) Close() error {
 	return nil
 }
 
-func (m *manager) onConnect() error {
+func (m *Manager) onConnect() error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -83,7 +83,7 @@ func (m *manager) onConnect() error {
 	return nil
 }
 
-func (m *manager) AddOnConnectCallback(callback OnConnectCallback) int {
+func (m *Manager) AddOnConnectCallback(callback OnConnectCallback) int {
 	m.Lock()
 	defer m.Unlock()
 
@@ -92,14 +92,14 @@ func (m *manager) AddOnConnectCallback(callback OnConnectCallback) int {
 	return m.tokenCounter
 }
 
-func (m *manager) RemoveOnConnectCallback(key int) {
+func (m *Manager) RemoveOnConnectCallback(key int) {
 	m.Lock()
 	defer m.Unlock()
 	delete(m.onConnectCallbacks, key)
 }
 
-func NewManager(info *Info) *manager {
-	return &manager{
+func NewManager(info *Info) *Manager {
+	return &Manager{
 		info: info,
 	}
 }
