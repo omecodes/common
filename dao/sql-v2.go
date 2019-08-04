@@ -537,3 +537,9 @@ func (c *SQLCursor) HasNext() bool {
 func (c *SQLCursor) Next() (interface{}, error) {
 	return c.scan.ScanRow(c.rows)
 }
+
+type Cursor interface {
+	HasNext() bool
+	Next() (interface{}, error)
+	Close() error
+}

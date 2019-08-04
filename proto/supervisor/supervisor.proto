@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package supervisorpb;
+
+import "google/api/annotations.proto";
+
+message WorkerStats {
+    int64 disk_usage = 1;
+    map<string, string> database_dsn = 2;
+    repeated string net_addresses = 3;
+}
+message ProgramStats {
+    string label = 1;
+    bytes json_configs = 2;
+}
+
+// API model specifications
+message GetStatsRequest {}
+message GetStatsResponse {
+    WorkerStats stats = 1;
+}
+
+message GetProgramStatsRequest {
+    string program_id = 1;
+}
+message GetProgramStatsResponse {
+    ProgramStats stats = 1;
+}
+
+message StartRequest {
+    string program_name = 1;
+    string label = 2;
+    bytes json_configs = 3;
+    repeated string arguments = 4;
+}
+message StartResponse {
+    bool started = 1;
+    string program_id = 2;
+}
+
+message RestartRequest {
+    string program_id = 1;
+}
+message RestartResponse {}
+
+message StopRequest {
+    string program_id = 1;
+}
+message StopResponse {}
+
+service SupervisorNodeAPI {
+    rpc GetStats(GetStatsRequest) returns (GetStatsResponse) {
+        option(google.api.http) = {
+            get: "/api/v1/stats/node";
+        };
+    };
+    rpc GetProgramStats(GetProgramStatsRequest) returns (GetProgramStatsResponse) {
+        option(google.api.http) = {
+            get: "/api/v1/stats/program/{program_id}";
+        };
+    };
+    rpc Start(StartRequest) returns (StartResponse){
+        option(google.api.http) = {
+            post: "/api/v1/program/start";
+            body: "*";
+        };
+    };
+    rpc Restart(RestartRequest) returns (RestartResponse){
+        option(google.api.http) = {
+            get: "/api/v1/program/restart/{program_id}";
+        };
+    };
+    rpc Stop(StopRequest) returns (StopResponse){
+        option(google.api.http) = {
+            get: "/api/v1/program/stop/{program_id}";
+        };
+    };
+};

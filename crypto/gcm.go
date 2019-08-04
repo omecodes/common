@@ -3,9 +3,10 @@ package crypto2
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 )
 
-func GCMEncrypt(key, salt, data []byte) ([]byte, error) {
+func AESGCMEncryptWithSalt(key, salt, data []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -20,7 +21,27 @@ func GCMEncrypt(key, salt, data []byte) ([]byte, error) {
 	return append(salt[:12], result...), nil
 }
 
-func GCMDecrypt(key, data []byte) ([]byte, error) {
+func AESGCMEncrypt(key, data []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+	salt := make([]byte, 12)
+	_, err = rand.Read(salt)
+	if err != nil {
+		return nil, err
+	}
+
+	result := gcm.Seal(nil, salt, data, nil)
+	return append(salt, result...), nil
+}
+
+func AESGCMDecrypt(key, data []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

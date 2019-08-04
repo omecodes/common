@@ -131,3 +131,11 @@ func SQLite(driver string, path string) (*sql.DB, error) {
 func Bolt(path string) (*bolt.DB, error) {
 	return bolt.Open(path, 0755, nil)
 }
+
+func SQLiteConfig(filename string) conf.Map {
+	return conf.Map{
+		"type":   "sqlite",
+		"driver": "sqlite3",
+		"path":   filename,
+	}
+}

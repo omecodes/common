@@ -1,4 +1,4 @@
-package http
+package http_helper
 
 import (
 	"context"
@@ -17,35 +17,13 @@ import (
 )
 
 const (
-	MethodGet     = "GET"
-	MethodHead    = "HEAD"
-	MethodPost    = "POST"
-	MethodPut     = "PUT"
-	MethodPatch   = "PATCH" // RFC 5789
-	MethodDelete  = "DELETE"
-	MethodConnect = "CONNECT"
-	MethodOptions = "OPTIONS"
-	MethodTrace   = "TRACE"
-
 	Cookies           = types.String("cookies")
 	CtxCCookiesStore  = types.String("cookies")
 	CtxResponseWriter = types.String("response_writer")
-	Vars              = types.String("vars")
+	HttpVars          = types.String("vars")
 )
 
 type (
-	Server struct {
-		*http.Server
-	}
-
-	Request struct {
-		*http.Request
-	}
-
-	ResponseWriter interface {
-		http.ResponseWriter
-	}
-
 	Resource struct {
 		Mime      string
 		BytesData []byte
@@ -74,76 +52,71 @@ type (
 
 	JSON map[string]interface{}
 
-	Route struct {
-		Name              string
-		Path              string
-		PathMatchesPrefix bool
-		Method            string
-		Handler           Handler
-		Description       string
-	}
-
-	Routes []Route
-
-	Header struct {
+	HttpHeader struct {
 		Name  string
 		Value string
 	}
 
-	Handler func(ctx context.Context, r *Request) (interface{}, error)
-
-	Router interface {
-		GetRoutes() Routes
-	}
-
-	Middleware func(handler Handler) Handler
+	HttpMiddleware func(handler http.HandlerFunc) http.HandlerFunc
 )
 
-func logger(inner http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func logger(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		inner.ServeHTTP(w, r)
+		h(w, r)
 		log.Printf(
 			"%s %s %s",
 			r.Method,
 			r.RequestURI,
 			time.Since(start),
 		)
-	})
+	}
 }
 
-func final(ctx context.Context, h Handler, cookieStore *sessions.CookieStore, middlewareList ...Middleware) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		handler := h
+func final(ctx context.Context, next http.HandlerFunc, cookieStore *sessions.CookieStore, middlewareList ...HttpMiddleware) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		handler := next
 		for _, m := range middlewareList {
 			handler = m(handler)
 		}
 
 		muxVars := mux.Vars(r)
 		httpCtx := ctx
-
 		//can add middleware stack here to enrich context before calling the handler
 		httpCtx = context.WithValue(httpCtx, CtxResponseWriter, w)
 		httpCtx = context.WithValue(httpCtx, CtxCCookiesStore, cookieStore)
-		httpCtx = context.WithValue(httpCtx, Vars, muxVars)
+		httpCtx = context.WithValue(httpCtx, HttpVars, muxVars)
 
 		r = r.WithContext(httpCtx)
-		status := http.StatusOK
-		request := Request{r}
-		result, err := handler(httpCtx, &request)
-		if err != nil {
-			status = errors.Parse(err).Code
-			w.WriteHeader(status)
-			return
-		}
-
-		if result != nil {
-			writeResponse(w, status, result)
-		}
-	})
+		handler(w, r)
+	}
 }
 
-func writeResponse(w http.ResponseWriter, status int, data interface{}, headers ...Header) {
+func ApiAccessMiddleware(key, secret string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, password, ok := r.BasicAuth()
+		if !ok || key != user && secret != password {
+			WriteResponse(w, 401, &RequireAuth{
+				Realm: "onfs-ds",
+				Type:  "Basic",
+			})
+		}
+		next(w, r)
+	}
+}
+
+func HttpBasicMiddlewareStack(ctx context.Context, h http.HandlerFunc, cookieStore *sessions.CookieStore, middlewareList ...HttpMiddleware) http.HandlerFunc {
+	handler := final(ctx, h.ServeHTTP, cookieStore)
+	handler = logger(handler)
+	return http.HandlerFunc(handler)
+}
+
+func WriteError(w http.ResponseWriter, err error) {
+	status := errors.Parse(err).Code
+	w.WriteHeader(status)
+}
+
+func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers ...HttpHeader) {
 	for _, h := range headers {
 		w.Header().Set(h.Name, h.Value)
 	}
@@ -296,46 +269,4 @@ func writeRedirect(red *RedirectURL, w http.ResponseWriter) {
 func writeRequireAuth(ar *RequireAuth, w http.ResponseWriter) {
 	w.Header().Set("WWW-Authenticate", `Basic realm="`+ar.Realm+`"`)
 	w.WriteHeader(http.StatusUnauthorized)
-}
-
-func StartServer(ctx context.Context, addr string, routes Routes, cookieStore *sessions.CookieStore, middlewareList ...Middleware) (*Server, error) {
-	muxRouter := mux.NewRouter()
-	for _, route := range routes {
-		handler := final(ctx, route.Handler, cookieStore, middlewareList...)
-		handler = logger(handler)
-		if route.PathMatchesPrefix {
-			muxRouter.PathPrefix(route.Path).HandlerFunc(handler.ServeHTTP).Methods(route.Method).Name(route.Name)
-		} else {
-			muxRouter.HandleFunc(route.Path, handler.ServeHTTP).Methods(route.Method).Name(route.Name)
-		}
-	}
-	httpServer := http.Server{Handler: muxRouter, Addr: addr}
-	go func() {
-		err := httpServer.ListenAndServe()
-		if err != nil {
-			log.Println("failed to start HTTP server:", err)
-		}
-	}()
-	return &Server{&httpServer}, nil
-}
-
-func StartSecureServer(ctx context.Context, addr string, routes Routes, certFile string, keyFile string, cookieStore *sessions.CookieStore, middlewareList ...Middleware) (*http.Server, error) {
-	muxRouter := mux.NewRouter()
-	for _, route := range routes {
-		handler := final(ctx, route.Handler, cookieStore, middlewareList...)
-		handler = logger(handler)
-		if route.PathMatchesPrefix {
-			muxRouter.PathPrefix(route.Path).HandlerFunc(handler.ServeHTTP).Methods(route.Method).Name(route.Name)
-		} else {
-			muxRouter.HandleFunc(route.Path, handler.ServeHTTP).Methods(route.Method).Name(route.Name)
-		}
-	}
-	httpServer := &http.Server{Handler: muxRouter, Addr: addr}
-	go func() {
-		err := httpServer.ListenAndServeTLS(certFile, keyFile)
-		if err != nil {
-			log.Println(err)
-		}
-	}()
-	return httpServer, nil
 }

@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"os"
@@ -44,7 +45,67 @@ func (item Map) getItem(key string) (interface{}, bool) {
 	return temp, true
 }
 
-func (item Map) Get(key string) Map {
+func (item Map) Get(key string) interface{} {
+	v, _ := item.getItem(key)
+	return v
+}
+
+func (item Map) Del(key string) bool {
+	if !strings.Contains(key, "/") {
+		delete(item, key)
+		return true
+	}
+
+	temp := item
+	var lastKeyItem string
+
+	splits := strings.Split(key, "/")
+	for len(splits) > 1 {
+		lastKeyItem = splits[0]
+		if lastKeyItem == "" {
+			continue
+		}
+
+		splits = splits[1:]
+
+		temp = temp.GetConf(lastKeyItem)
+		if temp == nil {
+			return false
+		}
+	}
+	delete(temp, splits[0])
+	return true
+}
+
+func (item Map) Set(key string, val interface{}) {
+	if !strings.Contains(key, "/") {
+		item[key] = val
+		return
+	}
+
+	temp := item
+	var lastKeyItem string
+
+	splits := strings.Split(key, "/")
+	for len(splits) > 1 {
+		lastKeyItem = splits[0]
+		if lastKeyItem == "" {
+			continue
+		}
+
+		splits = splits[1:]
+
+		tmp := temp.GetConf(lastKeyItem)
+		if tmp == nil {
+			temp[lastKeyItem] = Map{}
+			tmp = temp.GetConf(lastKeyItem)
+		}
+		temp = tmp
+	}
+	temp[splits[0]] = val
+}
+
+func (item Map) GetConf(key string) Map {
 	v, ok := item.getItem(key)
 	if !ok {
 		return nil
@@ -55,6 +116,7 @@ func (item Map) Get(key string) Map {
 	m := v.(map[string]interface{})
 	return Map(m)
 }
+
 func (item Map) GetBool(key string) (bool, bool) {
 	i, ok := item.getItem(key)
 	if !ok {
@@ -68,7 +130,7 @@ func (item Map) GetBool(key string) (bool, bool) {
 }
 func (item Map) GetString(key string) (string, bool) {
 	i, ok := item.getItem(key)
-	//log.Println("Get: ", key, " => ", i)
+	//log.Println("GetConf: ", key, " => ", i)
 	if !ok {
 		return "", false
 	}
@@ -93,7 +155,6 @@ func (item Map) GetInt32(key string) (int32, bool) {
 	}
 	return types.Int32Val(i)
 }
-
 func (item Map) GetInt64(key string) (int64, bool) {
 	i, ok := item.getItem(key)
 	if !ok {
@@ -101,7 +162,6 @@ func (item Map) GetInt64(key string) (int64, bool) {
 	}
 	return types.Int64Val(i)
 }
-
 func (item Map) GetUint16(key string) (uint16, bool) {
 	i, ok := item.getItem(key)
 	if !ok {
@@ -123,7 +183,6 @@ func (item Map) GetUInt64(key string) (uint64, bool) {
 	}
 	return types.UInt64Val(i)
 }
-
 func (item Map) GetFloat32(key string) (float32, bool) {
 	i, ok := item.getItem(key)
 	if !ok {
@@ -146,6 +205,24 @@ func (item Map) Save(filename string, mode os.FileMode) error {
 		return err
 	}
 	return ioutil.WriteFile(filename, bytes, mode)
+}
+
+func (item Map) Load(filename string) error {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bytes, &item)
+}
+
+func (item Map) String() string {
+	configsBytes, _ := json.Marshal(item)
+	buffer := bytes.NewBuffer([]byte{})
+	if err := json.Indent(buffer, configsBytes, "", "\t"); err == nil {
+		return string(buffer.Bytes())
+	} else {
+		return string(configsBytes)
+	}
 }
 
 //Load load content from json file

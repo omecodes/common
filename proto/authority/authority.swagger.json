@@ -1,0 +1,188 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "authority.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/access/check": {
+      "get": {
+        "operationId": "CheckApplicationAccess",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbCheckApplicationAccessResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_key",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "auth_message",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/access/create": {
+      "post": {
+        "operationId": "CreateApplicationCredentials",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbCreateApplicationCredentialsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbCreateApplicationCredentialsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/cert/generate": {
+      "post": {
+        "operationId": "GenerateServiceCertificate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbGenerateServiceCertificateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbGenerateServiceCertificateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "authoritypbAuthChallenge": {
+      "type": "object",
+      "properties": {
+        "nonce": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "authoritypbCheckApplicationAccessResponse": {
+      "type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "authoritypbCreateApplicationCredentialsRequest": {
+      "type": "object",
+      "properties": {
+        "application_name": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        }
+      }
+    },
+    "authoritypbCreateApplicationCredentialsResponse": {
+      "type": "object"
+    },
+    "authoritypbGenerateServiceCertificateRequest": {
+      "type": "object",
+      "properties": {
+        "service_name": {
+          "type": "string"
+        },
+        "application_key": {
+          "type": "string"
+        },
+        "application_secret": {
+          "type": "string"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "public_key": {
+          "type": "string",
+          "format": "byte"
+        },
+        "auth_challenge": {
+          "$ref": "#/definitions/authoritypbAuthChallenge"
+        }
+      }
+    },
+    "authoritypbGenerateServiceCertificateResponse": {
+      "type": "object",
+      "properties": {
+        "certificateBytes": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    }
+  }
+}
