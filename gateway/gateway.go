@@ -5,7 +5,9 @@ import (
 	"flag"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/zoenion/common"
 	http_helper "github.com/zoenion/common/http-helper"
+	registrypb "github.com/zoenion/common/proto/registry"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -13,6 +15,7 @@ import (
 )
 
 type Gateway struct {
+	running                    bool
 	gs                         *grpc.Server
 	hs                         *http.Server
 	config                     *Config
@@ -27,6 +30,10 @@ func New(config *Config) *Gateway {
 }
 
 func (g *Gateway) Start() error {
+	if g.running {
+		return nil
+	}
+
 	err := g.listen()
 
 	if err != nil {
@@ -40,6 +47,8 @@ func (g *Gateway) Start() error {
 	if g.config.HTTP != nil {
 		go g.startHTTP()
 	}
+
+	g.running = true
 	return nil
 }
 
@@ -57,6 +66,37 @@ func (g *Gateway) Stop() {
 	if err := g.listenerHTTP.Close(); err != nil {
 		log.Println("stopped http listener with error:", err)
 	}
+
+	g.running = false
+}
+
+func (g *Gateway) RunningNodes() []*registrypb.Node {
+	if !g.running {
+		log.Println("could not get running node, gateway is not running")
+		return nil
+	}
+
+	if g.config.GRPC == nil && g.config.HTTP == nil {
+		return nil
+	}
+
+	var nodes []*registrypb.Node
+	if g.config.HTTP == nil {
+		nodes = append(nodes, &registrypb.Node{
+			Address:  g.config.HTTP.Address,
+			Ttl:      -1,
+			Protocol: common.ProtocolHTTP,
+		})
+	}
+
+	if g.config.GRPC == nil {
+		nodes = append(nodes, &registrypb.Node{
+			Address:  g.config.GRPC.Address,
+			Ttl:      -1,
+			Protocol: common.ProtocolGRPC,
+		})
+	}
+	return nodes
 }
 
 func (g *Gateway) listen() (err error) {
