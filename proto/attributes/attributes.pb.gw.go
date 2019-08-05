@@ -144,9 +144,9 @@ func RegisterInfoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_InfoService_SetAttribute_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "info", "set"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_InfoService_SetAttribute_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "info", "set"}, ""))
 
-	pattern_InfoService_GetAttributes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "info", "get"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_InfoService_GetAttributes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "info", "get"}, ""))
 )
 
 var (

@@ -108,7 +108,7 @@ func ApiAccessMiddleware(key, secret string, next http.HandlerFunc) http.Handler
 func HttpBasicMiddlewareStack(ctx context.Context, h http.HandlerFunc, cookieStore *sessions.CookieStore, middlewareList ...HttpMiddleware) http.HandlerFunc {
 	handler := final(ctx, h.ServeHTTP, cookieStore)
 	handler = logger(handler)
-	return http.HandlerFunc(handler)
+	return handler
 }
 
 func WriteError(w http.ResponseWriter, err error) {
