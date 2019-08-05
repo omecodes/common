@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -326,6 +328,17 @@ func (c *infoServiceClient) GetAttributes(ctx context.Context, in *GetAttributes
 type InfoServiceServer interface {
 	SetAttribute(context.Context, *SetAttributeRequest) (*SetAttributeResponse, error)
 	GetAttributes(context.Context, *GetAttributesRequest) (*GetAttributesResponse, error)
+}
+
+// UnimplementedInfoServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedInfoServiceServer struct {
+}
+
+func (*UnimplementedInfoServiceServer) SetAttribute(ctx context.Context, req *SetAttributeRequest) (*SetAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetAttribute not implemented")
+}
+func (*UnimplementedInfoServiceServer) GetAttributes(ctx context.Context, req *GetAttributesRequest) (*GetAttributesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAttributes not implemented")
 }
 
 func RegisterInfoServiceServer(s *grpc.Server, srv InfoServiceServer) {

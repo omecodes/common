@@ -19,3 +19,8 @@ cd ..
 cd tree
 ./compile.sh
 cd ..
+
+
+cd users
+./compile.sh
+cd ..

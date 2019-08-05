@@ -44,7 +44,7 @@ service UsersService {
     };
     rpc AddUser (AddUserRequest) returns (AddUserResponse) {
         option(google.api.http) = {
-            post: "/api/v1/group/{group_id}/user";
+            post: "/api/v1/group/{user.group_id}/user";
             body: "*";
         };
     };
@@ -59,7 +59,7 @@ service UsersService {
         option(google.api.http).get = "/api/v1/group/{group_id}/users/list";
     };
     rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
-        option(google.api.http).delete = "/api/v1/group/{group_id}/users/delete";
+        option(google.api.http).delete = "/api/v1/group/{user.group_id}/users/delete";
     };
     rpc DeleteUserSession (stream User) returns (stream User);
 }
@@ -70,18 +70,18 @@ message CreateGroupRequest {
 message CreateGroupResponse {}
 
 message GetGroupRequest {
-    string group_path = 1;
+    string group_id = 1;
 }
 message GetGroupResponse {
     Group group = 1;
 }
 
 message StreamSubGroupsRequest {
-    string group_path = 1;
+    string group_id = 1;
 }
 
 message ListSubGroupRequest {
-    string group_path = 1;
+    string group_id = 1;
     uint32 offset = 2;
 }
 message ListSubGroupResponse {
@@ -91,7 +91,7 @@ message ListSubGroupResponse {
 }
 
 message DeleteGroupRequest {
-    string group_path = 1;
+    string group_id = 1;
 }
 message DeleteGroupResponse {}
 
@@ -104,16 +104,16 @@ message AddUserResponse {
 
 message MoveUserRequest {
     User user = 1;
-    string to_group_path = 2;
+    string to_group_id = 2;
 }
 message MoveUserResponse {}
 
 message GetUserStreamRequest {
-    string group_path = 1;
+    string group_id = 1;
 }
 
 message ListUsersRequest {
-    string group_path = 1;
+    string group_id = 1;
     uint32 offset = 2;
 }
 message ListUsersResponse {
@@ -123,7 +123,7 @@ message ListUsersResponse {
 }
 
 message DeleteUserRequest {
-    string user = 1;
+    User user = 1;
 }
 message DeleteUserResponse {
 }
