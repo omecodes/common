@@ -7,8 +7,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-type Param func(gateway *Gateway)
-
 type HTTP struct {
 	Address        string
 	WireGRPCFunc   WireEndpointFunc

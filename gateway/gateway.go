@@ -107,16 +107,24 @@ func (g *Gateway) startHTTP() {
 		return
 	}
 
-	handler := http_helper.HttpBasicMiddlewareStack(context.Background(), serverMux.ServeHTTP, nil)
-	for _, m := range g.config.HTTP.MiddlewareList {
-		handler = m(handler)
+	var handler http.HandlerFunc
+
+	if len(g.config.HTTP.MiddlewareList) > 0 {
+		m := g.config.HTTP.MiddlewareList[0]
+		hf := m(serverMux.ServeHTTP)
+		for _, mid := range g.config.HTTP.MiddlewareList[1:] {
+			hf = mid(hf)
+		}
+		handler = http_helper.HttpBasicMiddlewareStack(context.Background(), hf, nil)
+
+	} else {
+		handler = http_helper.HttpBasicMiddlewareStack(context.Background(), serverMux.ServeHTTP, nil)
 	}
 
 	g.hs = &http.Server{
 		Addr:    g.config.HTTP.Address,
 		Handler: handler,
 	}
-
 	if err := g.hs.Serve(g.listenerHTTP); err != nil {
 		log.Println("HTTP server stopped, cause:", err)
 	}
