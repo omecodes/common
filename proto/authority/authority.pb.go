@@ -9,8 +9,6 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -487,20 +485,6 @@ type AuthorityServiceServer interface {
 	GenerateServiceCertificate(context.Context, *GenerateServiceCertificateRequest) (*GenerateServiceCertificateResponse, error)
 	CreateApplicationCredentials(context.Context, *CreateApplicationCredentialsRequest) (*CreateApplicationCredentialsResponse, error)
 	CheckApplicationAccess(context.Context, *CheckApplicationAccessRequest) (*CheckApplicationAccessResponse, error)
-}
-
-// UnimplementedAuthorityServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAuthorityServiceServer struct {
-}
-
-func (*UnimplementedAuthorityServiceServer) GenerateServiceCertificate(ctx context.Context, req *GenerateServiceCertificateRequest) (*GenerateServiceCertificateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateServiceCertificate not implemented")
-}
-func (*UnimplementedAuthorityServiceServer) CreateApplicationCredentials(ctx context.Context, req *CreateApplicationCredentialsRequest) (*CreateApplicationCredentialsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateApplicationCredentials not implemented")
-}
-func (*UnimplementedAuthorityServiceServer) CheckApplicationAccess(ctx context.Context, req *CheckApplicationAccessRequest) (*CheckApplicationAccessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckApplicationAccess not implemented")
 }
 
 func RegisterAuthorityServiceServer(s *grpc.Server, srv AuthorityServiceServer) {

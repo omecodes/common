@@ -9,8 +9,6 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -1540,47 +1538,6 @@ type TreeServiceServer interface {
 	Copy(context.Context, *CopyRequest) (*CopyResponse, error)
 	Move(context.Context, *MoveRequest) (*MoveResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-}
-
-// UnimplementedTreeServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTreeServiceServer struct {
-}
-
-func (*UnimplementedTreeServiceServer) List(ctx context.Context, req *ListRequest) (*ListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
-}
-func (*UnimplementedTreeServiceServer) GetListStream(req *GetListStreamRequest, srv TreeService_GetListStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetListStream not implemented")
-}
-func (*UnimplementedTreeServiceServer) Create(ctx context.Context, req *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
-}
-func (*UnimplementedTreeServiceServer) GetInfo(ctx context.Context, req *GetInfoRequest) (*GetInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInfo not implemented")
-}
-func (*UnimplementedTreeServiceServer) GetInfoSession(srv TreeService_GetInfoSessionServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetInfoSession not implemented")
-}
-func (*UnimplementedTreeServiceServer) GetMeta(ctx context.Context, req *GetMetaRequest) (*GetMetaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMeta not implemented")
-}
-func (*UnimplementedTreeServiceServer) SetMeta(ctx context.Context, req *SetMetaRequest) (*SetMetaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetMeta not implemented")
-}
-func (*UnimplementedTreeServiceServer) DownloadURL(ctx context.Context, req *DownloadInfoRequest) (*DownloadInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DownloadURL not implemented")
-}
-func (*UnimplementedTreeServiceServer) UploadURL(ctx context.Context, req *UploadInfoRequest) (*UploadInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UploadURL not implemented")
-}
-func (*UnimplementedTreeServiceServer) Copy(ctx context.Context, req *CopyRequest) (*CopyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Copy not implemented")
-}
-func (*UnimplementedTreeServiceServer) Move(ctx context.Context, req *MoveRequest) (*MoveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Move not implemented")
-}
-func (*UnimplementedTreeServiceServer) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 
 func RegisterTreeServiceServer(s *grpc.Server, srv TreeServiceServer) {

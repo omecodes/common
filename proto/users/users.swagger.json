@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_id}": {
+    "/api/v1/group/{group_uuid}": {
       "get": {
         "operationId": "GetGroup",
         "responses": {
@@ -54,7 +54,7 @@
         },
         "parameters": [
           {
-            "name": "group_id",
+            "name": "group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -65,7 +65,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_id}/delete": {
+    "/api/v1/group/{group_uuid}/delete": {
       "delete": {
         "operationId": "DeleteGroup",
         "responses": {
@@ -78,7 +78,7 @@
         },
         "parameters": [
           {
-            "name": "group_id",
+            "name": "group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -89,7 +89,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_id}/subgroups": {
+    "/api/v1/group/{group_uuid}/subgroups": {
       "get": {
         "operationId": "ListSubGroup",
         "responses": {
@@ -102,7 +102,7 @@
         },
         "parameters": [
           {
-            "name": "group_id",
+            "name": "group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -120,7 +120,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_id}/users/list": {
+    "/api/v1/group/{group_uuid}/users/list": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
@@ -133,7 +133,7 @@
         },
         "parameters": [
           {
-            "name": "group_id",
+            "name": "group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -151,7 +151,7 @@
         ]
       }
     },
-    "/api/v1/group/{user.group_id}/user": {
+    "/api/v1/group/{user.group_uuid}/user": {
       "post": {
         "operationId": "AddUser",
         "responses": {
@@ -164,7 +164,7 @@
         },
         "parameters": [
           {
-            "name": "user.group_id",
+            "name": "user.group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
@@ -183,7 +183,7 @@
         ]
       }
     },
-    "/api/v1/group/{user.group_id}/users/delete": {
+    "/api/v1/group/{user.group_uuid}/users/delete": {
       "delete": {
         "operationId": "DeleteUser",
         "responses": {
@@ -196,13 +196,13 @@
         },
         "parameters": [
           {
-            "name": "user.group_id",
+            "name": "user.group_uuid",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "user.id",
+            "name": "user.name",
             "in": "query",
             "required": false,
             "type": "string"
@@ -329,7 +329,10 @@
     "userspbGroup": {
       "type": "object",
       "properties": {
-        "id": {
+        "uuid": {
+          "type": "string"
+        },
+        "full_name": {
           "type": "string"
         },
         "label": {
@@ -337,14 +340,6 @@
         },
         "description": {
           "type": "string"
-        },
-        "sub_group_count": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "users_count": {
-          "type": "integer",
-          "format": "int64"
         },
         "created_at": {
           "type": "string",
@@ -368,7 +363,7 @@
           "type": "integer",
           "format": "int64"
         },
-        "totoal": {
+        "total": {
           "type": "integer",
           "format": "int64"
         }
@@ -399,7 +394,7 @@
         "user": {
           "$ref": "#/definitions/userspbUser"
         },
-        "to_group_id": {
+        "group_uuid": {
           "type": "string"
         }
       }
@@ -410,10 +405,10 @@
     "userspbUser": {
       "type": "object",
       "properties": {
-        "group_id": {
+        "group_uuid": {
           "type": "string"
         },
-        "id": {
+        "name": {
           "type": "string"
         }
       }

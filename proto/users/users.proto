@@ -11,18 +11,29 @@ enum Capabilities {
 }
 
 message User {
-    string group_id = 1;
-    string id = 2;
+    string group_uuid = 1;
+    string name = 2;
 }
 
 message Group {
-    string id = 1;
-    string label = 2;
-    string description = 3;
-    uint32 sub_group_count = 4;
-    uint32 users_count = 5;
-    int64 created_at = 6;
-    string created_by = 7;
+    string uuid = 1;
+    string full_name = 2;
+    string label = 3;
+    string description = 4;
+    int64 created_at = 5;
+    string created_by = 6;
+}
+
+message GroupInfo {
+    string uuid = 1;
+    string full_name = 2;
+    string label = 3;
+    string description = 4;
+    int64 created_at = 5;
+    string created_by = 6;
+    string parent = 7;
+    uint32 user_count = 8;
+    uint32 sub_count = 9;
 }
 
 service UsersService {
@@ -33,18 +44,18 @@ service UsersService {
         };
     };
     rpc GetGroup (GetGroupRequest) returns (GetGroupResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_id}";
+        option(google.api.http).get = "/api/v1/group/{group_uuid}";
     };
     rpc StreamSubGroups (StreamSubGroupsRequest) returns (stream Group);
     rpc ListSubGroup (ListSubGroupRequest) returns (ListSubGroupResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_id}/subgroups";
+        option(google.api.http).get = "/api/v1/group/{group_uuid}/subgroups";
     };
     rpc DeleteGroup (DeleteGroupRequest) returns (DeleteGroupResponse) {
-        option(google.api.http).delete = "/api/v1/group/{group_id}/delete";
+        option(google.api.http).delete = "/api/v1/group/{group_uuid}/delete";
     };
     rpc AddUser (AddUserRequest) returns (AddUserResponse) {
         option(google.api.http) = {
-            post: "/api/v1/group/{user.group_id}/user";
+            post: "/api/v1/group/{user.group_uuid}/user";
             body: "*";
         };
     };
@@ -56,10 +67,10 @@ service UsersService {
     };
     rpc GetUserStream (GetUserStreamRequest) returns (stream User);
     rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_id}/users/list";
+        option(google.api.http).get = "/api/v1/group/{group_uuid}/users/list";
     };
     rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
-        option(google.api.http).delete = "/api/v1/group/{user.group_id}/users/delete";
+        option(google.api.http).delete = "/api/v1/group/{user.group_uuid}/users/delete";
     };
     rpc DeleteUserSession (stream User) returns (stream User);
 }
@@ -70,28 +81,28 @@ message CreateGroupRequest {
 message CreateGroupResponse {}
 
 message GetGroupRequest {
-    string group_id = 1;
+    string group_uuid = 1;
 }
 message GetGroupResponse {
     Group group = 1;
 }
 
 message StreamSubGroupsRequest {
-    string group_id = 1;
+    string group_uuid = 1;
 }
 
 message ListSubGroupRequest {
-    string group_id = 1;
+    string group_uuid = 1;
     uint32 offset = 2;
 }
 message ListSubGroupResponse {
     repeated Group groups = 1;
     uint32 offset = 2;
-    uint32 totoal = 3;
+    uint32 total = 3;
 }
 
 message DeleteGroupRequest {
-    string group_id = 1;
+    string group_uuid = 1;
 }
 message DeleteGroupResponse {}
 
@@ -104,16 +115,16 @@ message AddUserResponse {
 
 message MoveUserRequest {
     User user = 1;
-    string to_group_id = 2;
+    string group_uuid = 2;
 }
 message MoveUserResponse {}
 
 message GetUserStreamRequest {
-    string group_id = 1;
+    string group_uuid = 1;
 }
 
 message ListUsersRequest {
-    string group_id = 1;
+    string group_uuid = 1;
     uint32 offset = 2;
 }
 message ListUsersResponse {

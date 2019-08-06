@@ -21,10 +21,6 @@ const (
 	ScannerIndex = "scanner_index"
 )
 
-type SQLv2RowScanner interface {
-	ScanRow(rows *sql.Rows) (interface{}, error)
-}
-
 type SQlv2Result struct {
 	Error        error
 	LastInserted int64
@@ -46,7 +42,7 @@ type SQLv2 struct {
 	tableDefs            map[string]string
 	registeredStatements map[string]string
 	migrationScripts     []string
-	scanners             map[string]SQLv2RowScanner
+	scanners             map[string]RowScannerV2
 	initDone             bool
 }
 
@@ -207,9 +203,9 @@ func (dao *SQLv2) AddStatement(name string, statementStr string) *SQLv2 {
 	return dao
 }
 
-func (dao *SQLv2) RegisterScanner(name string, scanner SQLv2RowScanner) *SQLv2 {
+func (dao *SQLv2) RegisterScanner(name string, scanner RowScannerV2) *SQLv2 {
 	if dao.scanners == nil {
-		dao.scanners = map[string]SQLv2RowScanner{}
+		dao.scanners = map[string]RowScannerV2{}
 	}
 	dao.scanners[name] = scanner
 	return dao
@@ -377,12 +373,12 @@ func (dao *SQLv2) Exec(stmt string, params ...interface{}) *SQlv2Result {
 	return result
 }
 
-func (dao *SQLv2) sqliteIndexScan(rows *sql.Rows) (interface{}, error) {
+func (dao *SQLv2) sqliteIndexScan(row Row) (interface{}, error) {
 	dao.rLock()
 	defer dao.rUnLock()
 
 	var index SQLIndex
-	m, err := dao.rowToMap(rows)
+	m, err := dao.rowToMap(row.(*sql.Rows))
 	if err != nil {
 		return nil, err
 	}
@@ -395,9 +391,9 @@ func (dao *SQLv2) sqliteIndexScan(rows *sql.Rows) (interface{}, error) {
 	return index, nil
 }
 
-func (dao *SQLv2) mysqlIndexScan(rows *sql.Rows) (interface{}, error) {
+func (dao *SQLv2) mysqlIndexScan(row Row) (interface{}, error) {
 	var index SQLIndex
-	m, err := dao.rowToMap(rows)
+	m, err := dao.rowToMap(row.(*sql.Rows))
 	if err != nil {
 		return nil, err
 	}
@@ -449,7 +445,7 @@ func (dao *SQLv2) findCompileStatement(name string) (*sql.Stmt, error) {
 	return nil, errors.NotFound
 }
 
-func (dao *SQLv2) findScanner(name string) (SQLv2RowScanner, error) {
+func (dao *SQLv2) findScanner(name string) (RowScannerV2, error) {
 	scanner, found := dao.scanners[name]
 	if !found {
 		return nil, errors.NotFound
@@ -499,14 +495,14 @@ type DBCursor interface {
 }
 
 type scannerFunc struct {
-	f func(rows *sql.Rows) (interface{}, error)
+	f func(rows Row) (interface{}, error)
 }
 
-func (sf *scannerFunc) ScanRow(rows *sql.Rows) (interface{}, error) {
-	return sf.f(rows)
+func (sf *scannerFunc) ScanRow(row Row) (interface{}, error) {
+	return sf.f(row)
 }
 
-func NewScannerFunc(f func(rows *sql.Rows) (interface{}, error)) SQLv2RowScanner {
+func NewScannerFunc(f func(row Row) (interface{}, error)) RowScannerV2 {
 	return &scannerFunc{
 		f: f,
 	}
@@ -515,11 +511,11 @@ func NewScannerFunc(f func(rows *sql.Rows) (interface{}, error)) SQLv2RowScanner
 // SQLCursor
 type SQLCursor struct {
 	err  error
-	scan SQLv2RowScanner
+	scan RowScannerV2
 	rows *sql.Rows
 }
 
-func NewSQLDBCursor(rows *sql.Rows, scanner SQLv2RowScanner) DBCursor {
+func NewSQLDBCursor(rows *sql.Rows, scanner RowScannerV2) DBCursor {
 	return &SQLCursor{
 		scan: scanner,
 		rows: rows,
@@ -536,10 +532,4 @@ func (c *SQLCursor) HasNext() bool {
 
 func (c *SQLCursor) Next() (interface{}, error) {
 	return c.scan.ScanRow(c.rows)
-}
-
-type Cursor interface {
-	HasNext() bool
-	Next() (interface{}, error)
-	Close() error
 }

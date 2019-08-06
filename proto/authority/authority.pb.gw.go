@@ -70,10 +70,7 @@ func request_AuthorityService_CheckApplicationAccess_0(ctx context.Context, mars
 	var protoReq CheckApplicationAccessRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AuthorityService_CheckApplicationAccess_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_AuthorityService_CheckApplicationAccess_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -184,11 +181,11 @@ func RegisterAuthorityServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_AuthorityService_GenerateServiceCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "cert", "generate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_GenerateServiceCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "cert", "generate"}, ""))
 
-	pattern_AuthorityService_CreateApplicationCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "access", "create"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_CreateApplicationCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "access", "create"}, ""))
 
-	pattern_AuthorityService_CheckApplicationAccess_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "access", "check"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_CheckApplicationAccess_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "access", "check"}, ""))
 )
 
 var (

@@ -5,20 +5,20 @@ import (
 	"os"
 )
 
-type Dir struct {
+type ConfDir struct {
 	path string
 }
 
-func (d *Dir) Create() error {
+func (d *ConfDir) Create() error {
 	return os.MkdirAll(d.path, os.ModePerm)
 }
 
-func (d *Dir) Path() string {
+func (d *ConfDir) Path() string {
 	return d.path
 }
 
-func GetDir(vendor, appName string) *Dir {
+func GetDir(vendor, appName string) *ConfDir {
 	dirs := configdir.New(vendor, appName)
 	appData := dirs.QueryFolders(configdir.Global)[0]
-	return &Dir{appData.Path}
+	return &ConfDir{appData.Path}
 }
