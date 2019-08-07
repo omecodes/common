@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-func GetDB(c conf.Map) (string, interface{}, error) {
+func Connect(c conf.Map) (string, interface{}, error) {
 	t, ok := c.GetString("type")
 	if !ok {
 		return "", nil, errors.NotFound
@@ -111,7 +111,7 @@ func GetDB(c conf.Map) (string, interface{}, error) {
 }
 
 func GetMysql(c conf.Map) (*sql.DB, error) {
-	_, dbi, err := GetDB(c)
+	_, dbi, err := Connect(c)
 	if err != nil {
 		return nil, err
 	}
@@ -121,6 +121,28 @@ func GetMysql(c conf.Map) (*sql.DB, error) {
 		return nil, errors.NotFound
 	}
 	return db, nil
+}
+
+func Create(c conf.Map) error {
+	driver := c["driver"]
+	if driver == "mysql" {
+		dsn := fmt.Sprintf("%s:%s@tcp(%s)/?charset=%s&parseTime=True&loc=Local",
+			c["user"],
+			c["password"],
+			c["host"],
+			c["charset"],
+		)
+
+		db, err := sql.Open("mysql", dsn)
+		if err != nil {
+			return err
+		}
+		defer db.Close()
+
+		_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", c["name"]))
+		return err
+	}
+	return nil
 }
 
 // SQLite creates an instance of SQLite database
