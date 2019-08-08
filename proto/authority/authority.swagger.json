@@ -15,32 +15,32 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/access/check": {
+    "/api/v1/app/authenticate": {
       "get": {
-        "operationId": "CheckApplicationAccess",
+        "operationId": "Authenticate",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authoritypbCheckApplicationAccessResponse"
+              "$ref": "#/definitions/authoritypbAuthenticateResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "application_key",
+            "name": "authentication.app_name",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "nonce",
+            "name": "authentication.nonce",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "auth_message",
+            "name": "authentication.challenge",
             "in": "query",
             "required": false,
             "type": "string"
@@ -51,33 +51,7 @@
         ]
       }
     },
-    "/api/v1/access/create": {
-      "post": {
-        "operationId": "CreateApplicationCredentials",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authoritypbCreateApplicationCredentialsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authoritypbCreateApplicationCredentialsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthorityService"
-        ]
-      }
-    },
-    "/api/v1/cert/generate": {
+    "/api/v1/app/cert/get": {
       "post": {
         "operationId": "GenerateServiceCertificate",
         "responses": {
@@ -102,45 +76,90 @@
           "AuthorityService"
         ]
       }
+    },
+    "/api/v1/app/register": {
+      "post": {
+        "operationId": "RegisterApplication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbRegisterApplicationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
     }
   },
   "definitions": {
-    "authoritypbAuthChallenge": {
+    "authoritypbAppType": {
+      "type": "string",
+      "enum": [
+        "Registry",
+        "ServiceProvider",
+        "IdentityProvider"
+      ],
+      "default": "Registry"
+    },
+    "authoritypbApplication": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/authoritypbAppType"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "create_at": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "authoritypbAuthenticateResponse": {
       "type": "object",
       "properties": {
         "nonce": {
           "type": "string"
         },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "authoritypbCheckApplicationAccessResponse": {
-      "type": "object",
-      "properties": {
         "valid": {
           "type": "boolean",
           "format": "boolean"
         }
       }
     },
-    "authoritypbCreateApplicationCredentialsRequest": {
+    "authoritypbAuthentication": {
       "type": "object",
       "properties": {
-        "application_name": {
+        "app_name": {
           "type": "string"
         },
-        "key": {
+        "nonce": {
           "type": "string"
         },
-        "secret": {
+        "challenge": {
           "type": "string"
         }
       }
-    },
-    "authoritypbCreateApplicationCredentialsResponse": {
-      "type": "object"
     },
     "authoritypbGenerateServiceCertificateRequest": {
       "type": "object",
@@ -169,9 +188,6 @@
         "public_key": {
           "type": "string",
           "format": "byte"
-        },
-        "auth_challenge": {
-          "$ref": "#/definitions/authoritypbAuthChallenge"
         }
       }
     },
@@ -183,6 +199,17 @@
           "format": "byte"
         }
       }
+    },
+    "authoritypbRegisterApplicationRequest": {
+      "type": "object",
+      "properties": {
+        "application": {
+          "$ref": "#/definitions/authoritypbApplication"
+        }
+      }
+    },
+    "authoritypbRegisterApplicationResponse": {
+      "type": "object"
     }
   }
 }
