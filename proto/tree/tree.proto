@@ -129,34 +129,34 @@ message DeleteResponse {
 
 service TreeService {
     rpc List (ListRequest) returns (ListResponse) {
-        option(google.api.http).get = "/api/v1/tree/list/{dir}";
+        option(google.api.http).get = "/api/v1/tree/list/{dir=**}";
     };
 
     rpc GetListStream(GetListStreamRequest) returns (stream NodeInfo);
 
     rpc Create (CreateRequest) returns (CreateResponse) {
-        option(google.api.http).get = "/api/v1/tree/create/{path}";
+        option(google.api.http).get = "/api/v1/tree/create/{path=**}";
     };
     rpc GetInfo (GetInfoRequest) returns (GetInfoResponse) {
-        option(google.api.http).get = "/api/v1/tree/info/{path}";
+        option(google.api.http).get = "/api/v1/tree/info/{path=**}";
     };
 
     rpc GetInfoSession(stream GetInfoRequest) returns (stream NodeInfo);
 
     rpc GetMeta (GetMetaRequest) returns (GetMetaResponse) {
-        option(google.api.http).get = "/api/v1/tree/meta/{path}";
+        option(google.api.http).get = "/api/v1/tree/meta/{path=**}";
     };
     rpc SetMeta (SetMetaRequest) returns (SetMetaResponse) {
         option(google.api.http) = {
-            post: "/api/v1/tree/meta/{path}";
+            post: "/api/v1/tree/meta/{path=**}";
             body: "*";
         };
     };
     rpc DownloadURL (DownloadInfoRequest) returns (DownloadInfoResponse) {
-        option(google.api.http).get = "/api/v1/tree/download_url/{file}";
+        option(google.api.http).get = "/api/v1/tree/download_url/{file=**}";
     };
     rpc UploadURL (UploadInfoRequest) returns (UploadInfoResponse) {
-        option(google.api.http).get = "/api/v1/tree/upload_url/{file}";
+        option(google.api.http).get = "/api/v1/tree/upload_url/{file=**}";
     };
     rpc Copy (CopyRequest) returns (CopyResponse) {
         option(google.api.http) = {
@@ -171,6 +171,6 @@ service TreeService {
         };
     };
     rpc Delete (DeleteRequest) returns (DeleteResponse) {
-        option(google.api.http).get = "/api/v1/tree/delete/{path}";
+        option(google.api.http).get = "/api/v1/tree/delete/{path=**}";
     };
 }
