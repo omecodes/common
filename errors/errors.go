@@ -17,6 +17,8 @@ var (
 	WrongContent       = &Error{Code: 6, Message: "wrong content"}
 	BadInput           = &Error{Code: 7, Message: "bad input"}
 	TimeOut            = &Error{Code: 8, Message: "time out"}
+	Forbidden          = &Error{Code: 8, Message: "forbidden"}
+	Internal           = &Error{Code: 8, Message: "internal"}
 )
 
 type Error struct {
