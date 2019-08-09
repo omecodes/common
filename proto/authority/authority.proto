@@ -4,9 +4,38 @@ package authoritypb;
 
 import "google/api/annotations.proto";
 
-message AuthChallenge {
-    string nonce = 1;
-    string value = 2;
+enum AppType {
+    Registry = 0;
+    ServiceProvider = 1;
+    IdentityProvider = 2;
+}
+
+message Application {
+    string name = 1;
+    AppType type = 2;
+    string label = 4;
+    string description = 5;
+    int64 create_at = 6;
+}
+
+message Authentication {
+    string app_name = 1;
+    string nonce = 2;
+    string challenge = 3;
+}
+
+message AppCredentials {
+    string name = 1;
+    string access_key = 2;
+    string access_secret = 3;
+}
+
+
+message RegisterApplicationRequest {
+    Application application = 1;
+}
+message RegisterApplicationResponse {
+
 }
 
 message GenerateServiceCertificateRequest {
@@ -16,44 +45,34 @@ message GenerateServiceCertificateRequest {
     repeated string domains = 4;
     repeated string addresses = 5;
     bytes public_key = 6;
-    AuthChallenge auth_challenge = 7;
 }
 message GenerateServiceCertificateResponse {
     bytes certificateBytes = 1;
 }
 
-message CreateApplicationCredentialsRequest {
-    string application_name = 1;
-    string key = 2;
-    string secret = 3;
+message AuthenticateRequest {
+    Authentication authentication = 1;
 }
-message CreateApplicationCredentialsResponse {
-}
-
-message CheckApplicationAccessRequest {
-    string application_key = 1;
-    string nonce = 2;
-    string auth_message = 3;
-}
-message CheckApplicationAccessResponse {
-    bool valid = 1;
+message AuthenticateResponse {
+    string nonce = 1;
+    bool valid = 2;
 }
 
 
 service AuthorityService {
+    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
+        option(google.api.http) = {
+            post: "/api/v1/app/register";
+            body: "*";
+        };
+    };
     rpc GenerateServiceCertificate (GenerateServiceCertificateRequest) returns (GenerateServiceCertificateResponse) {
         option(google.api.http) = {
-            post: "/api/v1/cert/generate";
+            post: "/api/v1/app/cert/get";
             body: "*";
         };
     };
-    rpc CreateApplicationCredentials (CreateApplicationCredentialsRequest) returns (CreateApplicationCredentialsResponse) {
-        option(google.api.http) = {
-            post: "/api/v1/access/create";
-            body: "*";
-        };
-    };
-    rpc CheckApplicationAccess (CheckApplicationAccessRequest) returns (CheckApplicationAccessResponse) {
-        option(google.api.http).get = "/api/v1/access/check";
+    rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse) {
+        option(google.api.http).get = "/api/v1/app/authenticate";
     };
 }

@@ -23,71 +23,302 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type AuthChallenge struct {
-	Nonce                string   `protobuf:"bytes,1,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	Value                string   `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+type AppType int32
+
+const (
+	AppType_Registry         AppType = 0
+	AppType_ServiceProvider  AppType = 1
+	AppType_IdentityProvider AppType = 2
+)
+
+var AppType_name = map[int32]string{
+	0: "Registry",
+	1: "ServiceProvider",
+	2: "IdentityProvider",
+}
+
+var AppType_value = map[string]int32{
+	"Registry":         0,
+	"ServiceProvider":  1,
+	"IdentityProvider": 2,
+}
+
+func (x AppType) String() string {
+	return proto.EnumName(AppType_name, int32(x))
+}
+
+func (AppType) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{0}
+}
+
+type Application struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Type                 AppType  `protobuf:"varint,2,opt,name=type,proto3,enum=authoritypb.AppType" json:"type,omitempty"`
+	Label                string   `protobuf:"bytes,4,opt,name=label,proto3" json:"label,omitempty"`
+	Description          string   `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	CreateAt             int64    `protobuf:"varint,6,opt,name=create_at,json=createAt,proto3" json:"create_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AuthChallenge) Reset()         { *m = AuthChallenge{} }
-func (m *AuthChallenge) String() string { return proto.CompactTextString(m) }
-func (*AuthChallenge) ProtoMessage()    {}
-func (*AuthChallenge) Descriptor() ([]byte, []int) {
+func (m *Application) Reset()         { *m = Application{} }
+func (m *Application) String() string { return proto.CompactTextString(m) }
+func (*Application) ProtoMessage()    {}
+func (*Application) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6a5a0640cd66a638, []int{0}
 }
 
-func (m *AuthChallenge) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AuthChallenge.Unmarshal(m, b)
+func (m *Application) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Application.Unmarshal(m, b)
 }
-func (m *AuthChallenge) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AuthChallenge.Marshal(b, m, deterministic)
+func (m *Application) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Application.Marshal(b, m, deterministic)
 }
-func (m *AuthChallenge) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AuthChallenge.Merge(m, src)
+func (m *Application) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Application.Merge(m, src)
 }
-func (m *AuthChallenge) XXX_Size() int {
-	return xxx_messageInfo_AuthChallenge.Size(m)
+func (m *Application) XXX_Size() int {
+	return xxx_messageInfo_Application.Size(m)
 }
-func (m *AuthChallenge) XXX_DiscardUnknown() {
-	xxx_messageInfo_AuthChallenge.DiscardUnknown(m)
+func (m *Application) XXX_DiscardUnknown() {
+	xxx_messageInfo_Application.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AuthChallenge proto.InternalMessageInfo
+var xxx_messageInfo_Application proto.InternalMessageInfo
 
-func (m *AuthChallenge) GetNonce() string {
+func (m *Application) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Application) GetType() AppType {
+	if m != nil {
+		return m.Type
+	}
+	return AppType_Registry
+}
+
+func (m *Application) GetLabel() string {
+	if m != nil {
+		return m.Label
+	}
+	return ""
+}
+
+func (m *Application) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *Application) GetCreateAt() int64 {
+	if m != nil {
+		return m.CreateAt
+	}
+	return 0
+}
+
+type Authentication struct {
+	AppName              string   `protobuf:"bytes,1,opt,name=app_name,json=appName,proto3" json:"app_name,omitempty"`
+	Nonce                string   `protobuf:"bytes,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Challenge            string   `protobuf:"bytes,3,opt,name=challenge,proto3" json:"challenge,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Authentication) Reset()         { *m = Authentication{} }
+func (m *Authentication) String() string { return proto.CompactTextString(m) }
+func (*Authentication) ProtoMessage()    {}
+func (*Authentication) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{1}
+}
+
+func (m *Authentication) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Authentication.Unmarshal(m, b)
+}
+func (m *Authentication) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Authentication.Marshal(b, m, deterministic)
+}
+func (m *Authentication) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Authentication.Merge(m, src)
+}
+func (m *Authentication) XXX_Size() int {
+	return xxx_messageInfo_Authentication.Size(m)
+}
+func (m *Authentication) XXX_DiscardUnknown() {
+	xxx_messageInfo_Authentication.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Authentication proto.InternalMessageInfo
+
+func (m *Authentication) GetAppName() string {
+	if m != nil {
+		return m.AppName
+	}
+	return ""
+}
+
+func (m *Authentication) GetNonce() string {
 	if m != nil {
 		return m.Nonce
 	}
 	return ""
 }
 
-func (m *AuthChallenge) GetValue() string {
+func (m *Authentication) GetChallenge() string {
 	if m != nil {
-		return m.Value
+		return m.Challenge
 	}
 	return ""
 }
 
+type AppCredentials struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	AccessKey            string   `protobuf:"bytes,2,opt,name=access_key,json=accessKey,proto3" json:"access_key,omitempty"`
+	AccessSecret         string   `protobuf:"bytes,3,opt,name=access_secret,json=accessSecret,proto3" json:"access_secret,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AppCredentials) Reset()         { *m = AppCredentials{} }
+func (m *AppCredentials) String() string { return proto.CompactTextString(m) }
+func (*AppCredentials) ProtoMessage()    {}
+func (*AppCredentials) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{2}
+}
+
+func (m *AppCredentials) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AppCredentials.Unmarshal(m, b)
+}
+func (m *AppCredentials) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AppCredentials.Marshal(b, m, deterministic)
+}
+func (m *AppCredentials) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AppCredentials.Merge(m, src)
+}
+func (m *AppCredentials) XXX_Size() int {
+	return xxx_messageInfo_AppCredentials.Size(m)
+}
+func (m *AppCredentials) XXX_DiscardUnknown() {
+	xxx_messageInfo_AppCredentials.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AppCredentials proto.InternalMessageInfo
+
+func (m *AppCredentials) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *AppCredentials) GetAccessKey() string {
+	if m != nil {
+		return m.AccessKey
+	}
+	return ""
+}
+
+func (m *AppCredentials) GetAccessSecret() string {
+	if m != nil {
+		return m.AccessSecret
+	}
+	return ""
+}
+
+type RegisterApplicationRequest struct {
+	Application          *Application `protobuf:"bytes,1,opt,name=application,proto3" json:"application,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *RegisterApplicationRequest) Reset()         { *m = RegisterApplicationRequest{} }
+func (m *RegisterApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*RegisterApplicationRequest) ProtoMessage()    {}
+func (*RegisterApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{3}
+}
+
+func (m *RegisterApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegisterApplicationRequest.Unmarshal(m, b)
+}
+func (m *RegisterApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegisterApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *RegisterApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterApplicationRequest.Merge(m, src)
+}
+func (m *RegisterApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_RegisterApplicationRequest.Size(m)
+}
+func (m *RegisterApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RegisterApplicationRequest proto.InternalMessageInfo
+
+func (m *RegisterApplicationRequest) GetApplication() *Application {
+	if m != nil {
+		return m.Application
+	}
+	return nil
+}
+
+type RegisterApplicationResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RegisterApplicationResponse) Reset()         { *m = RegisterApplicationResponse{} }
+func (m *RegisterApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*RegisterApplicationResponse) ProtoMessage()    {}
+func (*RegisterApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{4}
+}
+
+func (m *RegisterApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegisterApplicationResponse.Unmarshal(m, b)
+}
+func (m *RegisterApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegisterApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *RegisterApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterApplicationResponse.Merge(m, src)
+}
+func (m *RegisterApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_RegisterApplicationResponse.Size(m)
+}
+func (m *RegisterApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RegisterApplicationResponse proto.InternalMessageInfo
+
 type GenerateServiceCertificateRequest struct {
-	ServiceName          string         `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	ApplicationKey       string         `protobuf:"bytes,2,opt,name=application_key,json=applicationKey,proto3" json:"application_key,omitempty"`
-	ApplicationSecret    string         `protobuf:"bytes,3,opt,name=application_secret,json=applicationSecret,proto3" json:"application_secret,omitempty"`
-	Domains              []string       `protobuf:"bytes,4,rep,name=domains,proto3" json:"domains,omitempty"`
-	Addresses            []string       `protobuf:"bytes,5,rep,name=addresses,proto3" json:"addresses,omitempty"`
-	PublicKey            []byte         `protobuf:"bytes,6,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
-	AuthChallenge        *AuthChallenge `protobuf:"bytes,7,opt,name=auth_challenge,json=authChallenge,proto3" json:"auth_challenge,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+	ServiceName          string   `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	ApplicationKey       string   `protobuf:"bytes,2,opt,name=application_key,json=applicationKey,proto3" json:"application_key,omitempty"`
+	ApplicationSecret    string   `protobuf:"bytes,3,opt,name=application_secret,json=applicationSecret,proto3" json:"application_secret,omitempty"`
+	Domains              []string `protobuf:"bytes,4,rep,name=domains,proto3" json:"domains,omitempty"`
+	Addresses            []string `protobuf:"bytes,5,rep,name=addresses,proto3" json:"addresses,omitempty"`
+	PublicKey            []byte   `protobuf:"bytes,6,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *GenerateServiceCertificateRequest) Reset()         { *m = GenerateServiceCertificateRequest{} }
 func (m *GenerateServiceCertificateRequest) String() string { return proto.CompactTextString(m) }
 func (*GenerateServiceCertificateRequest) ProtoMessage()    {}
 func (*GenerateServiceCertificateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{1}
+	return fileDescriptor_6a5a0640cd66a638, []int{5}
 }
 
 func (m *GenerateServiceCertificateRequest) XXX_Unmarshal(b []byte) error {
@@ -150,13 +381,6 @@ func (m *GenerateServiceCertificateRequest) GetPublicKey() []byte {
 	return nil
 }
 
-func (m *GenerateServiceCertificateRequest) GetAuthChallenge() *AuthChallenge {
-	if m != nil {
-		return m.AuthChallenge
-	}
-	return nil
-}
-
 type GenerateServiceCertificateResponse struct {
 	CertificateBytes     []byte   `protobuf:"bytes,1,opt,name=certificateBytes,proto3" json:"certificateBytes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -168,7 +392,7 @@ func (m *GenerateServiceCertificateResponse) Reset()         { *m = GenerateServ
 func (m *GenerateServiceCertificateResponse) String() string { return proto.CompactTextString(m) }
 func (*GenerateServiceCertificateResponse) ProtoMessage()    {}
 func (*GenerateServiceCertificateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{2}
+	return fileDescriptor_6a5a0640cd66a638, []int{6}
 }
 
 func (m *GenerateServiceCertificateResponse) XXX_Unmarshal(b []byte) error {
@@ -196,180 +420,86 @@ func (m *GenerateServiceCertificateResponse) GetCertificateBytes() []byte {
 	return nil
 }
 
-type CreateApplicationCredentialsRequest struct {
-	ApplicationName      string   `protobuf:"bytes,1,opt,name=application_name,json=applicationName,proto3" json:"application_name,omitempty"`
-	Key                  string   `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	Secret               string   `protobuf:"bytes,3,opt,name=secret,proto3" json:"secret,omitempty"`
+type AuthenticateRequest struct {
+	Authentication       *Authentication `protobuf:"bytes,1,opt,name=authentication,proto3" json:"authentication,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *AuthenticateRequest) Reset()         { *m = AuthenticateRequest{} }
+func (m *AuthenticateRequest) String() string { return proto.CompactTextString(m) }
+func (*AuthenticateRequest) ProtoMessage()    {}
+func (*AuthenticateRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{7}
+}
+
+func (m *AuthenticateRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AuthenticateRequest.Unmarshal(m, b)
+}
+func (m *AuthenticateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AuthenticateRequest.Marshal(b, m, deterministic)
+}
+func (m *AuthenticateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuthenticateRequest.Merge(m, src)
+}
+func (m *AuthenticateRequest) XXX_Size() int {
+	return xxx_messageInfo_AuthenticateRequest.Size(m)
+}
+func (m *AuthenticateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuthenticateRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AuthenticateRequest proto.InternalMessageInfo
+
+func (m *AuthenticateRequest) GetAuthentication() *Authentication {
+	if m != nil {
+		return m.Authentication
+	}
+	return nil
+}
+
+type AuthenticateResponse struct {
+	Nonce                string   `protobuf:"bytes,1,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Valid                bool     `protobuf:"varint,2,opt,name=valid,proto3" json:"valid,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *CreateApplicationCredentialsRequest) Reset()         { *m = CreateApplicationCredentialsRequest{} }
-func (m *CreateApplicationCredentialsRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateApplicationCredentialsRequest) ProtoMessage()    {}
-func (*CreateApplicationCredentialsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{3}
+func (m *AuthenticateResponse) Reset()         { *m = AuthenticateResponse{} }
+func (m *AuthenticateResponse) String() string { return proto.CompactTextString(m) }
+func (*AuthenticateResponse) ProtoMessage()    {}
+func (*AuthenticateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a5a0640cd66a638, []int{8}
 }
 
-func (m *CreateApplicationCredentialsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateApplicationCredentialsRequest.Unmarshal(m, b)
+func (m *AuthenticateResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AuthenticateResponse.Unmarshal(m, b)
 }
-func (m *CreateApplicationCredentialsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateApplicationCredentialsRequest.Marshal(b, m, deterministic)
+func (m *AuthenticateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AuthenticateResponse.Marshal(b, m, deterministic)
 }
-func (m *CreateApplicationCredentialsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateApplicationCredentialsRequest.Merge(m, src)
+func (m *AuthenticateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuthenticateResponse.Merge(m, src)
 }
-func (m *CreateApplicationCredentialsRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateApplicationCredentialsRequest.Size(m)
+func (m *AuthenticateResponse) XXX_Size() int {
+	return xxx_messageInfo_AuthenticateResponse.Size(m)
 }
-func (m *CreateApplicationCredentialsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateApplicationCredentialsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateApplicationCredentialsRequest proto.InternalMessageInfo
-
-func (m *CreateApplicationCredentialsRequest) GetApplicationName() string {
-	if m != nil {
-		return m.ApplicationName
-	}
-	return ""
+func (m *AuthenticateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AuthenticateResponse.DiscardUnknown(m)
 }
 
-func (m *CreateApplicationCredentialsRequest) GetKey() string {
-	if m != nil {
-		return m.Key
-	}
-	return ""
-}
+var xxx_messageInfo_AuthenticateResponse proto.InternalMessageInfo
 
-func (m *CreateApplicationCredentialsRequest) GetSecret() string {
-	if m != nil {
-		return m.Secret
-	}
-	return ""
-}
-
-type CreateApplicationCredentialsResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateApplicationCredentialsResponse) Reset()         { *m = CreateApplicationCredentialsResponse{} }
-func (m *CreateApplicationCredentialsResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateApplicationCredentialsResponse) ProtoMessage()    {}
-func (*CreateApplicationCredentialsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{4}
-}
-
-func (m *CreateApplicationCredentialsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateApplicationCredentialsResponse.Unmarshal(m, b)
-}
-func (m *CreateApplicationCredentialsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateApplicationCredentialsResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateApplicationCredentialsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateApplicationCredentialsResponse.Merge(m, src)
-}
-func (m *CreateApplicationCredentialsResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateApplicationCredentialsResponse.Size(m)
-}
-func (m *CreateApplicationCredentialsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateApplicationCredentialsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateApplicationCredentialsResponse proto.InternalMessageInfo
-
-type CheckApplicationAccessRequest struct {
-	ApplicationKey       string   `protobuf:"bytes,1,opt,name=application_key,json=applicationKey,proto3" json:"application_key,omitempty"`
-	Nonce                string   `protobuf:"bytes,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	AuthMessage          string   `protobuf:"bytes,3,opt,name=auth_message,json=authMessage,proto3" json:"auth_message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CheckApplicationAccessRequest) Reset()         { *m = CheckApplicationAccessRequest{} }
-func (m *CheckApplicationAccessRequest) String() string { return proto.CompactTextString(m) }
-func (*CheckApplicationAccessRequest) ProtoMessage()    {}
-func (*CheckApplicationAccessRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{5}
-}
-
-func (m *CheckApplicationAccessRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CheckApplicationAccessRequest.Unmarshal(m, b)
-}
-func (m *CheckApplicationAccessRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CheckApplicationAccessRequest.Marshal(b, m, deterministic)
-}
-func (m *CheckApplicationAccessRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CheckApplicationAccessRequest.Merge(m, src)
-}
-func (m *CheckApplicationAccessRequest) XXX_Size() int {
-	return xxx_messageInfo_CheckApplicationAccessRequest.Size(m)
-}
-func (m *CheckApplicationAccessRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CheckApplicationAccessRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CheckApplicationAccessRequest proto.InternalMessageInfo
-
-func (m *CheckApplicationAccessRequest) GetApplicationKey() string {
-	if m != nil {
-		return m.ApplicationKey
-	}
-	return ""
-}
-
-func (m *CheckApplicationAccessRequest) GetNonce() string {
+func (m *AuthenticateResponse) GetNonce() string {
 	if m != nil {
 		return m.Nonce
 	}
 	return ""
 }
 
-func (m *CheckApplicationAccessRequest) GetAuthMessage() string {
-	if m != nil {
-		return m.AuthMessage
-	}
-	return ""
-}
-
-type CheckApplicationAccessResponse struct {
-	Valid                bool     `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CheckApplicationAccessResponse) Reset()         { *m = CheckApplicationAccessResponse{} }
-func (m *CheckApplicationAccessResponse) String() string { return proto.CompactTextString(m) }
-func (*CheckApplicationAccessResponse) ProtoMessage()    {}
-func (*CheckApplicationAccessResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6a5a0640cd66a638, []int{6}
-}
-
-func (m *CheckApplicationAccessResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CheckApplicationAccessResponse.Unmarshal(m, b)
-}
-func (m *CheckApplicationAccessResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CheckApplicationAccessResponse.Marshal(b, m, deterministic)
-}
-func (m *CheckApplicationAccessResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CheckApplicationAccessResponse.Merge(m, src)
-}
-func (m *CheckApplicationAccessResponse) XXX_Size() int {
-	return xxx_messageInfo_CheckApplicationAccessResponse.Size(m)
-}
-func (m *CheckApplicationAccessResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CheckApplicationAccessResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CheckApplicationAccessResponse proto.InternalMessageInfo
-
-func (m *CheckApplicationAccessResponse) GetValid() bool {
+func (m *AuthenticateResponse) GetValid() bool {
 	if m != nil {
 		return m.Valid
 	}
@@ -377,55 +507,64 @@ func (m *CheckApplicationAccessResponse) GetValid() bool {
 }
 
 func init() {
-	proto.RegisterType((*AuthChallenge)(nil), "authoritypb.AuthChallenge")
+	proto.RegisterEnum("authoritypb.AppType", AppType_name, AppType_value)
+	proto.RegisterType((*Application)(nil), "authoritypb.Application")
+	proto.RegisterType((*Authentication)(nil), "authoritypb.Authentication")
+	proto.RegisterType((*AppCredentials)(nil), "authoritypb.AppCredentials")
+	proto.RegisterType((*RegisterApplicationRequest)(nil), "authoritypb.RegisterApplicationRequest")
+	proto.RegisterType((*RegisterApplicationResponse)(nil), "authoritypb.RegisterApplicationResponse")
 	proto.RegisterType((*GenerateServiceCertificateRequest)(nil), "authoritypb.GenerateServiceCertificateRequest")
 	proto.RegisterType((*GenerateServiceCertificateResponse)(nil), "authoritypb.GenerateServiceCertificateResponse")
-	proto.RegisterType((*CreateApplicationCredentialsRequest)(nil), "authoritypb.CreateApplicationCredentialsRequest")
-	proto.RegisterType((*CreateApplicationCredentialsResponse)(nil), "authoritypb.CreateApplicationCredentialsResponse")
-	proto.RegisterType((*CheckApplicationAccessRequest)(nil), "authoritypb.CheckApplicationAccessRequest")
-	proto.RegisterType((*CheckApplicationAccessResponse)(nil), "authoritypb.CheckApplicationAccessResponse")
+	proto.RegisterType((*AuthenticateRequest)(nil), "authoritypb.AuthenticateRequest")
+	proto.RegisterType((*AuthenticateResponse)(nil), "authoritypb.AuthenticateResponse")
 }
 
 func init() { proto.RegisterFile("authority.proto", fileDescriptor_6a5a0640cd66a638) }
 
 var fileDescriptor_6a5a0640cd66a638 = []byte{
-	// 565 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x41, 0x8e, 0x12, 0x41,
-	0x14, 0x4d, 0x83, 0xc3, 0xc8, 0x87, 0x99, 0xc1, 0xca, 0x48, 0x3a, 0x1d, 0xc6, 0x40, 0x6b, 0x14,
-	0x31, 0xd2, 0xce, 0x98, 0xb8, 0xd0, 0x15, 0xb2, 0x70, 0x61, 0x34, 0xa6, 0xe7, 0x00, 0xa4, 0x28,
-	0xbe, 0x50, 0x99, 0xa6, 0xaa, 0xed, 0x2a, 0x48, 0x70, 0xa7, 0x17, 0x70, 0xe1, 0x01, 0x5c, 0x79,
-	0x07, 0xef, 0xe1, 0x15, 0x5c, 0x7b, 0x06, 0xd3, 0xd5, 0x0d, 0x74, 0x2b, 0x20, 0xb3, 0xe3, 0xbf,
-	0xff, 0x3f, 0xff, 0xf1, 0xde, 0x2b, 0xe0, 0x84, 0xce, 0xf4, 0x44, 0x46, 0x5c, 0x2f, 0xba, 0x61,
-	0x24, 0xb5, 0x24, 0x95, 0x15, 0x10, 0x0e, 0x9d, 0xc6, 0x58, 0xca, 0x71, 0x80, 0x1e, 0x0d, 0xb9,
-	0x47, 0x85, 0x90, 0x9a, 0x6a, 0x2e, 0x85, 0x4a, 0x46, 0xdd, 0x17, 0x70, 0xd4, 0x9b, 0xe9, 0x49,
-	0x7f, 0x42, 0x83, 0x00, 0xc5, 0x18, 0xc9, 0x29, 0x1c, 0x08, 0x29, 0x18, 0xda, 0x56, 0xd3, 0x6a,
-	0x97, 0xfd, 0xa4, 0x88, 0xd1, 0x39, 0x0d, 0x66, 0x68, 0x17, 0x12, 0xd4, 0x14, 0xee, 0x8f, 0x02,
-	0xb4, 0x5e, 0xa1, 0xc0, 0x88, 0x6a, 0xbc, 0xc4, 0x68, 0xce, 0x19, 0xf6, 0x31, 0xd2, 0xfc, 0x3d,
-	0x67, 0x54, 0xa3, 0x8f, 0x1f, 0x66, 0xa8, 0x34, 0x69, 0x41, 0x55, 0x25, 0xcd, 0x81, 0xa0, 0xd3,
-	0xe5, 0x17, 0x57, 0x52, 0xec, 0x2d, 0x9d, 0x22, 0x79, 0x00, 0x27, 0x34, 0x0c, 0x83, 0x78, 0x8d,
-	0x4b, 0x31, 0xb8, 0xc2, 0x45, 0x7a, 0xe8, 0x38, 0x03, 0xbf, 0xc6, 0x05, 0x79, 0x0c, 0x24, 0x3b,
-	0xa8, 0x90, 0x45, 0xa8, 0xed, 0xa2, 0x99, 0xbd, 0x95, 0xe9, 0x5c, 0x9a, 0x06, 0xb1, 0xe1, 0x70,
-	0x24, 0xa7, 0x94, 0x0b, 0x65, 0xdf, 0x68, 0x16, 0xdb, 0x65, 0x7f, 0x59, 0x92, 0x06, 0x94, 0xe9,
-	0x68, 0x14, 0xa1, 0x52, 0xa8, 0xec, 0x03, 0xd3, 0x5b, 0x03, 0xe4, 0x0c, 0x20, 0x9c, 0x0d, 0x03,
-	0xce, 0x0c, 0x95, 0x52, 0xd3, 0x6a, 0x57, 0xfd, 0x72, 0x82, 0xc4, 0x2c, 0x7a, 0x70, 0x1c, 0x2b,
-	0x3c, 0x60, 0x4b, 0xd5, 0xec, 0xc3, 0xa6, 0xd5, 0xae, 0x5c, 0x38, 0xdd, 0x8c, 0xf0, 0xdd, 0x9c,
-	0xae, 0xfe, 0x11, 0xcd, 0x96, 0xee, 0x3b, 0x70, 0x77, 0x29, 0xa7, 0x42, 0x29, 0x14, 0x92, 0x0e,
-	0xd4, 0xd8, 0x1a, 0x7e, 0xb9, 0xd0, 0xa8, 0x8c, 0x7c, 0x55, 0xff, 0x1f, 0xdc, 0xfd, 0x08, 0x77,
-	0xfb, 0x11, 0x52, 0x8d, 0xbd, 0xb5, 0x0c, 0xfd, 0x08, 0x47, 0x28, 0x34, 0xa7, 0x81, 0x5a, 0xba,
-	0xf1, 0x10, 0x6a, 0x59, 0x05, 0x33, 0x8e, 0x64, 0x2d, 0x30, 0xae, 0xd4, 0xa0, 0xb8, 0x76, 0x22,
-	0xfe, 0x48, 0xea, 0x50, 0xca, 0x49, 0x9e, 0x56, 0xee, 0x7d, 0xb8, 0xb7, 0xfb, 0x76, 0xf2, 0x7b,
-	0xdc, 0x4f, 0x16, 0x9c, 0xf5, 0x27, 0xc8, 0xae, 0x32, 0x73, 0x3d, 0xc6, 0x50, 0xad, 0xe8, 0x6d,
-	0x48, 0x82, 0xb5, 0x31, 0x09, 0xab, 0x9c, 0x16, 0xb2, 0x39, 0x6d, 0x41, 0xd5, 0x38, 0x33, 0x45,
-	0xa5, 0xe8, 0x18, 0x53, 0x9a, 0xe6, 0x3d, 0xbc, 0x49, 0x20, 0xf7, 0x19, 0xdc, 0xd9, 0x46, 0x21,
-	0x55, 0x3d, 0x09, 0x3b, 0x1f, 0x99, 0xcb, 0x37, 0xfd, 0xa4, 0xb8, 0xf8, 0x5d, 0x84, 0x5a, 0x6f,
-	0x69, 0x6f, 0xea, 0x19, 0xf9, 0x66, 0x81, 0xb3, 0xdd, 0x47, 0xd2, 0xcd, 0x05, 0xe2, 0xbf, 0x4f,
-	0xc5, 0xf1, 0xf6, 0x9e, 0x4f, 0x05, 0x6d, 0x7e, 0xfe, 0xf9, 0xeb, 0x6b, 0xc1, 0x71, 0x6f, 0x9b,
-	0xe7, 0x3d, 0x3f, 0xf7, 0xe2, 0x58, 0x78, 0xe3, 0x74, 0xf1, 0xb9, 0xd5, 0x21, 0xdf, 0x2d, 0x68,
-	0xec, 0xf2, 0x86, 0x3c, 0xc9, 0xdd, 0xdc, 0x23, 0x42, 0xce, 0xf9, 0x35, 0x36, 0xb6, 0xf1, 0xa4,
-	0x46, 0x72, 0x8f, 0x99, 0xe5, 0x98, 0xe7, 0x17, 0x0b, 0xea, 0x9b, 0x7d, 0x21, 0x9d, 0xfc, 0xbd,
-	0x5d, 0xf9, 0x71, 0x1e, 0xed, 0x35, 0x9b, 0xb2, 0x6a, 0x18, 0x56, 0x75, 0x72, 0xfa, 0x37, 0xab,
-	0x78, 0x6d, 0x58, 0x32, 0xff, 0x90, 0x4f, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff, 0xbd, 0x81, 0x97,
-	0xfb, 0x5f, 0x05, 0x00, 0x00,
+	// 670 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcd, 0x6e, 0xd3, 0x4c,
+	0x14, 0xfd, 0xdc, 0x24, 0x6d, 0x72, 0x93, 0x2f, 0x0d, 0x53, 0x2f, 0xdc, 0xb4, 0x15, 0xae, 0x59,
+	0x34, 0xaa, 0x44, 0x22, 0xca, 0xae, 0xbb, 0xb4, 0x0b, 0x84, 0x2a, 0xa1, 0xca, 0x65, 0x81, 0xd8,
+	0x44, 0x13, 0xfb, 0x92, 0x58, 0xb8, 0xf6, 0x30, 0x33, 0x89, 0xe4, 0x2d, 0x3b, 0xd6, 0xec, 0x11,
+	0x4f, 0xc1, 0x8b, 0xf0, 0x0a, 0xbc, 0x02, 0x7b, 0xe4, 0x99, 0x69, 0x32, 0x2e, 0xfd, 0x61, 0x97,
+	0x39, 0xf7, 0xde, 0x39, 0x67, 0xce, 0x3d, 0x31, 0x6c, 0xd3, 0x85, 0x9c, 0xe7, 0x3c, 0x91, 0xc5,
+	0x90, 0xf1, 0x5c, 0xe6, 0xa4, 0xbd, 0x02, 0xd8, 0xb4, 0xbf, 0x3f, 0xcb, 0xf3, 0x59, 0x8a, 0x23,
+	0xca, 0x92, 0x11, 0xcd, 0xb2, 0x5c, 0x52, 0x99, 0xe4, 0x99, 0xd0, 0xad, 0xc1, 0x77, 0x07, 0xda,
+	0x63, 0xc6, 0xd2, 0x24, 0x52, 0x30, 0x21, 0x50, 0xcf, 0xe8, 0x35, 0x7a, 0x8e, 0xef, 0x0c, 0x5a,
+	0xa1, 0xfa, 0x4d, 0x06, 0x50, 0x97, 0x05, 0x43, 0x6f, 0xc3, 0x77, 0x06, 0xdd, 0x13, 0x77, 0x68,
+	0xdd, 0x3e, 0x1c, 0x33, 0xf6, 0xb6, 0x60, 0x18, 0xaa, 0x0e, 0xe2, 0x42, 0x23, 0xa5, 0x53, 0x4c,
+	0xbd, 0xba, 0x1a, 0xd7, 0x07, 0xe2, 0x43, 0x3b, 0x46, 0x11, 0xf1, 0x84, 0x95, 0x14, 0x5e, 0x43,
+	0xd5, 0x6c, 0x88, 0xec, 0x41, 0x2b, 0xe2, 0x48, 0x25, 0x4e, 0xa8, 0xf4, 0x36, 0x7d, 0x67, 0x50,
+	0x0b, 0x9b, 0x1a, 0x18, 0xcb, 0x60, 0x02, 0xdd, 0xf1, 0x42, 0xce, 0x31, 0x93, 0x37, 0x22, 0x77,
+	0xa1, 0x49, 0x19, 0x9b, 0x58, 0x42, 0xb7, 0x28, 0x63, 0x6f, 0x4a, 0xad, 0x2e, 0x34, 0xb2, 0x3c,
+	0x8b, 0xb4, 0xd8, 0x56, 0xa8, 0x0f, 0x64, 0x1f, 0x5a, 0xd1, 0x9c, 0xa6, 0x29, 0x66, 0x33, 0xf4,
+	0x6a, 0xaa, 0xb2, 0x06, 0x82, 0x39, 0x74, 0xc7, 0x8c, 0x9d, 0x73, 0x8c, 0x4b, 0x0e, 0x9a, 0x8a,
+	0x3b, 0x5d, 0x38, 0x00, 0xa0, 0x51, 0x84, 0x42, 0x4c, 0x3e, 0x62, 0x61, 0xae, 0x6f, 0x69, 0xe4,
+	0x02, 0x0b, 0xf2, 0x0c, 0xfe, 0x37, 0x65, 0x81, 0x11, 0x47, 0x69, 0x68, 0x3a, 0x1a, 0xbc, 0x52,
+	0x58, 0xf0, 0x0e, 0xfa, 0x21, 0xce, 0x12, 0x21, 0x91, 0x5b, 0xa6, 0x87, 0xf8, 0x69, 0x81, 0x42,
+	0x92, 0x53, 0x68, 0xd3, 0x35, 0xaa, 0xc8, 0xdb, 0x27, 0xde, 0x6d, 0xbb, 0x57, 0x53, 0x76, 0x73,
+	0x70, 0x00, 0x7b, 0x77, 0xde, 0x2c, 0x58, 0x9e, 0x09, 0x0c, 0x7e, 0x3b, 0x70, 0xf8, 0x0a, 0x33,
+	0xe4, 0x54, 0xe2, 0x15, 0xf2, 0x65, 0x12, 0xe1, 0x39, 0x72, 0x99, 0x7c, 0x28, 0x1b, 0xf1, 0x46,
+	0xc0, 0x21, 0x74, 0x84, 0x2e, 0xda, 0xde, 0xb6, 0x0d, 0xa6, 0xfc, 0x3d, 0x82, 0x6d, 0x8b, 0xd6,
+	0xb2, 0xa2, 0x6b, 0xc1, 0xa5, 0x1f, 0xcf, 0x81, 0xd8, 0x8d, 0x15, 0x53, 0x9e, 0x58, 0x15, 0xed,
+	0x0c, 0xf1, 0x60, 0x2b, 0xce, 0xaf, 0x69, 0x92, 0x09, 0xaf, 0xee, 0xd7, 0xca, 0x8d, 0x9a, 0x63,
+	0xb9, 0x3b, 0x1a, 0xc7, 0x1c, 0x85, 0x40, 0xe1, 0x35, 0x54, 0x6d, 0x0d, 0x94, 0x5b, 0x61, 0x8b,
+	0x69, 0x9a, 0x44, 0x4a, 0x4a, 0x19, 0x9d, 0x4e, 0xd8, 0xd2, 0xc8, 0x05, 0x16, 0xc1, 0x25, 0x04,
+	0x0f, 0x3d, 0x5b, 0xbb, 0x43, 0x8e, 0xa1, 0x17, 0xad, 0xe1, 0xb3, 0x42, 0xa2, 0x50, 0x6f, 0xef,
+	0x84, 0x7f, 0xe1, 0xc1, 0x7b, 0xd8, 0xb1, 0xd2, 0xb8, 0xb2, 0xee, 0x1c, 0xba, 0xb4, 0x12, 0x52,
+	0xb3, 0xbe, 0xbd, 0xea, 0xfa, 0x2a, 0x2d, 0xe1, 0xad, 0x91, 0xe0, 0x0c, 0xdc, 0xea, 0xdd, 0x46,
+	0xdf, 0x2a, 0xd4, 0x8e, 0x1d, 0x6a, 0x17, 0x1a, 0x4b, 0x9a, 0x26, 0xb1, 0x5a, 0x40, 0x33, 0xd4,
+	0x87, 0xe3, 0x33, 0xd8, 0x32, 0xff, 0x49, 0xd2, 0x81, 0xa6, 0xce, 0x04, 0x2f, 0x7a, 0xff, 0x91,
+	0x1d, 0xd8, 0x36, 0x16, 0x5c, 0xf2, 0x7c, 0x99, 0xc4, 0xc8, 0x7b, 0x0e, 0x71, 0xa1, 0xf7, 0x5a,
+	0xa5, 0x5e, 0x16, 0x2b, 0x74, 0xe3, 0xe4, 0x47, 0x0d, 0x7a, 0xe3, 0x1b, 0xd9, 0x66, 0x88, 0x7c,
+	0x71, 0x60, 0xe7, 0x8e, 0x88, 0x91, 0xa3, 0xca, 0x0b, 0xef, 0x8f, 0x77, 0x7f, 0xf0, 0x78, 0xa3,
+	0x49, 0xeb, 0xd3, 0xcf, 0x3f, 0x7f, 0x7d, 0xdd, 0xd8, 0x0d, 0x5c, 0xf5, 0xd1, 0x5a, 0xbe, 0x18,
+	0x51, 0xc6, 0x46, 0xdc, 0x0c, 0x9c, 0x3a, 0xc7, 0xe4, 0x9b, 0x03, 0xfd, 0xfb, 0xf7, 0x4a, 0x86,
+	0x15, 0xa6, 0x47, 0x73, 0xdf, 0x1f, 0xfd, 0x73, 0xff, 0x43, 0x02, 0xcb, 0xa8, 0x8c, 0x66, 0x28,
+	0x4b, 0x81, 0x0b, 0xe8, 0xd8, 0x9b, 0x24, 0xfe, 0x7d, 0x31, 0x58, 0x69, 0x38, 0x7c, 0xa0, 0xc3,
+	0xb0, 0xfa, 0x8a, 0xb5, 0x4f, 0x3c, 0x9b, 0xd5, 0x8a, 0x10, 0x4e, 0x37, 0xd5, 0x47, 0xfd, 0xe5,
+	0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x65, 0x48, 0x27, 0xf4, 0x12, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -440,9 +579,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AuthorityServiceClient interface {
+	RegisterApplication(ctx context.Context, in *RegisterApplicationRequest, opts ...grpc.CallOption) (*RegisterApplicationResponse, error)
 	GenerateServiceCertificate(ctx context.Context, in *GenerateServiceCertificateRequest, opts ...grpc.CallOption) (*GenerateServiceCertificateResponse, error)
-	CreateApplicationCredentials(ctx context.Context, in *CreateApplicationCredentialsRequest, opts ...grpc.CallOption) (*CreateApplicationCredentialsResponse, error)
-	CheckApplicationAccess(ctx context.Context, in *CheckApplicationAccessRequest, opts ...grpc.CallOption) (*CheckApplicationAccessResponse, error)
+	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
 }
 
 type authorityServiceClient struct {
@@ -451,6 +590,15 @@ type authorityServiceClient struct {
 
 func NewAuthorityServiceClient(cc *grpc.ClientConn) AuthorityServiceClient {
 	return &authorityServiceClient{cc}
+}
+
+func (c *authorityServiceClient) RegisterApplication(ctx context.Context, in *RegisterApplicationRequest, opts ...grpc.CallOption) (*RegisterApplicationResponse, error) {
+	out := new(RegisterApplicationResponse)
+	err := c.cc.Invoke(ctx, "/authoritypb.AuthorityService/RegisterApplication", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *authorityServiceClient) GenerateServiceCertificate(ctx context.Context, in *GenerateServiceCertificateRequest, opts ...grpc.CallOption) (*GenerateServiceCertificateResponse, error) {
@@ -462,18 +610,9 @@ func (c *authorityServiceClient) GenerateServiceCertificate(ctx context.Context,
 	return out, nil
 }
 
-func (c *authorityServiceClient) CreateApplicationCredentials(ctx context.Context, in *CreateApplicationCredentialsRequest, opts ...grpc.CallOption) (*CreateApplicationCredentialsResponse, error) {
-	out := new(CreateApplicationCredentialsResponse)
-	err := c.cc.Invoke(ctx, "/authoritypb.AuthorityService/CreateApplicationCredentials", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authorityServiceClient) CheckApplicationAccess(ctx context.Context, in *CheckApplicationAccessRequest, opts ...grpc.CallOption) (*CheckApplicationAccessResponse, error) {
-	out := new(CheckApplicationAccessResponse)
-	err := c.cc.Invoke(ctx, "/authoritypb.AuthorityService/CheckApplicationAccess", in, out, opts...)
+func (c *authorityServiceClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
+	out := new(AuthenticateResponse)
+	err := c.cc.Invoke(ctx, "/authoritypb.AuthorityService/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -482,13 +621,31 @@ func (c *authorityServiceClient) CheckApplicationAccess(ctx context.Context, in 
 
 // AuthorityServiceServer is the server API for AuthorityService service.
 type AuthorityServiceServer interface {
+	RegisterApplication(context.Context, *RegisterApplicationRequest) (*RegisterApplicationResponse, error)
 	GenerateServiceCertificate(context.Context, *GenerateServiceCertificateRequest) (*GenerateServiceCertificateResponse, error)
-	CreateApplicationCredentials(context.Context, *CreateApplicationCredentialsRequest) (*CreateApplicationCredentialsResponse, error)
-	CheckApplicationAccess(context.Context, *CheckApplicationAccessRequest) (*CheckApplicationAccessResponse, error)
+	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
 }
 
 func RegisterAuthorityServiceServer(s *grpc.Server, srv AuthorityServiceServer) {
 	s.RegisterService(&_AuthorityService_serviceDesc, srv)
+}
+
+func _AuthorityService_RegisterApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterApplicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorityServiceServer).RegisterApplication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authoritypb.AuthorityService/RegisterApplication",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorityServiceServer).RegisterApplication(ctx, req.(*RegisterApplicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AuthorityService_GenerateServiceCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -509,38 +666,20 @@ func _AuthorityService_GenerateServiceCertificate_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthorityService_CreateApplicationCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateApplicationCredentialsRequest)
+func _AuthorityService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthorityServiceServer).CreateApplicationCredentials(ctx, in)
+		return srv.(AuthorityServiceServer).Authenticate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authoritypb.AuthorityService/CreateApplicationCredentials",
+		FullMethod: "/authoritypb.AuthorityService/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthorityServiceServer).CreateApplicationCredentials(ctx, req.(*CreateApplicationCredentialsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthorityService_CheckApplicationAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckApplicationAccessRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthorityServiceServer).CheckApplicationAccess(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authoritypb.AuthorityService/CheckApplicationAccess",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthorityServiceServer).CheckApplicationAccess(ctx, req.(*CheckApplicationAccessRequest))
+		return srv.(AuthorityServiceServer).Authenticate(ctx, req.(*AuthenticateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -550,16 +689,16 @@ var _AuthorityService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthorityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "RegisterApplication",
+			Handler:    _AuthorityService_RegisterApplication_Handler,
+		},
+		{
 			MethodName: "GenerateServiceCertificate",
 			Handler:    _AuthorityService_GenerateServiceCertificate_Handler,
 		},
 		{
-			MethodName: "CreateApplicationCredentials",
-			Handler:    _AuthorityService_CreateApplicationCredentials_Handler,
-		},
-		{
-			MethodName: "CheckApplicationAccess",
-			Handler:    _AuthorityService_CheckApplicationAccess_Handler,
+			MethodName: "Authenticate",
+			Handler:    _AuthorityService_Authenticate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
