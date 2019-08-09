@@ -1,8 +1,19 @@
 package app
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/zoenion/common/conf"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+)
 
 var (
+	Vendor = "Zoenion"
+	Name   = strings.Split(os.Args[0], fmt.Sprintf("%c", os.PathSeparator))[0]
+
 	ArgRegistry      string
 	ArgAddressGRPC   string
 	ArgAddressHTTP   string
@@ -22,7 +33,6 @@ func CMD(use string) *cobra.Command {
 			_ = cmd.Help()
 		},
 	}
-
 	command.PersistentFlags().StringVar(&ArgDir, "dir", "", "Configs directory path")
 	command.PersistentFlags().StringVar(&ArgAddressGRPC, "grpc", "", "GRPC listen address")
 	command.PersistentFlags().StringVar(&ArgAddressHTTP, "http", "", "HTTP listen address")
@@ -34,4 +44,22 @@ func CMD(use string) *cobra.Command {
 	command.PersistentFlags().StringVar(&ArgName, "name", "", "Unique name in registry group")
 
 	return command
+}
+
+func LoadConfig() (conf.Map, error) {
+	if ArgDir == "" {
+		dir := GetDir("Zoenion", "Auth")
+		if err := dir.Create(); err != nil {
+			log.Fatalln(err)
+		}
+		ArgDir = dir.Path()
+	}
+	configsFilename := filepath.Join(ArgDir, "configs.json")
+	cfg := conf.Map{}
+	return cfg, cfg.Load(configsFilename)
+}
+
+func SaveConfigs(cfg conf.Map) error {
+	configsFilename := filepath.Join(ArgDir, "configs.json")
+	return cfg.Save(configsFilename, os.ModePerm)
 }
