@@ -1,38 +1,73 @@
 package http_helper
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	auth "github.com/abbot/go-http-auth"
+	"github.com/zoenion/common/errors"
+	authpb "github.com/zoenion/common/proto/auth"
 	"net/http"
 )
 
-type AuthProviderFunc func(string) string
+// CredentialsProvider
+type CredentialsProvider func(args ...string) *authpb.Credentials
 
-type Authentication struct {
-	digest *auth.DigestAuth
-	basic  *auth.BasicAuth
+type JwtVerifier func(string) bool
 
-	provider     AuthProviderFunc
-	name         string
-	providerFunc AuthProviderFunc
+// DigestAuthenticationMiddleware
+type DigestAuthenticationMiddleware struct {
+	digest   *auth.DigestAuth
+	realm    string
+	wrappers []RequestWrapper
 }
 
-func (ba *Authentication) Wrap(next http.HandlerFunc) http.HandlerFunc {
-	if ba.digest != nil {
-		return func(w http.ResponseWriter, r *http.Request) {
-			if username, _ := ba.digest.CheckAuth(r); username == "" {
-				ba.digest.RequireAuth(w, r)
-			} else {
-				r.Header.Set("X-Authenticated-Username", username)
-				next(w, r)
+func (dam *DigestAuthenticationMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if username, _ := dam.digest.CheckAuth(r); username == "" {
+			dam.digest.RequireAuth(w, r)
+		} else {
+			for _, wrapper := range dam.wrappers {
+				r = wrapper(r)
 			}
+			next(w, r)
 		}
 	}
+}
 
+func NewDigestAuthenticationMiddleware(realm string, provider CredentialsProvider, wrappers ...RequestWrapper) *DigestAuthenticationMiddleware {
+	a := &DigestAuthenticationMiddleware{
+		realm:    realm,
+		wrappers: wrappers,
+	}
+	a.digest = auth.NewDigestAuthenticator(realm, func(username, realm string) string {
+		credentials := provider(username)
+		if credentials == nil {
+			return ""
+		}
+
+		ha1Str := fmt.Sprintf("%s:%s:%s", username, realm, credentials.Password)
+		h := md5.New()
+		h.Write([]byte(ha1Str))
+		ha1Bytes := h.Sum(nil)
+		return hex.EncodeToString(ha1Bytes)
+	})
+	return a
+}
+
+// BasicAuthenticationMiddleware
+type BasicAuthenticationMiddleware struct {
+	provider CredentialsProvider
+	wrappers []RequestWrapper
+	realm    string
+	basic    *auth.BasicAuth
+}
+
+func (bam *BasicAuthenticationMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if user := ba.basic.CheckAuth(r); user == "" {
+		if user := bam.basic.CheckAuth(r); user == "" {
 			WriteResponse(w, 401, &RequireAuth{
-				Realm: ba.name,
+				Realm: bam.realm,
 				Type:  "Basic",
 			})
 		} else {
@@ -42,24 +77,47 @@ func (ba *Authentication) Wrap(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func NewAuthentication(name string, digest bool, providerFunc AuthProviderFunc) *Authentication {
-	a := &Authentication{
-		provider:     providerFunc,
-		name:         name,
-		providerFunc: providerFunc,
-	}
-
-	if digest {
-		a.digest = auth.NewDigestAuthenticator(name, func(username, realm string) string {
-			return providerFunc(fmt.Sprintf("digest://%s.%s", username, realm))
-		})
-	} else {
-		a.basic = &auth.BasicAuth{
-			Realm: name,
+func NewBasicAuthenticationMiddleware(realm string, provider CredentialsProvider, wrappers ...RequestWrapper) *BasicAuthenticationMiddleware {
+	return &BasicAuthenticationMiddleware{
+		realm:    realm,
+		provider: provider,
+		wrappers: wrappers,
+		basic: &auth.BasicAuth{
+			Realm: realm,
 			Secrets: func(username, real string) string {
-				return providerFunc(username)
+				c := provider(username)
+				if c == nil {
+					return ""
+				}
+				return c.Username
 			},
-		}
+		},
 	}
-	return a
+}
+
+// BearerAuthenticationMiddleware
+type BearerAuthenticationMiddleware struct {
+	jwtVerifier JwtVerifier
+	wrappers    []RequestWrapper
+}
+
+func (bam *BearerAuthenticationMiddleware) Wrap(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authorization := r.Header.Get("Authorization")
+		if bam.jwtVerifier(authorization) {
+			for _, wrapper := range bam.wrappers {
+				r = wrapper(r)
+			}
+			next(w, r)
+			return
+		}
+		WriteError(w, errors.HttpForbidden)
+	}
+}
+
+func NewBearerAuthenticationMiddleware(jwtVerifier JwtVerifier, wrappers ...RequestWrapper) *BearerAuthenticationMiddleware {
+	return &BearerAuthenticationMiddleware{
+		jwtVerifier: jwtVerifier,
+		wrappers:    wrappers,
+	}
 }

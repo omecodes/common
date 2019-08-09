@@ -57,6 +57,8 @@ type (
 		Value string
 	}
 
+	RequestWrapper func(r *http.Request) *http.Request
+
 	HttpMiddleware func(handler http.HandlerFunc) http.HandlerFunc
 )
 
