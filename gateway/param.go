@@ -19,6 +19,7 @@ type GRPC struct {
 }
 
 type Config struct {
+	Name string
 	HTTP *HTTP
 	GRPC *GRPC
 }

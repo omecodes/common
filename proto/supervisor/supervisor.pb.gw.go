@@ -277,15 +277,15 @@ func RegisterSupervisorNodeAPIHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_SupervisorNodeAPI_GetStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "stats", "node"}, ""))
+	pattern_SupervisorNodeAPI_GetStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "stats", "node"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_SupervisorNodeAPI_GetProgramStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "stats", "program", "program_id"}, ""))
+	pattern_SupervisorNodeAPI_GetProgramStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "stats", "program", "program_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_SupervisorNodeAPI_Start_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "program", "start"}, ""))
+	pattern_SupervisorNodeAPI_Start_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "program", "start"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_SupervisorNodeAPI_Restart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "program", "restart", "program_id"}, ""))
+	pattern_SupervisorNodeAPI_Restart_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "program", "restart", "program_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_SupervisorNodeAPI_Stop_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "program", "stop", "program_id"}, ""))
+	pattern_SupervisorNodeAPI_Stop_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "program", "stop", "program_id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

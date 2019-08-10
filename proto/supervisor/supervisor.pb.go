@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -666,6 +668,26 @@ type SupervisorNodeAPIServer interface {
 	Start(context.Context, *StartRequest) (*StartResponse, error)
 	Restart(context.Context, *RestartRequest) (*RestartResponse, error)
 	Stop(context.Context, *StopRequest) (*StopResponse, error)
+}
+
+// UnimplementedSupervisorNodeAPIServer can be embedded to have forward compatible implementations.
+type UnimplementedSupervisorNodeAPIServer struct {
+}
+
+func (*UnimplementedSupervisorNodeAPIServer) GetStats(ctx context.Context, req *GetStatsRequest) (*GetStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStats not implemented")
+}
+func (*UnimplementedSupervisorNodeAPIServer) GetProgramStats(ctx context.Context, req *GetProgramStatsRequest) (*GetProgramStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProgramStats not implemented")
+}
+func (*UnimplementedSupervisorNodeAPIServer) Start(ctx context.Context, req *StartRequest) (*StartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
+}
+func (*UnimplementedSupervisorNodeAPIServer) Restart(ctx context.Context, req *RestartRequest) (*RestartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Restart not implemented")
+}
+func (*UnimplementedSupervisorNodeAPIServer) Stop(ctx context.Context, req *StopRequest) (*StopResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Stop not implemented")
 }
 
 func RegisterSupervisorNodeAPIServer(s *grpc.Server, srv SupervisorNodeAPIServer) {

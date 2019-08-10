@@ -1,0 +1,182 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "auth.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "authpbClaims": {
+      "type": "object",
+      "properties": {
+        "iss": {
+          "type": "string"
+        },
+        "sub": {
+          "type": "string"
+        },
+        "aud": {
+          "type": "string"
+        },
+        "exp": {
+          "type": "string",
+          "format": "int64"
+        },
+        "nbf": {
+          "type": "string",
+          "format": "int64"
+        },
+        "iat": {
+          "type": "string",
+          "format": "int64"
+        },
+        "jti": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "origin": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbCreateCredentialsResponse": {
+      "type": "object",
+      "properties": {
+        "user_taken": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "email_taken": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "authpbCredentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbDeleteTokenResponse": {
+      "type": "object"
+    },
+    "authpbFindTokenResponse": {
+      "type": "object",
+      "properties": {
+        "found": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbFindUserResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "authpbGetAuthorizationCodeResponse": {
+      "type": "object",
+      "properties": {
+        "code_challenge": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbGetOAuthAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "$ref": "#/definitions/authpbToken"
+        }
+      }
+    },
+    "authpbGetResetPasswordEmailTokenResponse": {
+      "type": "object"
+    },
+    "authpbGetTokenResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "$ref": "#/definitions/authpbToken"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "authpbRevokeTokenResponse": {
+      "type": "object"
+    },
+    "authpbSaveTokenResponse": {
+      "type": "object"
+    },
+    "authpbSetPasswordResponse": {
+      "type": "object",
+      "properties": {
+        "already_used": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "authpbToken": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "$ref": "#/definitions/authpbTokenHeader"
+        },
+        "claims": {
+          "$ref": "#/definitions/authpbClaims"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbTokenHeader": {
+      "type": "object",
+      "properties": {
+        "typ": {
+          "type": "string"
+        },
+        "alg": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

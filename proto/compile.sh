@@ -4,6 +4,10 @@ cd attributes
 ./compile.sh
 cd ..
 
+cd auth
+./compile.sh
+cd ..
+
 cd authority
 ./compile.sh
 cd ..

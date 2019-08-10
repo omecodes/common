@@ -53,21 +53,19 @@ func (g *Gateway) Start() error {
 }
 
 func (g *Gateway) Stop() {
-	g.gs.GracefulStop()
-	if err := g.listenerGRPC.Close(); err != nil {
-		log.Println("stopped grpc listener with error:", err)
-	}
-
-	ctx := context.Background()
-	if err := g.hs.Shutdown(ctx); err != nil {
-		log.Println("stopped grpc listener with error:", err)
-	}
-
-	if err := g.listenerHTTP.Close(); err != nil {
-		log.Println("stopped http listener with error:", err)
-	}
 
 	g.running = false
+
+	if g.gs != nil {
+		g.gs.GracefulStop()
+		_ = g.listenerGRPC.Close()
+	}
+
+	if g.hs != nil {
+		ctx := context.Background()
+		_ = g.hs.Shutdown(ctx)
+		_ = g.listenerHTTP.Close()
+	}
 }
 
 func (g *Gateway) RunningNodes() []*registrypb.Node {
@@ -125,7 +123,7 @@ func (g *Gateway) listen() (err error) {
 }
 
 func (g *Gateway) startGRPC() {
-	log.Printf("starting gRPC server at %s", g.config.GRPC.Address)
+	log.Printf("starting %s.gRPC at %s", g.config.Name, g.config.GRPC.Address)
 
 	g.gs = grpc.NewServer()
 	g.config.GRPC.RegisterHandlerFunc(g.gs)
@@ -135,7 +133,7 @@ func (g *Gateway) startGRPC() {
 }
 
 func (g *Gateway) startHTTP() {
-	log.Printf("starting HTTP server at %s", g.config.HTTP.Address)
+	log.Printf("starting %s.HTTP at %s", g.config.Name, g.config.HTTP.Address)
 
 	ctx := context.Background()
 	endpoint := flag.String("grpc-server-endpoint", g.config.GRPC.Address, "gRPC server endpoint")

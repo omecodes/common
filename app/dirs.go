@@ -17,8 +17,8 @@ func (d *ConfDir) Path() string {
 	return d.path
 }
 
-func GetDir(vendor, appName string) *ConfDir {
-	dirs := configdir.New(vendor, appName)
+func getDir() *ConfDir {
+	dirs := configdir.New(Vendor, Name)
 	appData := dirs.QueryFolders(configdir.Global)[0]
 	return &ConfDir{appData.Path}
 }

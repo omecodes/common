@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package authpb;
+
+enum TokenPurpose {
+    AUTHENTICATION = 0;
+    RESOURCES_ACCESS = 1;
+    VALIDATION = 2;
+}
+
+enum TokenState {
+    VALID = 0;
+    NOT_VALID = 1;
+    EXPIRED = 2;
+    REVOKED = 3;
+    NOT_SIGNED = 4;
+    NOT_EFFECTIVE = 5;
+}
+
+message TokenHeader {
+    string typ = 1;
+    string alg = 2;
+}
+
+message Claims {
+    string iss = 1;
+    string sub = 2;
+    string aud = 3;
+    int64 exp = 4;
+    int64 nbf = 5;
+    int64 iat = 6;
+    string jti = 7;
+    string version = 8; // string version
+    repeated string scope = 9; // scope of the token
+    string origin = 10; // location the token was requested from
+    string data = 11;
+}
+
+message Token {
+    TokenHeader header = 1;
+    Claims claims = 2;
+    string signature = 3;
+}
+
+message Credentials  {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message TokenEvent {
+    string jti = 1;
+    TokenState state = 2;
+}
+
+service TokenStoreService {
+    rpc SaveToken(SaveTokenRequest) returns (SaveTokenResponse);
+    rpc FindToken(FindTokenRequest) returns (FindTokenResponse);
+    rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse);
+}
+
+message SaveTokenRequest {
+    Token token = 1;
+}
+message SaveTokenResponse {}
+
+message FindTokenRequest {
+    string jti = 1;
+}
+message FindTokenResponse {
+    string found = 1;
+}
+
+message DeleteTokenRequest {
+    string jti = 1;
+}
+message DeleteTokenResponse {}
+
+service AuthService {
+    rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse);
+    rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
+    rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
+    rpc GetOAuthAccessToken (GetOAuthAccessTokenRequest) returns (GetOAuthAccessTokenResponse);
+    rpc GetEmailValidationToken (GetEmailValidationTokenRequest) returns (GetTokenResponse);
+    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
+    rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);
+    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
+    rpc FindUser (FindUserRequest) returns (FindUserResponse);
+}
+
+message CreateCredentialsRequest {
+    Credentials credentials = 1;
+}
+message CreateCredentialsResponse {
+    bool user_taken = 1;
+    bool email_taken = 2;
+}
+
+message AuthenticateRequest {
+    string subject = 1;
+    string password = 2;
+}
+message GetTokenResponse {
+    Token token = 1;
+    uint32 code = 2;
+}
+
+message GetAuthorizationCodeRequest {
+    string client_id = 1;
+    repeated string scope = 2;
+    string code_verifier = 3;
+    string code_verifier_method = 4;
+}
+message GetAuthorizationCodeResponse {
+    string code_challenge = 1;
+}
+
+message GetOAuthAccessTokenRequest {
+    string client_id = 1;
+    bytes code = 2;
+    string state = 3;
+    string code_verifier = 4;
+    repeated string scope = 5;
+}
+message GetOAuthAccessTokenResponse {
+    Token token = 1;
+}
+
+message GetEmailValidationTokenRequest {
+    string email = 1;
+    string user = 2;
+}
+
+message RevokeTokenRequest {
+    Token token = 1;
+}
+message RevokeTokenResponse {
+}
+
+message GetResetPasswordEmailTokenRequest {
+    string email = 1;
+    string callback_url = 2;
+}
+message GetResetPasswordEmailTokenResponse {
+}
+
+message SetPasswordRequest {
+    string user = 1;
+    string email = 2;
+    string old_password = 3;
+    string new_password = 4;
+}
+message SetPasswordResponse {
+    bool already_used = 1;
+}
+
+message FindUserRequest {
+    string subject = 1;
+}
+message FindUserResponse {
+    bool exists = 1;
+}

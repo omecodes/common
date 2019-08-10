@@ -138,8 +138,7 @@ func Create(c conf.Map) error {
 			return err
 		}
 		defer db.Close()
-
-		_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", c["name"]))
+		_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c["name"]))
 		return err
 	}
 	return nil
