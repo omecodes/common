@@ -412,46 +412,8 @@ func (m *TokenEvent) GetState() TokenState {
 	return TokenState_VALID
 }
 
-type SaveTokenRequest struct {
-	Token                *Token   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SaveTokenRequest) Reset()         { *m = SaveTokenRequest{} }
-func (m *SaveTokenRequest) String() string { return proto.CompactTextString(m) }
-func (*SaveTokenRequest) ProtoMessage()    {}
-func (*SaveTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{5}
-}
-
-func (m *SaveTokenRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SaveTokenRequest.Unmarshal(m, b)
-}
-func (m *SaveTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SaveTokenRequest.Marshal(b, m, deterministic)
-}
-func (m *SaveTokenRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SaveTokenRequest.Merge(m, src)
-}
-func (m *SaveTokenRequest) XXX_Size() int {
-	return xxx_messageInfo_SaveTokenRequest.Size(m)
-}
-func (m *SaveTokenRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SaveTokenRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SaveTokenRequest proto.InternalMessageInfo
-
-func (m *SaveTokenRequest) GetToken() *Token {
-	if m != nil {
-		return m.Token
-	}
-	return nil
-}
-
 type SaveTokenResponse struct {
+	Count                uint32   `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -461,7 +423,7 @@ func (m *SaveTokenResponse) Reset()         { *m = SaveTokenResponse{} }
 func (m *SaveTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*SaveTokenResponse) ProtoMessage()    {}
 func (*SaveTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{6}
+	return fileDescriptor_8bbd6f3875b0e874, []int{5}
 }
 
 func (m *SaveTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -482,6 +444,13 @@ func (m *SaveTokenResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SaveTokenResponse proto.InternalMessageInfo
 
+func (m *SaveTokenResponse) GetCount() uint32 {
+	if m != nil {
+		return m.Count
+	}
+	return 0
+}
+
 type FindTokenRequest struct {
 	Jti                  string   `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -493,7 +462,7 @@ func (m *FindTokenRequest) Reset()         { *m = FindTokenRequest{} }
 func (m *FindTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*FindTokenRequest) ProtoMessage()    {}
 func (*FindTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{7}
+	return fileDescriptor_8bbd6f3875b0e874, []int{6}
 }
 
 func (m *FindTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -532,7 +501,7 @@ func (m *FindTokenResponse) Reset()         { *m = FindTokenResponse{} }
 func (m *FindTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*FindTokenResponse) ProtoMessage()    {}
 func (*FindTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{8}
+	return fileDescriptor_8bbd6f3875b0e874, []int{7}
 }
 
 func (m *FindTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -571,7 +540,7 @@ func (m *DeleteTokenRequest) Reset()         { *m = DeleteTokenRequest{} }
 func (m *DeleteTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteTokenRequest) ProtoMessage()    {}
 func (*DeleteTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{9}
+	return fileDescriptor_8bbd6f3875b0e874, []int{8}
 }
 
 func (m *DeleteTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -600,6 +569,7 @@ func (m *DeleteTokenRequest) GetJti() string {
 }
 
 type DeleteTokenResponse struct {
+	Count                uint32   `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -609,7 +579,7 @@ func (m *DeleteTokenResponse) Reset()         { *m = DeleteTokenResponse{} }
 func (m *DeleteTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteTokenResponse) ProtoMessage()    {}
 func (*DeleteTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{10}
+	return fileDescriptor_8bbd6f3875b0e874, []int{9}
 }
 
 func (m *DeleteTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -630,6 +600,13 @@ func (m *DeleteTokenResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeleteTokenResponse proto.InternalMessageInfo
 
+func (m *DeleteTokenResponse) GetCount() uint32 {
+	if m != nil {
+		return m.Count
+	}
+	return 0
+}
+
 type CreateCredentialsRequest struct {
 	Credentials          *Credentials `protobuf:"bytes,1,opt,name=credentials,proto3" json:"credentials,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
@@ -641,7 +618,7 @@ func (m *CreateCredentialsRequest) Reset()         { *m = CreateCredentialsReque
 func (m *CreateCredentialsRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateCredentialsRequest) ProtoMessage()    {}
 func (*CreateCredentialsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{11}
+	return fileDescriptor_8bbd6f3875b0e874, []int{10}
 }
 
 func (m *CreateCredentialsRequest) XXX_Unmarshal(b []byte) error {
@@ -681,7 +658,7 @@ func (m *CreateCredentialsResponse) Reset()         { *m = CreateCredentialsResp
 func (m *CreateCredentialsResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateCredentialsResponse) ProtoMessage()    {}
 func (*CreateCredentialsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{12}
+	return fileDescriptor_8bbd6f3875b0e874, []int{11}
 }
 
 func (m *CreateCredentialsResponse) XXX_Unmarshal(b []byte) error {
@@ -728,7 +705,7 @@ func (m *AuthenticateRequest) Reset()         { *m = AuthenticateRequest{} }
 func (m *AuthenticateRequest) String() string { return proto.CompactTextString(m) }
 func (*AuthenticateRequest) ProtoMessage()    {}
 func (*AuthenticateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{13}
+	return fileDescriptor_8bbd6f3875b0e874, []int{12}
 }
 
 func (m *AuthenticateRequest) XXX_Unmarshal(b []byte) error {
@@ -775,7 +752,7 @@ func (m *GetTokenResponse) Reset()         { *m = GetTokenResponse{} }
 func (m *GetTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetTokenResponse) ProtoMessage()    {}
 func (*GetTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{14}
+	return fileDescriptor_8bbd6f3875b0e874, []int{13}
 }
 
 func (m *GetTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -824,7 +801,7 @@ func (m *GetAuthorizationCodeRequest) Reset()         { *m = GetAuthorizationCod
 func (m *GetAuthorizationCodeRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAuthorizationCodeRequest) ProtoMessage()    {}
 func (*GetAuthorizationCodeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{15}
+	return fileDescriptor_8bbd6f3875b0e874, []int{14}
 }
 
 func (m *GetAuthorizationCodeRequest) XXX_Unmarshal(b []byte) error {
@@ -884,7 +861,7 @@ func (m *GetAuthorizationCodeResponse) Reset()         { *m = GetAuthorizationCo
 func (m *GetAuthorizationCodeResponse) String() string { return proto.CompactTextString(m) }
 func (*GetAuthorizationCodeResponse) ProtoMessage()    {}
 func (*GetAuthorizationCodeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{16}
+	return fileDescriptor_8bbd6f3875b0e874, []int{15}
 }
 
 func (m *GetAuthorizationCodeResponse) XXX_Unmarshal(b []byte) error {
@@ -927,7 +904,7 @@ func (m *GetOAuthAccessTokenRequest) Reset()         { *m = GetOAuthAccessTokenR
 func (m *GetOAuthAccessTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*GetOAuthAccessTokenRequest) ProtoMessage()    {}
 func (*GetOAuthAccessTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{17}
+	return fileDescriptor_8bbd6f3875b0e874, []int{16}
 }
 
 func (m *GetOAuthAccessTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -994,7 +971,7 @@ func (m *GetOAuthAccessTokenResponse) Reset()         { *m = GetOAuthAccessToken
 func (m *GetOAuthAccessTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetOAuthAccessTokenResponse) ProtoMessage()    {}
 func (*GetOAuthAccessTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{18}
+	return fileDescriptor_8bbd6f3875b0e874, []int{17}
 }
 
 func (m *GetOAuthAccessTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1034,7 +1011,7 @@ func (m *GetEmailValidationTokenRequest) Reset()         { *m = GetEmailValidati
 func (m *GetEmailValidationTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*GetEmailValidationTokenRequest) ProtoMessage()    {}
 func (*GetEmailValidationTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{19}
+	return fileDescriptor_8bbd6f3875b0e874, []int{18}
 }
 
 func (m *GetEmailValidationTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1080,7 +1057,7 @@ func (m *RevokeTokenRequest) Reset()         { *m = RevokeTokenRequest{} }
 func (m *RevokeTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*RevokeTokenRequest) ProtoMessage()    {}
 func (*RevokeTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{20}
+	return fileDescriptor_8bbd6f3875b0e874, []int{19}
 }
 
 func (m *RevokeTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1118,7 +1095,7 @@ func (m *RevokeTokenResponse) Reset()         { *m = RevokeTokenResponse{} }
 func (m *RevokeTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*RevokeTokenResponse) ProtoMessage()    {}
 func (*RevokeTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{21}
+	return fileDescriptor_8bbd6f3875b0e874, []int{20}
 }
 
 func (m *RevokeTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1151,7 +1128,7 @@ func (m *GetResetPasswordEmailTokenRequest) Reset()         { *m = GetResetPassw
 func (m *GetResetPasswordEmailTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*GetResetPasswordEmailTokenRequest) ProtoMessage()    {}
 func (*GetResetPasswordEmailTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{22}
+	return fileDescriptor_8bbd6f3875b0e874, []int{21}
 }
 
 func (m *GetResetPasswordEmailTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1196,7 +1173,7 @@ func (m *GetResetPasswordEmailTokenResponse) Reset()         { *m = GetResetPass
 func (m *GetResetPasswordEmailTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetResetPasswordEmailTokenResponse) ProtoMessage()    {}
 func (*GetResetPasswordEmailTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{23}
+	return fileDescriptor_8bbd6f3875b0e874, []int{22}
 }
 
 func (m *GetResetPasswordEmailTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1231,7 +1208,7 @@ func (m *SetPasswordRequest) Reset()         { *m = SetPasswordRequest{} }
 func (m *SetPasswordRequest) String() string { return proto.CompactTextString(m) }
 func (*SetPasswordRequest) ProtoMessage()    {}
 func (*SetPasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{24}
+	return fileDescriptor_8bbd6f3875b0e874, []int{23}
 }
 
 func (m *SetPasswordRequest) XXX_Unmarshal(b []byte) error {
@@ -1291,7 +1268,7 @@ func (m *SetPasswordResponse) Reset()         { *m = SetPasswordResponse{} }
 func (m *SetPasswordResponse) String() string { return proto.CompactTextString(m) }
 func (*SetPasswordResponse) ProtoMessage()    {}
 func (*SetPasswordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{25}
+	return fileDescriptor_8bbd6f3875b0e874, []int{24}
 }
 
 func (m *SetPasswordResponse) XXX_Unmarshal(b []byte) error {
@@ -1330,7 +1307,7 @@ func (m *FindUserRequest) Reset()         { *m = FindUserRequest{} }
 func (m *FindUserRequest) String() string { return proto.CompactTextString(m) }
 func (*FindUserRequest) ProtoMessage()    {}
 func (*FindUserRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{26}
+	return fileDescriptor_8bbd6f3875b0e874, []int{25}
 }
 
 func (m *FindUserRequest) XXX_Unmarshal(b []byte) error {
@@ -1369,7 +1346,7 @@ func (m *FindUserResponse) Reset()         { *m = FindUserResponse{} }
 func (m *FindUserResponse) String() string { return proto.CompactTextString(m) }
 func (*FindUserResponse) ProtoMessage()    {}
 func (*FindUserResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{27}
+	return fileDescriptor_8bbd6f3875b0e874, []int{26}
 }
 
 func (m *FindUserResponse) XXX_Unmarshal(b []byte) error {
@@ -1405,7 +1382,6 @@ func init() {
 	proto.RegisterType((*Token)(nil), "authpb.Token")
 	proto.RegisterType((*Credentials)(nil), "authpb.Credentials")
 	proto.RegisterType((*TokenEvent)(nil), "authpb.TokenEvent")
-	proto.RegisterType((*SaveTokenRequest)(nil), "authpb.SaveTokenRequest")
 	proto.RegisterType((*SaveTokenResponse)(nil), "authpb.SaveTokenResponse")
 	proto.RegisterType((*FindTokenRequest)(nil), "authpb.FindTokenRequest")
 	proto.RegisterType((*FindTokenResponse)(nil), "authpb.FindTokenResponse")
@@ -1433,86 +1409,85 @@ func init() {
 func init() { proto.RegisterFile("auth.proto", fileDescriptor_8bbd6f3875b0e874) }
 
 var fileDescriptor_8bbd6f3875b0e874 = []byte{
-	// 1262 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x57, 0x6d, 0x73, 0xdb, 0x44,
-	0x10, 0xae, 0x92, 0xd8, 0x89, 0x57, 0x4e, 0x50, 0xce, 0x69, 0xab, 0xba, 0x05, 0x12, 0xa5, 0x74,
-	0xd2, 0x74, 0xa6, 0x03, 0x61, 0x18, 0xe0, 0x03, 0x33, 0x0d, 0x8e, 0x92, 0x98, 0x42, 0x52, 0x64,
-	0x27, 0xd3, 0x99, 0x32, 0x78, 0xce, 0xd2, 0x26, 0x51, 0xab, 0x48, 0x46, 0x77, 0x72, 0x5f, 0x3e,
-	0xf3, 0x0b, 0xf8, 0x01, 0x7c, 0xe5, 0x67, 0x31, 0xc3, 0x2f, 0x61, 0xee, 0x45, 0x96, 0x1c, 0x3b,
-	0x6e, 0xe1, 0xdb, 0xed, 0xee, 0x73, 0xab, 0xbd, 0xe7, 0xf6, 0x9e, 0x1d, 0x01, 0xd0, 0x8c, 0x5f,
-	0x3c, 0x1e, 0xa4, 0x09, 0x4f, 0x48, 0x55, 0xac, 0x07, 0x7d, 0xe7, 0x0b, 0x30, 0xbb, 0xc9, 0x2b,
-	0x8c, 0x0f, 0x91, 0x06, 0x98, 0x12, 0x0b, 0xe6, 0xf9, 0xdb, 0x81, 0x6d, 0xac, 0x1b, 0x5b, 0x35,
-	0x4f, 0x2c, 0x85, 0x87, 0x46, 0xe7, 0xf6, 0x9c, 0xf2, 0xd0, 0xe8, 0xdc, 0xf9, 0xc7, 0x80, 0x6a,
-	0x2b, 0xa2, 0xe1, 0x25, 0x13, 0xc1, 0x90, 0xb1, 0x1c, 0x1e, 0x32, 0xe9, 0x61, 0x59, 0x3f, 0x87,
-	0xb3, 0xac, 0x2f, 0x13, 0x64, 0x81, 0x3d, 0xaf, 0x13, 0x64, 0x81, 0xf0, 0xe0, 0x9b, 0x81, 0xbd,
-	0xb0, 0x6e, 0x6c, 0xcd, 0x7b, 0x62, 0x29, 0x3c, 0x71, 0xff, 0xcc, 0xae, 0x28, 0x4f, 0xdc, 0x3f,
-	0x93, 0x99, 0x29, 0xb7, 0xab, 0xca, 0x13, 0x52, 0x2e, 0x3c, 0x2f, 0x79, 0x68, 0x2f, 0xaa, 0x3c,
-	0x2f, 0x79, 0x48, 0x6c, 0x58, 0x1c, 0x62, 0xca, 0xc2, 0x24, 0xb6, 0x97, 0xa4, 0x37, 0x37, 0xc9,
-	0x1a, 0x54, 0x98, 0x9f, 0x0c, 0xd0, 0xae, 0xad, 0xcf, 0x6f, 0xd5, 0x3c, 0x65, 0x90, 0x5b, 0x50,
-	0x4d, 0xd2, 0xf0, 0x3c, 0x8c, 0x6d, 0x90, 0x70, 0x6d, 0x11, 0x02, 0x0b, 0x01, 0xe5, 0xd4, 0x36,
-	0xa5, 0x57, 0xae, 0x9d, 0x77, 0x50, 0x91, 0xbc, 0x90, 0x47, 0x50, 0xbd, 0x90, 0xdc, 0xc8, 0x53,
-	0x9a, 0x3b, 0x8d, 0xc7, 0x8a, 0xb9, 0xc7, 0x25, 0xda, 0x3c, 0x0d, 0x21, 0x0f, 0xa0, 0xea, 0x4b,
-	0x66, 0x24, 0x01, 0xe6, 0xce, 0x4a, 0x0e, 0x56, 0x7c, 0x79, 0x3a, 0x4a, 0xee, 0x41, 0x8d, 0x85,
-	0xe7, 0x31, 0xe5, 0x59, 0x8a, 0x9a, 0x99, 0xc2, 0xe1, 0xbc, 0x00, 0xb3, 0x95, 0x62, 0x80, 0x31,
-	0x0f, 0x69, 0xc4, 0x48, 0x13, 0x96, 0x32, 0x86, 0x69, 0x4c, 0x2f, 0x51, 0x33, 0x3d, 0xb2, 0xc5,
-	0x41, 0xf1, 0x92, 0x86, 0x91, 0x26, 0x5c, 0x19, 0x62, 0xc7, 0x80, 0x32, 0xf6, 0x3a, 0x49, 0x73,
-	0xde, 0x47, 0xb6, 0x73, 0x08, 0x20, 0x2b, 0x77, 0x87, 0x18, 0x8f, 0x48, 0x35, 0x0a, 0x52, 0xb7,
-	0xa0, 0xc2, 0x38, 0xe5, 0x28, 0x33, 0xae, 0xec, 0x90, 0xb1, 0xe3, 0x76, 0x44, 0xc4, 0x53, 0x00,
-	0xe7, 0x6b, 0xb0, 0x3a, 0x74, 0x88, 0x32, 0xe0, 0xe1, 0x6f, 0x19, 0x32, 0x4e, 0x36, 0xa1, 0xc2,
-	0x85, 0xad, 0xc9, 0x5a, 0x1e, 0xdb, 0xed, 0xa9, 0x98, 0xd3, 0x80, 0xd5, 0xd2, 0x46, 0x36, 0x48,
-	0x62, 0x86, 0xce, 0x7d, 0xb0, 0xf6, 0xc3, 0x38, 0x18, 0xcb, 0x36, 0x51, 0x9d, 0xf3, 0x10, 0x56,
-	0x4b, 0x28, 0xb5, 0x55, 0x90, 0x70, 0x96, 0x64, 0x71, 0xa0, 0x81, 0xca, 0x70, 0x1e, 0x00, 0xd9,
-	0xc3, 0x08, 0x39, 0xbe, 0x27, 0xe5, 0x4d, 0x68, 0x8c, 0xe1, 0x74, 0x3d, 0x3f, 0x83, 0xdd, 0x4a,
-	0x91, 0x72, 0x2c, 0x5d, 0x45, 0x9e, 0xe4, 0x2b, 0x30, 0xfd, 0xc2, 0x7b, 0xb5, 0x31, 0xca, 0x1b,
-	0xca, 0x38, 0xe7, 0x05, 0xdc, 0x99, 0x92, 0x52, 0x1f, 0xe2, 0x63, 0x00, 0x71, 0xab, 0x3d, 0x4e,
-	0x73, 0xfa, 0x96, 0xbc, 0x9a, 0xf0, 0x74, 0x85, 0x83, 0x7c, 0x0a, 0xa6, 0xbc, 0x5b, 0x1d, 0x9f,
-	0x93, 0x71, 0x90, 0x2e, 0x09, 0x70, 0x9e, 0x42, 0x63, 0x37, 0xe3, 0x17, 0x22, 0xad, 0x2f, 0x2e,
-	0x49, 0x97, 0x6a, 0xc3, 0x22, 0xcb, 0xfa, 0x2f, 0xd1, 0xe7, 0xfa, 0xcc, 0xb9, 0x39, 0xd6, 0x24,
-	0x73, 0x57, 0x9a, 0xe4, 0x29, 0x58, 0x07, 0xc8, 0xc7, 0x59, 0xfe, 0x90, 0xab, 0x15, 0x4f, 0xc9,
-	0x4f, 0x02, 0xd5, 0x3c, 0xcb, 0x9e, 0x5c, 0x3b, 0x7f, 0x19, 0x70, 0xf7, 0x00, 0xb9, 0xa8, 0x2e,
-	0x49, 0xc3, 0x77, 0x94, 0x87, 0x49, 0xdc, 0x4a, 0x82, 0x51, 0x89, 0x77, 0xa1, 0xe6, 0x47, 0x21,
-	0xc6, 0xbc, 0x17, 0xe6, 0x57, 0xb8, 0xa4, 0x1c, 0xed, 0xa0, 0x78, 0xc9, 0x73, 0xe5, 0x97, 0xbc,
-	0x09, 0xcb, 0x22, 0x75, 0x6f, 0x88, 0x69, 0x78, 0x16, 0x62, 0xaa, 0xbb, 0xbc, 0x2e, 0x9c, 0xa7,
-	0xda, 0x47, 0x3e, 0x87, 0xb5, 0x31, 0x50, 0xef, 0x12, 0xf9, 0x45, 0x12, 0x48, 0xdd, 0xa9, 0x79,
-	0xa4, 0x8c, 0xfd, 0x49, 0x46, 0x1c, 0x17, 0xee, 0x4d, 0x2f, 0x54, 0x53, 0xf0, 0x19, 0xac, 0xc8,
-	0x8c, 0xfe, 0x05, 0x8d, 0x22, 0x8c, 0xcf, 0xf3, 0xf7, 0x28, 0x8b, 0x69, 0xe5, 0x4e, 0xe7, 0x4f,
-	0x03, 0x9a, 0x07, 0xc8, 0x8f, 0x45, 0xa2, 0x5d, 0xdf, 0x47, 0xc6, 0xc6, 0x5a, 0x70, 0xe6, 0x79,
-	0xcb, 0x04, 0xd6, 0x15, 0x81, 0x92, 0x03, 0xf9, 0x24, 0xd5, 0x29, 0x95, 0x31, 0xc9, 0xc1, 0xc2,
-	0x14, 0x0e, 0x46, 0xf4, 0x55, 0x4a, 0xf4, 0x39, 0xdf, 0xcb, 0x0b, 0x99, 0xac, 0xef, 0x3f, 0xdc,
-	0xb4, 0xf3, 0x03, 0x7c, 0x72, 0x80, 0xdc, 0x15, 0x0d, 0x78, 0x4a, 0xa3, 0x30, 0x90, 0x6c, 0x8d,
-	0x9d, 0x73, 0xa4, 0x4d, 0x46, 0x59, 0x9b, 0x08, 0x2c, 0x88, 0xae, 0xd6, 0x2d, 0x27, 0xd7, 0xce,
-	0xb7, 0x40, 0x3c, 0x1c, 0x26, 0xaf, 0xfe, 0x87, 0x96, 0xdc, 0x84, 0xc6, 0xd8, 0x56, 0xfd, 0x7a,
-	0x7f, 0x81, 0x8d, 0x03, 0xe4, 0x1e, 0x32, 0xe4, 0xcf, 0x74, 0x53, 0xcb, 0x52, 0x3f, 0xa0, 0xc0,
-	0x0d, 0xa8, 0xfb, 0x34, 0x8a, 0xfa, 0xd4, 0x7f, 0xd5, 0xcb, 0xd2, 0x5c, 0x59, 0xcd, 0xdc, 0x77,
-	0x92, 0x46, 0xce, 0x7d, 0x70, 0x66, 0x65, 0xd7, 0x35, 0xfc, 0x6e, 0x00, 0xe9, 0x14, 0x88, 0xfc,
-	0xab, 0x39, 0x01, 0x46, 0x41, 0xc0, 0x35, 0x32, 0xbe, 0x01, 0xf5, 0x24, 0x0a, 0x7a, 0x57, 0xa4,
-	0xdc, 0x4c, 0xa2, 0x20, 0xcf, 0x29, 0x20, 0x31, 0xbe, 0x2e, 0x20, 0xaa, 0x07, 0xcc, 0x18, 0x5f,
-	0xe7, 0x10, 0xe7, 0x1b, 0x68, 0x8c, 0x55, 0xa1, 0x2f, 0x79, 0x03, 0xea, 0x34, 0x4a, 0x91, 0x06,
-	0x6f, 0x7b, 0x19, 0xc3, 0x40, 0x2b, 0x8e, 0xa9, 0x7d, 0x27, 0x0c, 0x03, 0xe7, 0x11, 0x7c, 0x24,
-	0xc4, 0xf6, 0x84, 0x61, 0xfa, 0x5e, 0x39, 0x71, 0xb6, 0x95, 0x7e, 0x2b, 0xb0, 0xfe, 0xc6, 0x2d,
-	0xa8, 0xe2, 0x9b, 0x90, 0x71, 0xa6, 0xb3, 0x6b, 0x6b, 0xfb, 0x10, 0xea, 0x92, 0xaa, 0x67, 0x59,
-	0x3a, 0x48, 0x18, 0x12, 0x02, 0x2b, 0xbb, 0x27, 0xdd, 0x43, 0xf7, 0xa8, 0xdb, 0x6e, 0xed, 0x76,
-	0xdb, 0xc7, 0x47, 0xd6, 0x0d, 0xb2, 0x06, 0x96, 0xe7, 0x76, 0x8e, 0x4f, 0xbc, 0x96, 0xdb, 0xe9,
-	0xed, 0xb6, 0x5a, 0x6e, 0xa7, 0x63, 0x19, 0x64, 0x05, 0xe0, 0x74, 0xf7, 0xc7, 0xf6, 0x9e, 0x42,
-	0xcd, 0x6d, 0xfb, 0x7a, 0x9a, 0xc9, 0xc1, 0x44, 0x6a, 0x50, 0x91, 0x51, 0xeb, 0x06, 0x59, 0x86,
-	0xda, 0xd1, 0x71, 0xb7, 0xa7, 0x4c, 0x83, 0x98, 0xb0, 0xe8, 0x3e, 0x7f, 0xd6, 0xf6, 0xdc, 0x3d,
-	0x6b, 0x4e, 0x18, 0x9e, 0x7b, 0x7a, 0xfc, 0xd4, 0xdd, 0xb3, 0xe6, 0x45, 0x46, 0x01, 0xec, 0xb4,
-	0x0f, 0x8e, 0xdc, 0x3d, 0x6b, 0x81, 0xac, 0xc2, 0xb2, 0xb0, 0xdd, 0xfd, 0x7d, 0xb7, 0xd5, 0x6d,
-	0x9f, 0xba, 0x56, 0x65, 0xe7, 0x6f, 0x03, 0x56, 0xf5, 0x57, 0x92, 0x14, 0x3b, 0x98, 0x0e, 0x43,
-	0x1f, 0xc9, 0x13, 0xa8, 0x8d, 0xa6, 0x18, 0xb1, 0xf3, 0xe6, 0xbc, 0x3a, 0x11, 0x9b, 0x77, 0xa6,
-	0x44, 0x34, 0x3d, 0x4f, 0xa0, 0x36, 0x1a, 0x66, 0x45, 0x86, 0xab, 0x53, 0xb0, 0xc8, 0x30, 0x39,
-	0xf9, 0xf6, 0xc1, 0x2c, 0xcd, 0x2e, 0xd2, 0xcc, 0x91, 0x93, 0x83, 0xaf, 0x79, 0x77, 0x6a, 0x4c,
-	0xe5, 0xd9, 0xf9, 0xa3, 0x0a, 0xa6, 0x50, 0x83, 0xfc, 0x6c, 0xcf, 0x61, 0x75, 0x62, 0x52, 0x91,
-	0xf5, 0xd2, 0x80, 0x9b, 0x3a, 0x17, 0x9b, 0x1b, 0x33, 0x10, 0xba, 0x62, 0x17, 0xea, 0xe5, 0x31,
-	0x45, 0x46, 0x65, 0x4d, 0x19, 0x5e, 0xcd, 0x11, 0x27, 0x13, 0xc3, 0x88, 0xc2, 0xda, 0x34, 0xa5,
-	0x26, 0x9b, 0xa5, 0x1d, 0xd7, 0x0d, 0x9c, 0xe6, 0xfd, 0xd9, 0x20, 0xfd, 0x89, 0x5f, 0xa1, 0x31,
-	0x45, 0x24, 0x89, 0x53, 0xda, 0x7c, 0x8d, 0xc2, 0x37, 0x37, 0x67, 0x62, 0x74, 0xfe, 0x17, 0x70,
-	0xfb, 0x1a, 0x01, 0x25, 0x0f, 0x4a, 0xfb, 0x67, 0x28, 0xec, 0x0c, 0x7e, 0xf6, 0xc1, 0x2c, 0xc9,
-	0x62, 0xd1, 0x18, 0x93, 0x32, 0x5b, 0x34, 0xc6, 0x14, 0x1d, 0x25, 0x4c, 0x4e, 0xb2, 0x6b, 0x94,
-	0x8e, 0x3c, 0x2c, 0x7d, 0x7f, 0xb6, 0xd6, 0x36, 0xb7, 0x3f, 0x04, 0x5a, 0x14, 0x5f, 0x52, 0xac,
-	0xa2, 0xf8, 0x49, 0x31, 0x2d, 0x8a, 0x9f, 0x26, 0x71, 0xdf, 0xc1, 0x52, 0x2e, 0x49, 0xe4, 0x76,
-	0xf9, 0x11, 0x95, 0x14, 0xad, 0x69, 0x4f, 0x06, 0xd4, 0xf6, 0x7e, 0x55, 0xfe, 0x29, 0x7d, 0xf9,
-	0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xbf, 0xfa, 0x1c, 0xcf, 0x37, 0x0d, 0x00, 0x00,
+	// 1247 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0x5f, 0x53, 0xdb, 0x46,
+	0x10, 0x8f, 0x00, 0x1b, 0xbc, 0x32, 0xd4, 0x1c, 0x34, 0x55, 0x9c, 0xb4, 0x05, 0x91, 0x66, 0x08,
+	0x99, 0xc9, 0xb4, 0x74, 0x3a, 0x6d, 0xdf, 0x4a, 0x8d, 0x30, 0x6e, 0x1a, 0x48, 0x65, 0xc3, 0x64,
+	0x26, 0x9d, 0x7a, 0xce, 0xd2, 0x02, 0x0a, 0x42, 0x72, 0x75, 0x27, 0xe7, 0xcf, 0x73, 0x3f, 0x47,
+	0x5f, 0xfb, 0x7d, 0xfa, 0xd4, 0xe7, 0x7e, 0x92, 0xce, 0xfd, 0x91, 0x25, 0x61, 0xe3, 0xd0, 0x37,
+	0xed, 0xde, 0xef, 0x7e, 0xb7, 0xfb, 0xbb, 0xbd, 0xdd, 0x11, 0x00, 0x4d, 0xf9, 0xc5, 0xd3, 0x61,
+	0x12, 0xf3, 0x98, 0x54, 0xc5, 0xf7, 0x70, 0x60, 0x7f, 0x05, 0x66, 0x2f, 0xbe, 0xc4, 0xe8, 0x10,
+	0xa9, 0x8f, 0x09, 0x69, 0xc0, 0x3c, 0x7f, 0x37, 0xb4, 0x8c, 0x0d, 0x63, 0xbb, 0xe6, 0x8a, 0x4f,
+	0xe1, 0xa1, 0xe1, 0xb9, 0x35, 0xa7, 0x3c, 0x34, 0x3c, 0xb7, 0xff, 0x35, 0xa0, 0xda, 0x0a, 0x69,
+	0x70, 0xc5, 0xc4, 0x62, 0xc0, 0x58, 0x06, 0x0f, 0x98, 0xf4, 0xb0, 0x74, 0x90, 0xc1, 0x59, 0x3a,
+	0x90, 0x04, 0xa9, 0x6f, 0xcd, 0x6b, 0x82, 0xd4, 0x17, 0x1e, 0x7c, 0x3b, 0xb4, 0x16, 0x36, 0x8c,
+	0xed, 0x79, 0x57, 0x7c, 0x0a, 0x4f, 0x34, 0x38, 0xb3, 0x2a, 0xca, 0x13, 0x0d, 0xce, 0x24, 0x33,
+	0xe5, 0x56, 0x55, 0x79, 0x02, 0xca, 0x85, 0xe7, 0x35, 0x0f, 0xac, 0x45, 0xc5, 0xf3, 0x9a, 0x07,
+	0xc4, 0x82, 0xc5, 0x11, 0x26, 0x2c, 0x88, 0x23, 0x6b, 0x49, 0x7a, 0x33, 0x93, 0xac, 0x43, 0x85,
+	0x79, 0xf1, 0x10, 0xad, 0xda, 0xc6, 0xfc, 0x76, 0xcd, 0x55, 0x06, 0xb9, 0x0b, 0xd5, 0x38, 0x09,
+	0xce, 0x83, 0xc8, 0x02, 0x09, 0xd7, 0x16, 0x21, 0xb0, 0xe0, 0x53, 0x4e, 0x2d, 0x53, 0x7a, 0xe5,
+	0xb7, 0xfd, 0x1e, 0x2a, 0x52, 0x17, 0xf2, 0x04, 0xaa, 0x17, 0x52, 0x1b, 0x99, 0xa5, 0xb9, 0xbb,
+	0xf6, 0x54, 0x29, 0xf7, 0xb4, 0x20, 0x9b, 0xab, 0x21, 0xe4, 0x11, 0x54, 0x3d, 0xa9, 0x8c, 0x14,
+	0xc0, 0xdc, 0x5d, 0xc9, 0xc0, 0x4a, 0x2f, 0x57, 0xaf, 0x92, 0x07, 0x50, 0x63, 0xc1, 0x79, 0x44,
+	0x79, 0x9a, 0xa0, 0x56, 0x26, 0x77, 0xd8, 0xaf, 0xc0, 0x6c, 0x25, 0xe8, 0x63, 0xc4, 0x03, 0x1a,
+	0x32, 0xd2, 0x84, 0xa5, 0x94, 0x61, 0x12, 0xd1, 0x2b, 0xd4, 0x4a, 0x8f, 0x6d, 0x91, 0x28, 0x5e,
+	0xd1, 0x20, 0xd4, 0x82, 0x2b, 0x43, 0xec, 0x18, 0x52, 0xc6, 0xde, 0xc4, 0x49, 0xa6, 0xfb, 0xd8,
+	0xb6, 0x0f, 0x01, 0x64, 0xe4, 0xce, 0x08, 0xa3, 0xb1, 0xa8, 0x46, 0x2e, 0xea, 0x36, 0x54, 0x18,
+	0xa7, 0x1c, 0x25, 0xe3, 0xca, 0x2e, 0x29, 0xa5, 0xdb, 0x15, 0x2b, 0xae, 0x02, 0xd8, 0x8f, 0x61,
+	0xb5, 0x4b, 0x47, 0x28, 0x17, 0x5c, 0x64, 0xc3, 0x38, 0x62, 0x32, 0x20, 0x2f, 0x4e, 0x23, 0x2e,
+	0x29, 0x97, 0x5d, 0x65, 0xd8, 0x0f, 0xa1, 0x71, 0x10, 0x44, 0xbe, 0x86, 0xfe, 0x9e, 0x22, 0x9b,
+	0x72, 0xb4, 0x20, 0x2c, 0xa0, 0x72, 0xc2, 0xb3, 0x38, 0x8d, 0x7c, 0x0d, 0x54, 0x86, 0xfd, 0x08,
+	0xc8, 0x3e, 0x86, 0xc8, 0xf1, 0x03, 0x94, 0x4f, 0x60, 0xad, 0x84, 0x9b, 0x19, 0xe5, 0x2f, 0x60,
+	0xb5, 0x12, 0xa4, 0x1c, 0x0b, 0xea, 0x67, 0xd4, 0xdf, 0x80, 0xe9, 0xe5, 0xde, 0xeb, 0xb5, 0x50,
+	0xdc, 0x50, 0xc4, 0xd9, 0xaf, 0xe0, 0xde, 0x14, 0x4a, 0x1d, 0xc5, 0xa7, 0x00, 0xe2, 0x22, 0xfb,
+	0x9c, 0x5e, 0x62, 0x24, 0x29, 0x97, 0xdc, 0x9a, 0xf0, 0xf4, 0x84, 0x83, 0x7c, 0x0e, 0xa6, 0xbc,
+	0x4e, 0xbd, 0x3e, 0x27, 0xd7, 0x41, 0xba, 0x24, 0xc0, 0x7e, 0x06, 0x6b, 0x7b, 0x29, 0xbf, 0x10,
+	0xb4, 0x9e, 0xb8, 0x17, 0x1d, 0xaa, 0x05, 0x8b, 0x2c, 0x1d, 0xbc, 0x46, 0x8f, 0x6b, 0x25, 0x32,
+	0xb3, 0x54, 0x17, 0x73, 0xd7, 0xea, 0xe2, 0x19, 0x34, 0xda, 0xc8, 0xcb, 0x32, 0x6d, 0x41, 0x85,
+	0xc7, 0x59, 0x6c, 0xe6, 0xee, 0x72, 0xa9, 0x16, 0x5c, 0xb5, 0x26, 0x5e, 0x8f, 0x17, 0xfb, 0xaa,
+	0x5e, 0x96, 0x5d, 0xf9, 0x6d, 0xff, 0x65, 0xc0, 0xfd, 0x36, 0x72, 0x11, 0x5d, 0x9c, 0x04, 0xef,
+	0x29, 0x0f, 0xe2, 0xa8, 0x15, 0xfb, 0xe3, 0x10, 0xef, 0x43, 0xcd, 0x0b, 0x03, 0x8c, 0x78, 0x3f,
+	0xc8, 0x2e, 0x76, 0x49, 0x39, 0x3a, 0x7e, 0xfe, 0x78, 0xe7, 0x8a, 0x8f, 0x77, 0x0b, 0x96, 0x05,
+	0x75, 0x7f, 0x84, 0x49, 0x70, 0x16, 0x60, 0xa2, 0x0b, 0xbb, 0x2e, 0x9c, 0xa7, 0xda, 0x47, 0xbe,
+	0x84, 0xf5, 0x12, 0xa8, 0x7f, 0x85, 0xfc, 0x22, 0xf6, 0x65, 0xab, 0xa9, 0xb9, 0xa4, 0x88, 0x7d,
+	0x2e, 0x57, 0x6c, 0x07, 0x1e, 0x4c, 0x0f, 0x54, 0x4b, 0xf0, 0x05, 0xac, 0x48, 0x46, 0xef, 0x82,
+	0x86, 0x21, 0x46, 0xe7, 0xd9, 0x13, 0x94, 0xc1, 0xb4, 0x32, 0xa7, 0xfd, 0xa7, 0x01, 0xcd, 0x36,
+	0xf2, 0x63, 0x41, 0xb4, 0xe7, 0x79, 0xc8, 0x58, 0xa9, 0x30, 0x67, 0xe6, 0x5b, 0x14, 0xb0, 0xae,
+	0x04, 0x94, 0x1a, 0xc8, 0x57, 0xa8, 0xb2, 0x54, 0xc6, 0xa4, 0x06, 0x0b, 0x53, 0x34, 0x18, 0xcb,
+	0x57, 0x29, 0xc8, 0x67, 0xff, 0x28, 0x2f, 0x64, 0x32, 0xbe, 0xff, 0x71, 0xd3, 0xf6, 0x4f, 0xf0,
+	0x59, 0x1b, 0xb9, 0x23, 0x0a, 0xf0, 0x94, 0x86, 0x81, 0x2f, 0xd5, 0x2a, 0xe5, 0x39, 0x6e, 0x47,
+	0x46, 0xb1, 0x1d, 0x11, 0x58, 0x10, 0x55, 0xad, 0x4b, 0x4e, 0x7e, 0xdb, 0xdf, 0x03, 0x71, 0x71,
+	0x14, 0x5f, 0x96, 0x1f, 0xf0, 0xad, 0xc2, 0xf8, 0x18, 0xd6, 0x4a, 0x5b, 0x55, 0x0a, 0xf6, 0xaf,
+	0xb0, 0xd9, 0x46, 0xee, 0x22, 0x43, 0xfe, 0x42, 0x17, 0xb5, 0x0c, 0xf5, 0x16, 0x01, 0x6e, 0x42,
+	0xdd, 0xa3, 0x61, 0x38, 0xa0, 0xde, 0x65, 0x3f, 0x4d, 0xb2, 0x66, 0x6a, 0x66, 0xbe, 0x93, 0x24,
+	0xb4, 0x1f, 0x82, 0x3d, 0x8b, 0x5d, 0xc7, 0xf0, 0x87, 0x01, 0xa4, 0x9b, 0x23, 0xb2, 0x53, 0x33,
+	0x01, 0x8c, 0x5c, 0x80, 0x1b, 0x3a, 0xf7, 0x26, 0xd4, 0xe3, 0xd0, 0xef, 0x5f, 0xeb, 0xde, 0x66,
+	0x1c, 0xfa, 0x19, 0xa7, 0x80, 0x44, 0xf8, 0x26, 0x87, 0xa8, 0x1a, 0x30, 0x23, 0x7c, 0x93, 0x41,
+	0xec, 0xef, 0x60, 0xad, 0x14, 0x85, 0xbe, 0xe4, 0x4d, 0xa8, 0xd3, 0x30, 0x41, 0xea, 0xbf, 0xeb,
+	0xa7, 0x0c, 0x7d, 0xdd, 0x71, 0x4c, 0xed, 0x3b, 0x61, 0xe8, 0xdb, 0x4f, 0xe0, 0x23, 0xd1, 0x82,
+	0x4f, 0x18, 0x26, 0x1f, 0x6c, 0x27, 0xf6, 0x8e, 0xea, 0xea, 0x0a, 0xac, 0xcf, 0xb8, 0x0b, 0x55,
+	0x7c, 0x1b, 0x30, 0xce, 0x34, 0xbb, 0xb6, 0x76, 0x0e, 0xa1, 0x2e, 0xa5, 0x7a, 0x91, 0x26, 0xc3,
+	0x98, 0x21, 0x21, 0xb0, 0xb2, 0x77, 0xd2, 0x3b, 0x74, 0x8e, 0x7a, 0x9d, 0xd6, 0x5e, 0xaf, 0x73,
+	0x7c, 0xd4, 0xb8, 0x43, 0xd6, 0xa1, 0xe1, 0x3a, 0xdd, 0xe3, 0x13, 0xb7, 0xe5, 0x74, 0xfb, 0x7b,
+	0xad, 0x96, 0xd3, 0xed, 0x36, 0x0c, 0xb2, 0x02, 0x70, 0xba, 0xf7, 0x73, 0x67, 0x5f, 0xa1, 0xe6,
+	0x76, 0x3c, 0x3d, 0xc0, 0xe4, 0x2c, 0x22, 0x35, 0xa8, 0xc8, 0xd5, 0xc6, 0x1d, 0xb2, 0x0c, 0xb5,
+	0xa3, 0xe3, 0x5e, 0x5f, 0x99, 0x06, 0x31, 0x61, 0xd1, 0x79, 0xf9, 0xa2, 0xe3, 0x3a, 0xfb, 0x8d,
+	0x39, 0x61, 0xb8, 0xce, 0xe9, 0xf1, 0x33, 0x67, 0xbf, 0x31, 0x2f, 0x18, 0x05, 0xb0, 0xdb, 0x69,
+	0x1f, 0x39, 0xfb, 0x8d, 0x05, 0xb2, 0x0a, 0xcb, 0xc2, 0x76, 0x0e, 0x0e, 0x9c, 0x56, 0xaf, 0x73,
+	0xea, 0x34, 0x2a, 0xbb, 0xff, 0x18, 0xb0, 0xaa, 0x4f, 0x89, 0x13, 0xec, 0x62, 0x32, 0x0a, 0x3c,
+	0x24, 0xdf, 0x42, 0x6d, 0x3c, 0xf1, 0x48, 0xb9, 0x38, 0x9b, 0xf7, 0x32, 0x73, 0x62, 0x26, 0x6e,
+	0x1b, 0xe4, 0x07, 0xa8, 0x8d, 0x27, 0x1b, 0xb1, 0x32, 0xe4, 0xf5, 0x91, 0x98, 0x73, 0x4c, 0x8e,
+	0xc1, 0x43, 0x30, 0x0b, 0x83, 0x8c, 0x34, 0x33, 0xe4, 0xe4, 0x14, 0x6c, 0xde, 0x9f, 0xba, 0x96,
+	0xc5, 0xb2, 0xfb, 0x77, 0x05, 0xa0, 0xb3, 0xff, 0x3c, 0xcb, 0xe9, 0x25, 0xac, 0x4e, 0x4c, 0x28,
+	0xb2, 0x51, 0x18, 0x6c, 0x53, 0xe7, 0x61, 0x73, 0x73, 0x06, 0x42, 0x87, 0xec, 0x40, 0xbd, 0x38,
+	0x9e, 0xc8, 0x38, 0xae, 0x29, 0x43, 0xab, 0x39, 0x16, 0x65, 0x62, 0x08, 0x1d, 0x80, 0x59, 0x78,
+	0xee, 0x79, 0xe6, 0x93, 0xed, 0x23, 0xcf, 0x7c, 0x4a, 0x7f, 0x10, 0x3c, 0x85, 0x47, 0x91, 0xf3,
+	0x4c, 0xbe, 0xd7, 0x9c, 0x67, 0xda, 0x2b, 0xa2, 0xb0, 0x3e, 0x6d, 0x62, 0x90, 0xad, 0x42, 0x06,
+	0x37, 0x0d, 0xbe, 0xe6, 0xc3, 0xd9, 0x20, 0x7d, 0xc4, 0x6f, 0xb0, 0x36, 0xa5, 0x59, 0x13, 0xbb,
+	0xb0, 0xf9, 0x86, 0x49, 0xd3, 0xdc, 0x9a, 0x89, 0xd1, 0xfc, 0xaf, 0xe0, 0x93, 0x1b, 0x1a, 0x39,
+	0x79, 0x54, 0xd8, 0x3f, 0xa3, 0xd3, 0xcf, 0xb8, 0x2f, 0x26, 0x27, 0xe1, 0x0d, 0x9d, 0x92, 0x3c,
+	0x2e, 0xec, 0x9b, 0xdd, 0xab, 0x9b, 0x3b, 0xb7, 0x81, 0xaa, 0x43, 0x07, 0x55, 0xf9, 0x57, 0xf3,
+	0xf5, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xef, 0x2d, 0xc9, 0xb6, 0xe3, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1527,9 +1502,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TokenStoreServiceClient interface {
-	SaveToken(ctx context.Context, in *SaveTokenRequest, opts ...grpc.CallOption) (*SaveTokenResponse, error)
+	SaveToken(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_SaveTokenClient, error)
 	FindToken(ctx context.Context, in *FindTokenRequest, opts ...grpc.CallOption) (*FindTokenResponse, error)
-	DeleteToken(ctx context.Context, in *DeleteTokenRequest, opts ...grpc.CallOption) (*DeleteTokenResponse, error)
+	DeleteToken(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_DeleteTokenClient, error)
 }
 
 type tokenStoreServiceClient struct {
@@ -1540,13 +1515,38 @@ func NewTokenStoreServiceClient(cc *grpc.ClientConn) TokenStoreServiceClient {
 	return &tokenStoreServiceClient{cc}
 }
 
-func (c *tokenStoreServiceClient) SaveToken(ctx context.Context, in *SaveTokenRequest, opts ...grpc.CallOption) (*SaveTokenResponse, error) {
-	out := new(SaveTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.TokenStoreService/SaveToken", in, out, opts...)
+func (c *tokenStoreServiceClient) SaveToken(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_SaveTokenClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_TokenStoreService_serviceDesc.Streams[0], "/authpb.TokenStoreService/SaveToken", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &tokenStoreServiceSaveTokenClient{stream}
+	return x, nil
+}
+
+type TokenStoreService_SaveTokenClient interface {
+	Send(*Token) error
+	CloseAndRecv() (*SaveTokenResponse, error)
+	grpc.ClientStream
+}
+
+type tokenStoreServiceSaveTokenClient struct {
+	grpc.ClientStream
+}
+
+func (x *tokenStoreServiceSaveTokenClient) Send(m *Token) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *tokenStoreServiceSaveTokenClient) CloseAndRecv() (*SaveTokenResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(SaveTokenResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func (c *tokenStoreServiceClient) FindToken(ctx context.Context, in *FindTokenRequest, opts ...grpc.CallOption) (*FindTokenResponse, error) {
@@ -1558,56 +1558,89 @@ func (c *tokenStoreServiceClient) FindToken(ctx context.Context, in *FindTokenRe
 	return out, nil
 }
 
-func (c *tokenStoreServiceClient) DeleteToken(ctx context.Context, in *DeleteTokenRequest, opts ...grpc.CallOption) (*DeleteTokenResponse, error) {
-	out := new(DeleteTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.TokenStoreService/DeleteToken", in, out, opts...)
+func (c *tokenStoreServiceClient) DeleteToken(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_DeleteTokenClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_TokenStoreService_serviceDesc.Streams[1], "/authpb.TokenStoreService/DeleteToken", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &tokenStoreServiceDeleteTokenClient{stream}
+	return x, nil
+}
+
+type TokenStoreService_DeleteTokenClient interface {
+	Send(*DeleteTokenRequest) error
+	CloseAndRecv() (*DeleteTokenResponse, error)
+	grpc.ClientStream
+}
+
+type tokenStoreServiceDeleteTokenClient struct {
+	grpc.ClientStream
+}
+
+func (x *tokenStoreServiceDeleteTokenClient) Send(m *DeleteTokenRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *tokenStoreServiceDeleteTokenClient) CloseAndRecv() (*DeleteTokenResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(DeleteTokenResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // TokenStoreServiceServer is the server API for TokenStoreService service.
 type TokenStoreServiceServer interface {
-	SaveToken(context.Context, *SaveTokenRequest) (*SaveTokenResponse, error)
+	SaveToken(TokenStoreService_SaveTokenServer) error
 	FindToken(context.Context, *FindTokenRequest) (*FindTokenResponse, error)
-	DeleteToken(context.Context, *DeleteTokenRequest) (*DeleteTokenResponse, error)
+	DeleteToken(TokenStoreService_DeleteTokenServer) error
 }
 
 // UnimplementedTokenStoreServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedTokenStoreServiceServer struct {
 }
 
-func (*UnimplementedTokenStoreServiceServer) SaveToken(ctx context.Context, req *SaveTokenRequest) (*SaveTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveToken not implemented")
+func (*UnimplementedTokenStoreServiceServer) SaveToken(srv TokenStoreService_SaveTokenServer) error {
+	return status.Errorf(codes.Unimplemented, "method SaveToken not implemented")
 }
 func (*UnimplementedTokenStoreServiceServer) FindToken(ctx context.Context, req *FindTokenRequest) (*FindTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindToken not implemented")
 }
-func (*UnimplementedTokenStoreServiceServer) DeleteToken(ctx context.Context, req *DeleteTokenRequest) (*DeleteTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteToken not implemented")
+func (*UnimplementedTokenStoreServiceServer) DeleteToken(srv TokenStoreService_DeleteTokenServer) error {
+	return status.Errorf(codes.Unimplemented, "method DeleteToken not implemented")
 }
 
 func RegisterTokenStoreServiceServer(s *grpc.Server, srv TokenStoreServiceServer) {
 	s.RegisterService(&_TokenStoreService_serviceDesc, srv)
 }
 
-func _TokenStoreService_SaveToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveTokenRequest)
-	if err := dec(in); err != nil {
+func _TokenStoreService_SaveToken_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TokenStoreServiceServer).SaveToken(&tokenStoreServiceSaveTokenServer{stream})
+}
+
+type TokenStoreService_SaveTokenServer interface {
+	SendAndClose(*SaveTokenResponse) error
+	Recv() (*Token, error)
+	grpc.ServerStream
+}
+
+type tokenStoreServiceSaveTokenServer struct {
+	grpc.ServerStream
+}
+
+func (x *tokenStoreServiceSaveTokenServer) SendAndClose(m *SaveTokenResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *tokenStoreServiceSaveTokenServer) Recv() (*Token, error) {
+	m := new(Token)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(TokenStoreServiceServer).SaveToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.TokenStoreService/SaveToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenStoreServiceServer).SaveToken(ctx, req.(*SaveTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 func _TokenStoreService_FindToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1628,22 +1661,30 @@ func _TokenStoreService_FindToken_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TokenStoreService_DeleteToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteTokenRequest)
-	if err := dec(in); err != nil {
+func _TokenStoreService_DeleteToken_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TokenStoreServiceServer).DeleteToken(&tokenStoreServiceDeleteTokenServer{stream})
+}
+
+type TokenStoreService_DeleteTokenServer interface {
+	SendAndClose(*DeleteTokenResponse) error
+	Recv() (*DeleteTokenRequest, error)
+	grpc.ServerStream
+}
+
+type tokenStoreServiceDeleteTokenServer struct {
+	grpc.ServerStream
+}
+
+func (x *tokenStoreServiceDeleteTokenServer) SendAndClose(m *DeleteTokenResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *tokenStoreServiceDeleteTokenServer) Recv() (*DeleteTokenRequest, error) {
+	m := new(DeleteTokenRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(TokenStoreServiceServer).DeleteToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.TokenStoreService/DeleteToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenStoreServiceServer).DeleteToken(ctx, req.(*DeleteTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 var _TokenStoreService_serviceDesc = grpc.ServiceDesc{
@@ -1651,376 +1692,343 @@ var _TokenStoreService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*TokenStoreServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SaveToken",
-			Handler:    _TokenStoreService_SaveToken_Handler,
-		},
-		{
 			MethodName: "FindToken",
 			Handler:    _TokenStoreService_FindToken_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "DeleteToken",
-			Handler:    _TokenStoreService_DeleteToken_Handler,
+			StreamName:    "SaveToken",
+			Handler:       _TokenStoreService_SaveToken_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "DeleteToken",
+			Handler:       _TokenStoreService_DeleteToken_Handler,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "auth.proto",
 }
 
-// AuthServiceClient is the client API for AuthService service.
+// IDMServiceClient is the client API for IDMService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type AuthServiceClient interface {
+type IDMServiceClient interface {
 	CreateCredentials(ctx context.Context, in *CreateCredentialsRequest, opts ...grpc.CallOption) (*CreateCredentialsResponse, error)
 	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*GetTokenResponse, error)
+	RevokeToken(ctx context.Context, in *RevokeTokenRequest, opts ...grpc.CallOption) (*RevokeTokenResponse, error)
+	SetPassword(ctx context.Context, in *SetPasswordRequest, opts ...grpc.CallOption) (*SetPasswordResponse, error)
 	GetAuthorizationCode(ctx context.Context, in *GetAuthorizationCodeRequest, opts ...grpc.CallOption) (*GetAuthorizationCodeResponse, error)
 	GetOAuthAccessToken(ctx context.Context, in *GetOAuthAccessTokenRequest, opts ...grpc.CallOption) (*GetOAuthAccessTokenResponse, error)
 	GetEmailValidationToken(ctx context.Context, in *GetEmailValidationTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error)
-	RevokeToken(ctx context.Context, in *RevokeTokenRequest, opts ...grpc.CallOption) (*RevokeTokenResponse, error)
 	GetResetPasswordEmailToken(ctx context.Context, in *GetResetPasswordEmailTokenRequest, opts ...grpc.CallOption) (*GetResetPasswordEmailTokenResponse, error)
-	SetPassword(ctx context.Context, in *SetPasswordRequest, opts ...grpc.CallOption) (*SetPasswordResponse, error)
-	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
 }
 
-type authServiceClient struct {
+type iDMServiceClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewAuthServiceClient(cc *grpc.ClientConn) AuthServiceClient {
-	return &authServiceClient{cc}
+func NewIDMServiceClient(cc *grpc.ClientConn) IDMServiceClient {
+	return &iDMServiceClient{cc}
 }
 
-func (c *authServiceClient) CreateCredentials(ctx context.Context, in *CreateCredentialsRequest, opts ...grpc.CallOption) (*CreateCredentialsResponse, error) {
+func (c *iDMServiceClient) CreateCredentials(ctx context.Context, in *CreateCredentialsRequest, opts ...grpc.CallOption) (*CreateCredentialsResponse, error) {
 	out := new(CreateCredentialsResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/CreateCredentials", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/CreateCredentials", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*GetTokenResponse, error) {
+func (c *iDMServiceClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*GetTokenResponse, error) {
 	out := new(GetTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/Authenticate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) GetAuthorizationCode(ctx context.Context, in *GetAuthorizationCodeRequest, opts ...grpc.CallOption) (*GetAuthorizationCodeResponse, error) {
-	out := new(GetAuthorizationCodeResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/GetAuthorizationCode", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) GetOAuthAccessToken(ctx context.Context, in *GetOAuthAccessTokenRequest, opts ...grpc.CallOption) (*GetOAuthAccessTokenResponse, error) {
-	out := new(GetOAuthAccessTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/GetOAuthAccessToken", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) GetEmailValidationToken(ctx context.Context, in *GetEmailValidationTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error) {
-	out := new(GetTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/GetEmailValidationToken", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) RevokeToken(ctx context.Context, in *RevokeTokenRequest, opts ...grpc.CallOption) (*RevokeTokenResponse, error) {
+func (c *iDMServiceClient) RevokeToken(ctx context.Context, in *RevokeTokenRequest, opts ...grpc.CallOption) (*RevokeTokenResponse, error) {
 	out := new(RevokeTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/RevokeToken", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/RevokeToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) GetResetPasswordEmailToken(ctx context.Context, in *GetResetPasswordEmailTokenRequest, opts ...grpc.CallOption) (*GetResetPasswordEmailTokenResponse, error) {
-	out := new(GetResetPasswordEmailTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/GetResetPasswordEmailToken", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) SetPassword(ctx context.Context, in *SetPasswordRequest, opts ...grpc.CallOption) (*SetPasswordResponse, error) {
+func (c *iDMServiceClient) SetPassword(ctx context.Context, in *SetPasswordRequest, opts ...grpc.CallOption) (*SetPasswordResponse, error) {
 	out := new(SetPasswordResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/SetPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/SetPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error) {
-	out := new(FindUserResponse)
-	err := c.cc.Invoke(ctx, "/authpb.AuthService/FindUser", in, out, opts...)
+func (c *iDMServiceClient) GetAuthorizationCode(ctx context.Context, in *GetAuthorizationCodeRequest, opts ...grpc.CallOption) (*GetAuthorizationCodeResponse, error) {
+	out := new(GetAuthorizationCodeResponse)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/GetAuthorizationCode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
-type AuthServiceServer interface {
+func (c *iDMServiceClient) GetOAuthAccessToken(ctx context.Context, in *GetOAuthAccessTokenRequest, opts ...grpc.CallOption) (*GetOAuthAccessTokenResponse, error) {
+	out := new(GetOAuthAccessTokenResponse)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/GetOAuthAccessToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iDMServiceClient) GetEmailValidationToken(ctx context.Context, in *GetEmailValidationTokenRequest, opts ...grpc.CallOption) (*GetTokenResponse, error) {
+	out := new(GetTokenResponse)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/GetEmailValidationToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iDMServiceClient) GetResetPasswordEmailToken(ctx context.Context, in *GetResetPasswordEmailTokenRequest, opts ...grpc.CallOption) (*GetResetPasswordEmailTokenResponse, error) {
+	out := new(GetResetPasswordEmailTokenResponse)
+	err := c.cc.Invoke(ctx, "/authpb.IDMService/GetResetPasswordEmailToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// IDMServiceServer is the server API for IDMService service.
+type IDMServiceServer interface {
 	CreateCredentials(context.Context, *CreateCredentialsRequest) (*CreateCredentialsResponse, error)
 	Authenticate(context.Context, *AuthenticateRequest) (*GetTokenResponse, error)
+	RevokeToken(context.Context, *RevokeTokenRequest) (*RevokeTokenResponse, error)
+	SetPassword(context.Context, *SetPasswordRequest) (*SetPasswordResponse, error)
 	GetAuthorizationCode(context.Context, *GetAuthorizationCodeRequest) (*GetAuthorizationCodeResponse, error)
 	GetOAuthAccessToken(context.Context, *GetOAuthAccessTokenRequest) (*GetOAuthAccessTokenResponse, error)
 	GetEmailValidationToken(context.Context, *GetEmailValidationTokenRequest) (*GetTokenResponse, error)
-	RevokeToken(context.Context, *RevokeTokenRequest) (*RevokeTokenResponse, error)
 	GetResetPasswordEmailToken(context.Context, *GetResetPasswordEmailTokenRequest) (*GetResetPasswordEmailTokenResponse, error)
-	SetPassword(context.Context, *SetPasswordRequest) (*SetPasswordResponse, error)
-	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
 }
 
-// UnimplementedAuthServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedAuthServiceServer struct {
+// UnimplementedIDMServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedIDMServiceServer struct {
 }
 
-func (*UnimplementedAuthServiceServer) CreateCredentials(ctx context.Context, req *CreateCredentialsRequest) (*CreateCredentialsResponse, error) {
+func (*UnimplementedIDMServiceServer) CreateCredentials(ctx context.Context, req *CreateCredentialsRequest) (*CreateCredentialsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCredentials not implemented")
 }
-func (*UnimplementedAuthServiceServer) Authenticate(ctx context.Context, req *AuthenticateRequest) (*GetTokenResponse, error) {
+func (*UnimplementedIDMServiceServer) Authenticate(ctx context.Context, req *AuthenticateRequest) (*GetTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
-func (*UnimplementedAuthServiceServer) GetAuthorizationCode(ctx context.Context, req *GetAuthorizationCodeRequest) (*GetAuthorizationCodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAuthorizationCode not implemented")
-}
-func (*UnimplementedAuthServiceServer) GetOAuthAccessToken(ctx context.Context, req *GetOAuthAccessTokenRequest) (*GetOAuthAccessTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOAuthAccessToken not implemented")
-}
-func (*UnimplementedAuthServiceServer) GetEmailValidationToken(ctx context.Context, req *GetEmailValidationTokenRequest) (*GetTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEmailValidationToken not implemented")
-}
-func (*UnimplementedAuthServiceServer) RevokeToken(ctx context.Context, req *RevokeTokenRequest) (*RevokeTokenResponse, error) {
+func (*UnimplementedIDMServiceServer) RevokeToken(ctx context.Context, req *RevokeTokenRequest) (*RevokeTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevokeToken not implemented")
 }
-func (*UnimplementedAuthServiceServer) GetResetPasswordEmailToken(ctx context.Context, req *GetResetPasswordEmailTokenRequest) (*GetResetPasswordEmailTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetResetPasswordEmailToken not implemented")
-}
-func (*UnimplementedAuthServiceServer) SetPassword(ctx context.Context, req *SetPasswordRequest) (*SetPasswordResponse, error) {
+func (*UnimplementedIDMServiceServer) SetPassword(ctx context.Context, req *SetPasswordRequest) (*SetPasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetPassword not implemented")
 }
-func (*UnimplementedAuthServiceServer) FindUser(ctx context.Context, req *FindUserRequest) (*FindUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindUser not implemented")
+func (*UnimplementedIDMServiceServer) GetAuthorizationCode(ctx context.Context, req *GetAuthorizationCodeRequest) (*GetAuthorizationCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuthorizationCode not implemented")
+}
+func (*UnimplementedIDMServiceServer) GetOAuthAccessToken(ctx context.Context, req *GetOAuthAccessTokenRequest) (*GetOAuthAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOAuthAccessToken not implemented")
+}
+func (*UnimplementedIDMServiceServer) GetEmailValidationToken(ctx context.Context, req *GetEmailValidationTokenRequest) (*GetTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEmailValidationToken not implemented")
+}
+func (*UnimplementedIDMServiceServer) GetResetPasswordEmailToken(ctx context.Context, req *GetResetPasswordEmailTokenRequest) (*GetResetPasswordEmailTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResetPasswordEmailToken not implemented")
 }
 
-func RegisterAuthServiceServer(s *grpc.Server, srv AuthServiceServer) {
-	s.RegisterService(&_AuthService_serviceDesc, srv)
+func RegisterIDMServiceServer(s *grpc.Server, srv IDMServiceServer) {
+	s.RegisterService(&_IDMService_serviceDesc, srv)
 }
 
-func _AuthService_CreateCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IDMService_CreateCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateCredentialsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).CreateCredentials(ctx, in)
+		return srv.(IDMServiceServer).CreateCredentials(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.AuthService/CreateCredentials",
+		FullMethod: "/authpb.IDMService/CreateCredentials",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).CreateCredentials(ctx, req.(*CreateCredentialsRequest))
+		return srv.(IDMServiceServer).CreateCredentials(ctx, req.(*CreateCredentialsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IDMService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthenticateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).Authenticate(ctx, in)
+		return srv.(IDMServiceServer).Authenticate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.AuthService/Authenticate",
+		FullMethod: "/authpb.IDMService/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Authenticate(ctx, req.(*AuthenticateRequest))
+		return srv.(IDMServiceServer).Authenticate(ctx, req.(*AuthenticateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_GetAuthorizationCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorizationCodeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetAuthorizationCode(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.AuthService/GetAuthorizationCode",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetAuthorizationCode(ctx, req.(*GetAuthorizationCodeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_GetOAuthAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOAuthAccessTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetOAuthAccessToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.AuthService/GetOAuthAccessToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetOAuthAccessToken(ctx, req.(*GetOAuthAccessTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_GetEmailValidationToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEmailValidationTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetEmailValidationToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.AuthService/GetEmailValidationToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetEmailValidationToken(ctx, req.(*GetEmailValidationTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_RevokeToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IDMService_RevokeToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RevokeTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).RevokeToken(ctx, in)
+		return srv.(IDMServiceServer).RevokeToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.AuthService/RevokeToken",
+		FullMethod: "/authpb.IDMService/RevokeToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).RevokeToken(ctx, req.(*RevokeTokenRequest))
+		return srv.(IDMServiceServer).RevokeToken(ctx, req.(*RevokeTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_GetResetPasswordEmailToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetResetPasswordEmailTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetResetPasswordEmailToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authpb.AuthService/GetResetPasswordEmailToken",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetResetPasswordEmailToken(ctx, req.(*GetResetPasswordEmailTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_SetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _IDMService_SetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SetPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).SetPassword(ctx, in)
+		return srv.(IDMServiceServer).SetPassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.AuthService/SetPassword",
+		FullMethod: "/authpb.IDMService/SetPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).SetPassword(ctx, req.(*SetPasswordRequest))
+		return srv.(IDMServiceServer).SetPassword(ctx, req.(*SetPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_FindUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindUserRequest)
+func _IDMService_GetAuthorizationCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorizationCodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).FindUser(ctx, in)
+		return srv.(IDMServiceServer).GetAuthorizationCode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.AuthService/FindUser",
+		FullMethod: "/authpb.IDMService/GetAuthorizationCode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).FindUser(ctx, req.(*FindUserRequest))
+		return srv.(IDMServiceServer).GetAuthorizationCode(ctx, req.(*GetAuthorizationCodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _AuthService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authpb.AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
+func _IDMService_GetOAuthAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOAuthAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IDMServiceServer).GetOAuthAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authpb.IDMService/GetOAuthAccessToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IDMServiceServer).GetOAuthAccessToken(ctx, req.(*GetOAuthAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IDMService_GetEmailValidationToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEmailValidationTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IDMServiceServer).GetEmailValidationToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authpb.IDMService/GetEmailValidationToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IDMServiceServer).GetEmailValidationToken(ctx, req.(*GetEmailValidationTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IDMService_GetResetPasswordEmailToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetResetPasswordEmailTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IDMServiceServer).GetResetPasswordEmailToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/authpb.IDMService/GetResetPasswordEmailToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IDMServiceServer).GetResetPasswordEmailToken(ctx, req.(*GetResetPasswordEmailTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _IDMService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "authpb.IDMService",
+	HandlerType: (*IDMServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "CreateCredentials",
-			Handler:    _AuthService_CreateCredentials_Handler,
+			Handler:    _IDMService_CreateCredentials_Handler,
 		},
 		{
 			MethodName: "Authenticate",
-			Handler:    _AuthService_Authenticate_Handler,
-		},
-		{
-			MethodName: "GetAuthorizationCode",
-			Handler:    _AuthService_GetAuthorizationCode_Handler,
-		},
-		{
-			MethodName: "GetOAuthAccessToken",
-			Handler:    _AuthService_GetOAuthAccessToken_Handler,
-		},
-		{
-			MethodName: "GetEmailValidationToken",
-			Handler:    _AuthService_GetEmailValidationToken_Handler,
+			Handler:    _IDMService_Authenticate_Handler,
 		},
 		{
 			MethodName: "RevokeToken",
-			Handler:    _AuthService_RevokeToken_Handler,
-		},
-		{
-			MethodName: "GetResetPasswordEmailToken",
-			Handler:    _AuthService_GetResetPasswordEmailToken_Handler,
+			Handler:    _IDMService_RevokeToken_Handler,
 		},
 		{
 			MethodName: "SetPassword",
-			Handler:    _AuthService_SetPassword_Handler,
+			Handler:    _IDMService_SetPassword_Handler,
 		},
 		{
-			MethodName: "FindUser",
-			Handler:    _AuthService_FindUser_Handler,
+			MethodName: "GetAuthorizationCode",
+			Handler:    _IDMService_GetAuthorizationCode_Handler,
+		},
+		{
+			MethodName: "GetOAuthAccessToken",
+			Handler:    _IDMService_GetOAuthAccessToken_Handler,
+		},
+		{
+			MethodName: "GetEmailValidationToken",
+			Handler:    _IDMService_GetEmailValidationToken_Handler,
+		},
+		{
+			MethodName: "GetResetPasswordEmailToken",
+			Handler:    _IDMService_GetResetPasswordEmailToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -88,22 +88,19 @@
       }
     },
     "authpbDeleteTokenResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     },
     "authpbFindTokenResponse": {
       "type": "object",
       "properties": {
         "found": {
           "type": "string"
-        }
-      }
-    },
-    "authpbFindUserResponse": {
-      "type": "object",
-      "properties": {
-        "exists": {
-          "type": "boolean",
-          "format": "boolean"
         }
       }
     },
@@ -142,7 +139,13 @@
       "type": "object"
     },
     "authpbSaveTokenResponse": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     },
     "authpbSetPasswordResponse": {
       "type": "object",

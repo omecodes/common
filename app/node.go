@@ -8,8 +8,8 @@ import (
 )
 
 type Node interface {
-	Configure(args *ConfigVars) error
-	Init(args *Vars) error
+	Configure(cVars *ConfigVars) error
+	Init(vars *Vars) error
 	Start() error
 	RegistryInfo() *registrypb.Application
 	Stop()

@@ -1,4 +1,4 @@
-package mail
+package mailer
 
 import "testing"
 
@@ -12,7 +12,7 @@ var html = `
 `
 
 func TestSendMail(t *testing.T) {
-	err := SendMail("", 0, "", "", "", "Zoenion test 1-2", html, "")
+	err := sendMail("", 0, "", "", "", "Zoenion test 1-2", html, "")
 	if err != nil {
 		t.Error(err.Error())
 	}

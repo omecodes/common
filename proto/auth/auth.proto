@@ -54,15 +54,14 @@ message TokenEvent {
 }
 
 service TokenStoreService {
-    rpc SaveToken(SaveTokenRequest) returns (SaveTokenResponse);
+    rpc SaveToken(stream Token) returns (SaveTokenResponse);
     rpc FindToken(FindTokenRequest) returns (FindTokenResponse);
-    rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse);
+    rpc DeleteToken(stream DeleteTokenRequest) returns (DeleteTokenResponse);
 }
 
-message SaveTokenRequest {
-    Token token = 1;
+message SaveTokenResponse {
+    uint32 count = 1;
 }
-message SaveTokenResponse {}
 
 message FindTokenRequest {
     string jti = 1;
@@ -74,18 +73,20 @@ message FindTokenResponse {
 message DeleteTokenRequest {
     string jti = 1;
 }
-message DeleteTokenResponse {}
+message DeleteTokenResponse {
+    uint32 count = 1;
+}
 
-service AuthService {
+service IDMService {
     rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse);
     rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
+    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
+    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
+
     rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
     rpc GetOAuthAccessToken (GetOAuthAccessTokenRequest) returns (GetOAuthAccessTokenResponse);
     rpc GetEmailValidationToken (GetEmailValidationTokenRequest) returns (GetTokenResponse);
-    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
     rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);
-    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
-    rpc FindUser (FindUserRequest) returns (FindUserResponse);
 }
 
 message CreateCredentialsRequest {

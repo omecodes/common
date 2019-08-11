@@ -110,11 +110,16 @@ func (item Map) GetConf(key string) Map {
 	if !ok {
 		return nil
 	}
-	if vItem, ok := v.(Map); ok {
-		return vItem
+
+	if vm, ok := v.(Map); ok {
+		return vm
 	}
-	m := v.(map[string]interface{})
-	return Map(m)
+
+	if vm, ok := v.(map[string]interface{}); ok {
+		return vm
+	}
+
+	return nil
 }
 
 func (item Map) GetBool(key string) (bool, bool) {
