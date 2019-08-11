@@ -80,7 +80,7 @@ func (g *Gateway) RunningNodes() []*registrypb.Node {
 	}
 
 	var nodes []*registrypb.Node
-	if g.config.HTTP == nil {
+	if g.config.HTTP != nil {
 		nodes = append(nodes, &registrypb.Node{
 			Address:  g.config.HTTP.Address,
 			Ttl:      -1,
@@ -88,7 +88,7 @@ func (g *Gateway) RunningNodes() []*registrypb.Node {
 		})
 	}
 
-	if g.config.GRPC == nil {
+	if g.config.GRPC != nil {
 		nodes = append(nodes, &registrypb.Node{
 			Address:  g.config.GRPC.Address,
 			Ttl:      -1,
