@@ -2,7 +2,6 @@ package http_helper
 
 import (
 	"crypto/md5"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	auth "github.com/abbot/go-http-auth"
@@ -126,35 +125,25 @@ func NewBearerAuthenticationMiddleware(jwtVerifier JwtVerifier, wrappers ...Requ
 }
 
 // ProxyAuthentication
-type ProxyAuthenticationMiddleware struct {
+type APIAccessAuthorization struct {
 	realm       string
 	credentials *authpb.Credentials
 	wrappers    []RequestWrapper
 }
 
-func (pam *ProxyAuthenticationMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
+func (pam *APIAccessAuthorization) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authorizationHeader := r.Header.Get("Proxy-Authentication")
-		if authorizationHeader == "" {
-			log.Println("Proxy authentication failed")
-			w.WriteHeader(http.StatusProxyAuthRequired)
-			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
+		authentication := r.Header.Get("X-Api-Key")
+		if authentication == "" {
+			log.Println("Api access refused")
+			WriteResponse(w, http.StatusUnauthorized, "API access refused")
 			return
 		}
 
-		authentication := strings.TrimLeft(authorizationHeader, "Basic ")
-		data, err := base64.StdEncoding.DecodeString(authentication)
-		if err != nil {
-			log.Println("Proxy authentication failed")
-			w.WriteHeader(http.StatusProxyAuthRequired)
-			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
-			return
-		}
-
-		parts := strings.Split(string(data), ":")
+		parts := strings.Split(authentication, ":")
 		if len(parts) != 2 || pam.credentials.Username != parts[0] || pam.credentials.Password != parts[1] {
-			w.WriteHeader(http.StatusProxyAuthRequired)
-			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
+			log.Println("Api access refused")
+			WriteResponse(w, http.StatusUnauthorized, "API access refused")
 			return
 		}
 
@@ -165,8 +154,8 @@ func (pam *ProxyAuthenticationMiddleware) Handle(next http.HandlerFunc) http.Han
 	}
 }
 
-func NewProxyAuthenticationMiddleware(realm string, credentials *authpb.Credentials, wrappers ...RequestWrapper) *ProxyAuthenticationMiddleware {
-	return &ProxyAuthenticationMiddleware{
+func NewAPIAuthenticationMiddleware(realm string, credentials *authpb.Credentials, wrappers ...RequestWrapper) *APIAccessAuthorization {
+	return &APIAccessAuthorization{
 		realm:       realm,
 		credentials: credentials,
 		wrappers:    wrappers,
