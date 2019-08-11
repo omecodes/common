@@ -1,29 +1,40 @@
 package app
 
 import (
+	"crypto/tls"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/zoenion/common/prompt"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-type RunArgs struct {
-	Dir               string
-	Registry          string
-	AddressGRPC       string
-	AddressHTTP       string
-	ConfigsServer     string
-	Domain            string
-	IP                string
-	Namespace         string
-	Name              string
-	AuthorityCertPath string
+type Vars struct {
+	Name         string
+	Dir          string
+	Domain       string
+	IP           string
+	ConfigServer string
+	Registry     string
+	Namespace    string
+
+	GRPCAuthorityAddress        string
+	AuthorityCertPath           string
+	AuthorityCredentials        string
+	authorityGRPCAuthentication credentials.PerRPCCredentials
+
+	GatewayGRPCPort string
+	GatewayHTTPPort string
+
+	gRPCAuthorityCredentials credentials.TransportCredentials
+	tlsClient, tlsServer     *tls.Config
 }
 
-type ConfigArgs struct {
+type ConfigVars struct {
 	Dir  string
 	Name string
 }
@@ -34,34 +45,33 @@ var (
 )
 
 func CMD(use string, node Node) *cobra.Command {
-
-	startArgs := new(RunArgs)
-	cfgArgs := new(ConfigArgs)
+	vars := new(Vars)
+	cVars := new(ConfigVars)
 
 	configureCMD := &cobra.Command{
 		Use:   "configure",
 		Short: "configure node",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validateConfArgs(cfgArgs); err != nil {
+			if err := validateConfVars(cVars); err != nil {
 				log.Fatalln(err)
 			}
-			err := node.Configure(cfgArgs)
+			err := node.Configure(cVars)
 			if err != nil {
 				log.Fatalln(err)
 			}
 		},
 	}
-	configureCMD.PersistentFlags().StringVar(&cfgArgs.Name, "name", "", "Unique name in registry group")
-	configureCMD.PersistentFlags().StringVar(&cfgArgs.Dir, "dir", "", "Configs directory path")
+	configureCMD.PersistentFlags().StringVar(&cVars.Name, "name", "", "Unique name in registry group")
+	configureCMD.PersistentFlags().StringVar(&cVars.Dir, "dir", "", "Configs directory path")
 
 	startCMD := &cobra.Command{
 		Use:   "start",
 		Short: "start node",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validateStartArgs(startArgs); err != nil {
+			if err := validateRunVars(vars); err != nil {
 				log.Fatalln(err)
 			}
-			if err := node.Init(startArgs); err != nil {
+			if err := node.Init(vars); err != nil {
 				log.Fatalln(err)
 			}
 			if err := node.Start(); err != nil {
@@ -71,16 +81,18 @@ func CMD(use string, node Node) *cobra.Command {
 			<-prompt.QuitSignal()
 		},
 	}
-	startCMD.PersistentFlags().StringVar(&startArgs.Name, "name", "", "Unique name in registry group")
-	startCMD.PersistentFlags().StringVar(&startArgs.Dir, "dir", "", "Configs directory path")
-	startCMD.PersistentFlags().StringVar(&startArgs.AddressGRPC, "grpc", "", "GRPC listen address")
-	startCMD.PersistentFlags().StringVar(&startArgs.AddressHTTP, "http", "", "HTTP listen address")
-	startCMD.PersistentFlags().StringVar(&startArgs.Registry, "registry", "", "ArgRegistry location")
-	startCMD.PersistentFlags().StringVar(&startArgs.ConfigsServer, "cfg-server", "", "Config server location")
-	startCMD.PersistentFlags().StringVar(&startArgs.IP, "ip", "", "Network address to bind to")
-	startCMD.PersistentFlags().StringVar(&startArgs.Domain, "domain", "", "ArgDomain name")
-	startCMD.PersistentFlags().StringVar(&startArgs.Namespace, "namespace", "", "Group identifier for registry")
-	startCMD.PersistentFlags().StringVar(&startArgs.AuthorityCertPath, "authority-cert", "", "Authority certificate path")
+	startCMD.PersistentFlags().StringVar(&vars.Name, "name", "", "Unique name in registry group")
+	startCMD.PersistentFlags().StringVar(&vars.Dir, "dir", "", "Configs directory path")
+	startCMD.PersistentFlags().StringVar(&vars.GatewayGRPCPort, "grpc", "", "GRPC listen address")
+	startCMD.PersistentFlags().StringVar(&vars.GatewayHTTPPort, "http", "", "HTTP listen address")
+	startCMD.PersistentFlags().StringVar(&vars.Registry, "registry", "", "ArgRegistry location")
+	startCMD.PersistentFlags().StringVar(&vars.ConfigServer, "cfg-server", "", "Config server location")
+	startCMD.PersistentFlags().StringVar(&vars.IP, "ip", "", "Network address to bind to")
+	startCMD.PersistentFlags().StringVar(&vars.Domain, "domain", "", "ArgDomain name")
+	startCMD.PersistentFlags().StringVar(&vars.Namespace, "namespace", "", "Group identifier for registry")
+	startCMD.PersistentFlags().StringVar(&vars.AuthorityCertPath, "authority-cert", "", "Authority certificate path")
+	startCMD.PersistentFlags().StringVar(&vars.GRPCAuthorityAddress, "authority", "", "Authority address location")
+	startCMD.PersistentFlags().StringVar(&vars.AuthorityCredentials, "authority-cred", "", "Authority access credentials")
 
 	command := &cobra.Command{
 		Use:   use,
@@ -94,27 +106,46 @@ func CMD(use string, node Node) *cobra.Command {
 	return command
 }
 
-func validateStartArgs(args *RunArgs) error {
-	if args.Dir == "" {
+func validateRunVars(vars *Vars) error {
+	if vars.Name == "" {
+		return errors.New("flag --name must be passed")
+	}
+
+	if vars.Domain == "" && vars.IP == "" {
+		return errors.New("one or both --domain and --ip flags must be passed")
+	}
+
+	if vars.Dir == "" {
 		d := getDir()
-		args.Dir = d.Path()
+		vars.Dir = d.Path()
 		if err := d.Create(); err != nil {
-			log.Printf("could not create %s. Might not be writeable\n", args.Dir)
+			log.Printf("could not create %s. Might not be writeable\n", vars.Dir)
 			return err
 		}
-
 	} else {
 		var err error
-		args.Dir, err = filepath.Abs(args.Dir)
+		vars.Dir, err = filepath.Abs(vars.Dir)
 		if err != nil {
-			log.Printf("could not find %s\n", args.Dir)
+			log.Printf("could not find %s\n", vars.Dir)
 			return err
+		}
+	}
+
+	if vars.GRPCAuthorityAddress != "" || vars.AuthorityCertPath != "" || vars.AuthorityCredentials != "" {
+		if vars.GRPCAuthorityAddress == "" || vars.AuthorityCertPath == "" || vars.AuthorityCredentials == "" {
+			return fmt.Errorf("to enable connection to authority %s, %s and %s flags must me passed", vars.GRPCAuthorityAddress, vars.AuthorityCertPath, vars.AuthorityCredentials)
+		}
+	}
+
+	if vars.Registry != "" || vars.Namespace != "" {
+		if vars.Registry == "" || vars.Namespace == "" {
+			return fmt.Errorf("to enable connection to authority %s and %s flags must me passed", vars.Registry, vars.Namespace)
 		}
 	}
 	return nil
 }
 
-func validateConfArgs(args *ConfigArgs) error {
+func validateConfVars(args *ConfigVars) error {
 	if args.Dir == "" {
 		d := getDir()
 		args.Dir = d.Path()

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
@@ -53,7 +54,13 @@ func serialNumber() *big.Int {
 }
 
 func caKeyUsage() x509.KeyUsage {
-	return x509.KeyUsageCertSign | x509.KeyUsageCRLSign
+	return x509.KeyUsageDigitalSignature |
+		x509.KeyUsageContentCommitment |
+		x509.KeyUsageKeyEncipherment |
+		x509.KeyUsageDataEncipherment |
+		x509.KeyUsageKeyAgreement |
+		x509.KeyUsageCertSign |
+		x509.KeyUsageCRLSign
 }
 
 func caExtKeyUsage() []x509.ExtKeyUsage {
@@ -92,14 +99,28 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 		PermittedDNSDomains:         nil,
 	}
 
-	pubBytes, err := asn1.Marshal(rsa.PublicKey{
-		N: (t.PublicKey.(*rsa.PublicKey)).N,
-		E: (t.PublicKey.(*rsa.PublicKey)).E,
-	})
-	if err == nil {
-		hash := sha1.Sum(pubBytes)
-		template.SubjectKeyId = hash[:]
+	var (
+		pubBytes []byte
+		err      error
+	)
+
+	switch pk := t.PublicKey.(type) {
+	case *ecdsa.PublicKey:
+		pubBytes = elliptic.Marshal(elliptic.P521(), pk.X, pk.Y)
+	case *rsa.PublicKey:
+		pubBytes, err = asn1.Marshal(rsa.PublicKey{
+			N: pk.N,
+			E: pk.E,
+		})
+	default:
+		err = errors.New("unsupported key type")
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	hash := sha1.Sum(pubBytes)
+	template.SubjectKeyId = hash[:]
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
@@ -131,16 +152,28 @@ func GenerateServiceCertificate(t *Template) (*x509.Certificate, error) {
 		NotAfter:       notAfter,
 	}
 
-	if pub, ok := t.PublicKey.(*rsa.PublicKey); ok {
-		pubBytes, err := asn1.Marshal(rsa.PublicKey{
-			N: pub.N,
-			E: pub.E,
+	var (
+		pubBytes []byte
+		err      error
+	)
+
+	switch pk := t.PublicKey.(type) {
+	case *ecdsa.PublicKey:
+		pubBytes = elliptic.Marshal(elliptic.P521(), pk.X, pk.Y)
+	case *rsa.PublicKey:
+		pubBytes, err = asn1.Marshal(rsa.PublicKey{
+			N: pk.N,
+			E: pk.E,
 		})
-		if err == nil {
-			hash := sha1.Sum(pubBytes)
-			template.SubjectKeyId = hash[:]
-		}
+	default:
+		err = errors.New("unsupported key type")
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	hash := sha1.Sum(pubBytes)
+	template.SubjectKeyId = hash[:]
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, t.SignerCertificate, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
@@ -235,4 +268,31 @@ func StoreCertificate(cert *x509.Certificate, file string, perm os.FileMode) err
 		return err
 	}
 	return ioutil.WriteFile(file, buff.Bytes(), os.ModePerm)
+}
+
+func PEMEncodeCertificate(cert *x509.Certificate) ([]byte, error) {
+	buff := bytes.NewBuffer([]byte{})
+	err := pem.Encode(buff, &pem.Block{Type: "CERTIFICATE", Bytes: cert.Raw})
+	if err != nil {
+		return nil, err
+	}
+	return buff.Bytes(), nil
+}
+
+func PEMEncodeKey(key crypto.PrivateKey) ([]byte, error) {
+	var block *pem.Block
+
+	if rp, ok := key.(*rsa.PrivateKey); ok {
+		block = &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(rp)}
+
+	} else if ep, ok := key.(*ecdsa.PrivateKey); ok {
+		privateKeyBytes, err := x509.MarshalECPrivateKey(ep)
+		if err != nil {
+			return nil, err
+		}
+		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: privateKeyBytes}
+	} else {
+		return nil, errors.NotSupported
+	}
+	return pem.EncodeToMemory(block), nil
 }

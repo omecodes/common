@@ -15,14 +15,66 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/app/authenticate": {
-      "get": {
-        "operationId": "Authenticate",
+    "/api/v1/app/register": {
+      "post": {
+        "operationId": "RegisterApplication",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authoritypbAuthenticateResponse"
+              "$ref": "#/definitions/authoritypbRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbRegisterApplicationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/app/sign/cert": {
+      "post": {
+        "operationId": "SignCertificate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbSignCertificateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbSignCertificateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/auth/validate": {
+      "get": {
+        "operationId": "ValidateAuth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbValidateAuthResponse"
             }
           }
         },
@@ -51,14 +103,14 @@
         ]
       }
     },
-    "/api/v1/app/cert/get": {
+    "/api/v1/sign/key": {
       "post": {
-        "operationId": "GenerateServiceCertificate",
+        "operationId": "SignKey",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authoritypbGenerateServiceCertificateResponse"
+              "$ref": "#/definitions/authoritypbSignKeyResponse"
             }
           }
         },
@@ -68,33 +120,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/authoritypbGenerateServiceCertificateRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthorityService"
-        ]
-      }
-    },
-    "/api/v1/app/register": {
-      "post": {
-        "operationId": "RegisterApplication",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authoritypbRegisterApplicationResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authoritypbRegisterApplicationRequest"
+              "$ref": "#/definitions/authoritypbSignKeyRequest"
             }
           }
         ],
@@ -105,23 +131,14 @@
     }
   },
   "definitions": {
-    "authoritypbAppType": {
-      "type": "string",
-      "enum": [
-        "Registry",
-        "ServiceProvider",
-        "IdentityProvider"
-      ],
-      "default": "Registry"
-    },
     "authoritypbApplication": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string"
         },
-        "type": {
-          "$ref": "#/definitions/authoritypbAppType"
+        "type_flags": {
+          "$ref": "#/definitions/authoritypbServiceTypeFlag"
         },
         "label": {
           "type": "string"
@@ -132,18 +149,6 @@
         "create_at": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "authoritypbAuthenticateResponse": {
-      "type": "object",
-      "properties": {
-        "nonce": {
-          "type": "string"
-        },
-        "valid": {
-          "type": "boolean",
-          "format": "boolean"
         }
       }
     },
@@ -161,25 +166,16 @@
         }
       }
     },
-    "authoritypbGenerateServiceCertificateRequest": {
+    "authoritypbCertificateTemplate": {
       "type": "object",
       "properties": {
-        "service_name": {
-          "type": "string"
-        },
-        "application_key": {
-          "type": "string"
-        },
-        "application_secret": {
-          "type": "string"
-        },
-        "domains": {
+        "addresses": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "addresses": {
+        "domains": {
           "type": "array",
           "items": {
             "type": "string"
@@ -188,15 +184,9 @@
         "public_key": {
           "type": "string",
           "format": "byte"
-        }
-      }
-    },
-    "authoritypbGenerateServiceCertificateResponse": {
-      "type": "object",
-      "properties": {
-        "certificateBytes": {
-          "type": "string",
-          "format": "byte"
+        },
+        "service_name": {
+          "type": "string"
         }
       }
     },
@@ -210,6 +200,62 @@
     },
     "authoritypbRegisterApplicationResponse": {
       "type": "object"
+    },
+    "authoritypbServiceTypeFlag": {
+      "type": "string",
+      "enum": [
+        "Unknown",
+        "ServiceProvider",
+        "IdentityProvider"
+      ],
+      "default": "Unknown"
+    },
+    "authoritypbSignCertificateRequest": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "$ref": "#/definitions/authoritypbCertificateTemplate"
+        }
+      }
+    },
+    "authoritypbSignCertificateResponse": {
+      "type": "object",
+      "properties": {
+        "raw_certificate": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "authoritypbSignKeyRequest": {
+      "type": "object",
+      "properties": {
+        "key_bytes": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "authoritypbSignKeyResponse": {
+      "type": "object",
+      "properties": {
+        "signature": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "authoritypbValidateAuthResponse": {
+      "type": "object",
+      "properties": {
+        "nonce": {
+          "type": "string"
+        },
+        "valid": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
     }
   }
 }

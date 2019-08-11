@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"crypto/tls"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	http_helper "github.com/zoenion/common/http-helper"
 	"google.golang.org/grpc"
@@ -15,11 +16,14 @@ type HTTP struct {
 
 type GRPC struct {
 	Address             string
+	Interceptor         grpc.UnaryServerInterceptor
+	StreamInterceptor   grpc.StreamServerInterceptor
 	RegisterHandlerFunc func(*grpc.Server)
 }
 
 type Config struct {
 	Name string
+	Tls  *tls.Config
 	HTTP *HTTP
 	GRPC *GRPC
 }

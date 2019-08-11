@@ -1,8 +1,8 @@
 package app
 
 type Node interface {
-	Configure(args *ConfigArgs) error
-	Init(args *RunArgs) error
+	Configure(args *ConfigVars) error
+	Init(args *Vars) error
 	Start() error
 	Stop()
 }

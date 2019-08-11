@@ -60,18 +60,28 @@ type BasicAuthenticationMiddleware struct {
 	provider CredentialsProvider
 	wrappers []RequestWrapper
 	realm    string
-	basic    *auth.BasicAuth
 }
 
 func (bam *BasicAuthenticationMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
+	reqAuth := &RequireAuth{
+		Realm: bam.realm,
+		Type:  "Basic",
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		if user := bam.basic.CheckAuth(r); user == "" {
-			WriteResponse(w, 401, &RequireAuth{
-				Realm: bam.realm,
-				Type:  "Basic",
-			})
-		} else {
-			r.Header.Set("X-Authenticated-Username", user)
+		user, password, ok := r.BasicAuth()
+		if !ok {
+			WriteResponse(w, 401, reqAuth)
+			return
+		}
+
+		c := bam.provider(user)
+		if c == nil || (c.Username != user && c.Email != user) || c.Password != password {
+			WriteResponse(w, 401, reqAuth)
+			return
+		}
+
+		for _, wrapper := range bam.wrappers {
+			r = wrapper(r)
 		}
 		next.ServeHTTP(w, r)
 	}
@@ -82,16 +92,6 @@ func NewBasicAuthenticationMiddleware(realm string, provider CredentialsProvider
 		realm:    realm,
 		provider: provider,
 		wrappers: wrappers,
-		basic: &auth.BasicAuth{
-			Realm: realm,
-			Secrets: func(username, real string) string {
-				c := provider(username)
-				if c == nil {
-					return ""
-				}
-				return c.Username
-			},
-		},
 	}
 }
 

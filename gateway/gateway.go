@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"crypto/tls"
 	"flag"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -102,7 +103,11 @@ func (g *Gateway) listen() (err error) {
 		if g.config.GRPC.Address == "" {
 			g.config.GRPC.Address = ":"
 		}
-		g.listenerGRPC, err = net.Listen("tcp", g.config.GRPC.Address)
+		if g.config.Tls != nil {
+			g.listenerGRPC, err = tls.Listen("tcp", g.config.GRPC.Address, g.config.Tls)
+		} else {
+			g.listenerGRPC, err = net.Listen("tcp", g.config.GRPC.Address)
+		}
 		if err != nil {
 			return err
 		}
@@ -113,7 +118,11 @@ func (g *Gateway) listen() (err error) {
 		if g.config.HTTP.Address == "" {
 			g.config.HTTP.Address = ":"
 		}
-		g.listenerHTTP, err = net.Listen("tcp", g.config.HTTP.Address)
+		if g.config.Tls != nil {
+			g.listenerHTTP, err = tls.Listen("tcp", g.config.HTTP.Address, g.config.Tls)
+		} else {
+			g.listenerHTTP, err = net.Listen("tcp", g.config.HTTP.Address)
+		}
 		if err != nil {
 			return err
 		}
@@ -125,7 +134,15 @@ func (g *Gateway) listen() (err error) {
 func (g *Gateway) startGRPC() {
 	log.Printf("starting %s.gRPC at %s", g.config.Name, g.config.GRPC.Address)
 
-	g.gs = grpc.NewServer()
+	var opts []grpc.ServerOption
+	if g.config.GRPC.Interceptor != nil {
+		opts = append(opts, grpc.UnaryInterceptor(g.config.GRPC.Interceptor))
+	}
+	if g.config.GRPC.StreamInterceptor != nil {
+		opts = append(opts, grpc.StreamInterceptor(g.config.GRPC.StreamInterceptor))
+	}
+
+	g.gs = grpc.NewServer(opts...)
 	g.config.GRPC.RegisterHandlerFunc(g.gs)
 	if err := g.gs.Serve(g.listenerGRPC); err != nil {
 		log.Println("gRPC server stopped, cause:", err)
