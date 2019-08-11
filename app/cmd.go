@@ -1,16 +1,20 @@
 package app
 
 import (
-	"crypto/tls"
+	"crypto"
+	"crypto/x509"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/zoenion/common/prompt"
-	"google.golang.org/grpc/credentials"
+	registrypb "github.com/zoenion/common/proto/registry"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/cobra"
+	"google.golang.org/grpc/credentials"
+
+	"github.com/zoenion/common/prompt"
 )
 
 type Vars struct {
@@ -19,19 +23,24 @@ type Vars struct {
 	Domain       string
 	IP           string
 	ConfigServer string
-	Registry     string
-	Namespace    string
+
+	Registry       string
+	Namespace      string
+	RegistryID     string
+	registryClient registrypb.RegistryClient
 
 	GRPCAuthorityAddress        string
 	AuthorityCertPath           string
 	AuthorityCredentials        string
+	authorityCert               *x509.Certificate
 	authorityGRPCAuthentication credentials.PerRPCCredentials
 
 	GatewayGRPCPort string
 	GatewayHTTPPort string
 
 	gRPCAuthorityCredentials credentials.TransportCredentials
-	tlsClient, tlsServer     *tls.Config
+	serviceCert              *x509.Certificate
+	serviceKey               crypto.PrivateKey
 }
 
 type ConfigVars struct {
@@ -68,16 +77,11 @@ func CMD(use string, node Node) *cobra.Command {
 		Use:   "start",
 		Short: "start node",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validateRunVars(vars); err != nil {
-				log.Fatalln(err)
+			err := StartNode(node, vars)
+			if err != nil {
+				log.Fatalf("could not start node %s: %s\n", vars.Name, err)
 			}
-			if err := node.Init(vars); err != nil {
-				log.Fatalln(err)
-			}
-			if err := node.Start(); err != nil {
-				log.Fatalln(err)
-			}
-			defer node.Stop()
+			defer StopNode(node, vars)
 			<-prompt.QuitSignal()
 		},
 	}
@@ -139,7 +143,7 @@ func validateRunVars(vars *Vars) error {
 
 	if vars.Registry != "" || vars.Namespace != "" {
 		if vars.Registry == "" || vars.Namespace == "" {
-			return fmt.Errorf("to enable connection to authority %s and %s flags must me passed", vars.Registry, vars.Namespace)
+			return errors.New("to enable connection to registry both --registry and --namespace flags must me passed")
 		}
 	}
 	return nil

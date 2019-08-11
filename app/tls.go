@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -23,7 +22,7 @@ import (
 	"time"
 )
 
-func GRPCAuthorityTransportCredentials(a *Vars) (credentials.TransportCredentials, error) {
+func authorityTransportCredentials(a *Vars) (credentials.TransportCredentials, error) {
 	if a.gRPCAuthorityCredentials != nil {
 		return a.gRPCAuthorityCredentials, nil
 	}
@@ -39,114 +38,128 @@ func GRPCAuthorityTransportCredentials(a *Vars) (credentials.TransportCredential
 	return a.gRPCAuthorityCredentials, err
 }
 
-func LoadTLS(a *Vars) (*tls.Config, *tls.Config, error) {
-	if a.tlsClient != nil && a.tlsServer != nil {
-		return a.tlsServer, a.tlsClient, nil
+func loadSignedKeyPair(v *Vars) error {
+	if v.serviceCert != nil && v.serviceKey != nil {
+		return nil
 	}
 
-	if a.AuthorityCertPath == "" {
-		return nil, nil, errors.BadInput
+	if v.AuthorityCertPath == "" {
+		return errors.BadInput
 	}
-	if !futils.FileExists(a.AuthorityCertPath) {
-		return nil, nil, errors.NotFound
+
+	v.AuthorityCertPath, _ = filepath.Abs(v.AuthorityCertPath)
+	if !futils.FileExists(v.AuthorityCertPath) {
+		return errors.NotFound
 	}
-	authorityCert, err := crypto2.LoadCertificate(a.AuthorityCertPath)
+	authorityCert, err := crypto2.LoadCertificate(v.AuthorityCertPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("could not load authority certificate: %s", err)
+		return fmt.Errorf("could not load authority certificate: %s", err)
 	}
 
-	name := strcase.ToSnake(a.Name)
-	certFilename := filepath.Join(a.Dir, fmt.Sprintf("%s.crt", name))
-	keyFilename := filepath.Join(a.Dir, fmt.Sprintf("%s.key", name))
-
-	var (
-		serviceKey  crypto.PrivateKey
-		serviceCert *x509.Certificate
-	)
+	name := strcase.ToSnake(v.Name)
+	certFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.crt", name))
+	keyFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.key", name))
 
 	shouldGenerateNewPair := !futils.FileExists(certFilename) || !futils.FileExists(keyFilename)
 	if !shouldGenerateNewPair {
-		serviceKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
+		v.serviceKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
 		if err != nil {
-			return nil, nil, fmt.Errorf("could not load private key: %s", err)
+			return fmt.Errorf("could not load private key: %s", err)
 		}
-		serviceCert, err = crypto2.LoadCertificate(certFilename)
+		v.serviceCert, err = crypto2.LoadCertificate(certFilename)
 		if err != nil {
-			return nil, nil, fmt.Errorf("could not load certificate: %s", err)
+			return fmt.Errorf("could not load certificate: %s", err)
 		}
 	}
 
 	CAPool := x509.NewCertPool()
 	CAPool.AddCert(authorityCert)
 
-	if serviceCert != nil {
-		_, err = serviceCert.Verify(x509.VerifyOptions{Roots: CAPool})
-		if err != nil || time.Now().After(serviceCert.NotAfter) || time.Now().Before(serviceCert.NotBefore) {
+	if v.serviceCert != nil {
+		_, err = v.serviceCert.Verify(x509.VerifyOptions{Roots: CAPool})
+		if err != nil || time.Now().After(v.serviceCert.NotAfter) || time.Now().Before(v.serviceCert.NotBefore) {
 			shouldGenerateNewPair = true
 		}
 	}
 
 	if shouldGenerateNewPair {
-		serviceKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		v.serviceKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 		if err != nil {
-			return nil, nil, err
+			return fmt.Errorf("could not generate key pair: %s", err)
 		}
-		pub := serviceKey.(*ecdsa.PrivateKey).PublicKey
+		pub := v.serviceKey.(*ecdsa.PrivateKey).PublicKey
 
-		creds, err := GRPCAuthorityTransportCredentials(a)
+		v.gRPCAuthorityCredentials, err = authorityTransportCredentials(v)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
-		if a.authorityGRPCAuthentication == nil {
-			parts := strings.Split(a.AuthorityCredentials, ":")
-			a.authorityGRPCAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
+		if v.authorityGRPCAuthentication == nil {
+			parts := strings.Split(v.AuthorityCredentials, ":")
+			v.authorityGRPCAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
 		}
 
-		conn, err := grpc.Dial(a.GRPCAuthorityAddress, grpc.WithTransportCredentials(creds), grpc.WithPerRPCCredentials(a.authorityGRPCAuthentication))
+		conn, err := grpc.Dial(v.GRPCAuthorityAddress, grpc.WithTransportCredentials(v.gRPCAuthorityCredentials), grpc.WithPerRPCCredentials(v.authorityGRPCAuthentication))
 		client := authoritypb.NewAuthorityServiceClient(conn)
 		rsp, err := client.SignCertificate(context.Background(), &authoritypb.SignCertificateRequest{
 			Template: &authoritypb.CertificateTemplate{
-				Domains:     []string{a.Domain},
-				Addresses:   []string{a.IP},
-				ServiceName: strcase.ToDelimited(a.Name, '.'),
+				Domains:     []string{v.Domain},
+				Addresses:   []string{v.IP},
+				ServiceName: strcase.ToDelimited(v.Name, '.'),
 				PublicKey:   elliptic.Marshal(elliptic.P256(), pub.X, pub.Y),
 			},
 		})
 		if err != nil {
-			return nil, nil, err
+			return fmt.Errorf("could not sign certificate: %s", err)
 		}
 
-		serviceCert, err = x509.ParseCertificate(rsp.RawCertificate)
+		v.serviceCert, err = x509.ParseCertificate(rsp.RawCertificate)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
 
-		err = crypto2.StoreCertificate(serviceCert, certFilename, os.ModePerm)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		err = crypto2.StorePrivateKey(serviceKey, nil, keyFilename)
-		if err != nil {
-			return nil, nil, err
-		}
+		_ = crypto2.StoreCertificate(v.serviceCert, certFilename, os.ModePerm)
+		_ = crypto2.StorePrivateKey(v.serviceKey, nil, keyFilename)
 	}
+	return nil
+}
+
+func ServiceProviderServerTLS(v *Vars) *tls.Config {
+	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
+		return nil
+	}
+
+	CAPool := x509.NewCertPool()
+	CAPool.AddCert(v.authorityCert)
 
 	tlsCert := tls.Certificate{
-		Certificate: [][]byte{serviceCert.Raw},
-		PrivateKey:  serviceKey.(*ecdsa.PrivateKey),
+		Certificate: [][]byte{v.serviceCert.Raw},
+		PrivateKey:  v.serviceKey.(*ecdsa.PrivateKey),
 	}
 
-	a.tlsServer = &tls.Config{
+	return &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
 		ClientCAs:    CAPool,
-		ClientAuth:   tls.VerifyClientCertIfGiven,
-		ServerName:   a.Domain,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ServerName:   v.Domain,
 	}
-	a.tlsClient = &tls.Config{
+}
+
+func ServiceProviderClientTLS(v *Vars) *tls.Config {
+	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
+		return nil
+	}
+
+	CAPool := x509.NewCertPool()
+	CAPool.AddCert(v.authorityCert)
+
+	tlsCert := tls.Certificate{
+		Certificate: [][]byte{v.serviceCert.Raw},
+		PrivateKey:  v.serviceKey.(*ecdsa.PrivateKey),
+	}
+
+	return &tls.Config{
 		RootCAs:      CAPool,
 		Certificates: []tls.Certificate{tlsCert},
 	}
-	return a.tlsServer, a.tlsClient, nil
 }
