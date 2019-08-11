@@ -2,12 +2,15 @@ package http_helper
 
 import (
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	auth "github.com/abbot/go-http-auth"
 	"github.com/zoenion/common/errors"
 	authpb "github.com/zoenion/common/proto/auth"
+	"log"
 	"net/http"
+	"strings"
 )
 
 // CredentialsProvider
@@ -118,6 +121,54 @@ func (bam *BearerAuthenticationMiddleware) Wrap(next http.HandlerFunc) http.Hand
 func NewBearerAuthenticationMiddleware(jwtVerifier JwtVerifier, wrappers ...RequestWrapper) *BearerAuthenticationMiddleware {
 	return &BearerAuthenticationMiddleware{
 		jwtVerifier: jwtVerifier,
+		wrappers:    wrappers,
+	}
+}
+
+// ProxyAuthentication
+type ProxyAuthenticationMiddleware struct {
+	realm       string
+	credentials *authpb.Credentials
+	wrappers    []RequestWrapper
+}
+
+func (pam *ProxyAuthenticationMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authorizationHeader := r.Header.Get("Proxy-Authentication")
+		if authorizationHeader == "" {
+			log.Println("Proxy authentication failed")
+			w.WriteHeader(http.StatusProxyAuthRequired)
+			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
+			return
+		}
+
+		authentication := strings.TrimLeft(authorizationHeader, "Basic ")
+		data, err := base64.StdEncoding.DecodeString(authentication)
+		if err != nil {
+			log.Println("Proxy authentication failed")
+			w.WriteHeader(http.StatusProxyAuthRequired)
+			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
+			return
+		}
+
+		parts := strings.Split(string(data), ":")
+		if len(parts) != 2 || pam.credentials.Username != parts[0] || pam.credentials.Password != parts[1] {
+			w.WriteHeader(http.StatusProxyAuthRequired)
+			w.Header().Set("Proxy-Authenticate", fmt.Sprintf("Basic realm=%s", pam.realm))
+			return
+		}
+
+		for _, wrapper := range pam.wrappers {
+			r = wrapper(r)
+		}
+		next(w, r)
+	}
+}
+
+func NewProxyAuthenticationMiddleware(realm string, credentials *authpb.Credentials, wrappers ...RequestWrapper) *ProxyAuthenticationMiddleware {
+	return &ProxyAuthenticationMiddleware{
+		realm:       realm,
+		credentials: credentials,
 		wrappers:    wrappers,
 	}
 }
