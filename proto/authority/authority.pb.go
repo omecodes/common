@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -746,6 +748,23 @@ type AuthorityServiceServer interface {
 	SignKey(context.Context, *SignKeyRequest) (*SignKeyResponse, error)
 	SignCertificate(context.Context, *SignCertificateRequest) (*SignCertificateResponse, error)
 	ValidateAuth(context.Context, *ValidateAuthRequest) (*ValidateAuthResponse, error)
+}
+
+// UnimplementedAuthorityServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedAuthorityServiceServer struct {
+}
+
+func (*UnimplementedAuthorityServiceServer) RegisterApplication(ctx context.Context, req *RegisterApplicationRequest) (*RegisterApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterApplication not implemented")
+}
+func (*UnimplementedAuthorityServiceServer) SignKey(ctx context.Context, req *SignKeyRequest) (*SignKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignKey not implemented")
+}
+func (*UnimplementedAuthorityServiceServer) SignCertificate(ctx context.Context, req *SignCertificateRequest) (*SignCertificateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignCertificate not implemented")
+}
+func (*UnimplementedAuthorityServiceServer) ValidateAuth(ctx context.Context, req *ValidateAuthRequest) (*ValidateAuthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateAuth not implemented")
 }
 
 func RegisterAuthorityServiceServer(s *grpc.Server, srv AuthorityServiceServer) {

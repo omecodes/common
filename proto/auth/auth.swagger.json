@@ -251,6 +251,30 @@
           "IDMService"
         ]
       }
+    },
+    "/api/v1/token/registered/{jti}": {
+      "get": {
+        "operationId": "FindToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbFindTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "jti",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TokenStoreService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -344,14 +368,8 @@
         }
       }
     },
-    "authpbDeleteTokenResponse": {
-      "type": "object",
-      "properties": {
-        "count": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
+    "authpbFeedResponse": {
+      "type": "object"
     },
     "authpbFindTokenResponse": {
       "type": "object",
@@ -375,15 +393,6 @@
     },
     "authpbRevokeTokenResponse": {
       "type": "object"
-    },
-    "authpbSaveTokenResponse": {
-      "type": "object",
-      "properties": {
-        "count": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
     },
     "authpbSetPasswordRequest": {
       "type": "object",
@@ -449,6 +458,57 @@
     },
     "authpbValidateEmailResponse": {
       "type": "object"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "x-stream-definitions": {
+    "authpbFeedResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/authpbFeedResponse"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of authpbFeedResponse"
     }
   }
 }

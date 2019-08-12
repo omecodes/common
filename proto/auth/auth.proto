@@ -55,14 +55,26 @@ message TokenEvent {
     TokenState state = 2;
 }
 
-service TokenStoreService {
-    rpc SaveToken(stream Token) returns (SaveTokenResponse);
-    rpc FindToken(FindTokenRequest) returns (FindTokenResponse);
-    rpc DeleteToken(stream DeleteTokenRequest) returns (DeleteTokenResponse);
+enum FeedAction {
+    Delete = 0;
+    Save = 1;
 }
 
-message SaveTokenResponse {
-    uint32 count = 1;
+service TokenStoreService {
+    rpc FeedSession(stream FeedRequest) returns (stream FeedResponse);
+    rpc FindToken(FindTokenRequest) returns (FindTokenResponse) {
+        option(google.api.http).get = "/api/v1/token/registered/{jti}";
+    };
+}
+
+message FeedRequest {
+    string jti = 1;
+    string nbf = 2;
+    string exp = 3;
+    string signature = 4;
+}
+message FeedResponse {
+
 }
 
 message FindTokenRequest {

@@ -3,10 +3,14 @@ package auth
 import (
 	"context"
 	"fmt"
+	"github.com/zoenion/common/configs"
+	"github.com/zoenion/common/errors"
 	authpb "github.com/zoenion/common/proto/auth"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"log"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -25,7 +29,7 @@ func (g *gRPCClientBasicAuthentication) RequireTransportSecurity() bool {
 }
 
 func NewGRPCBasicAuthentication(user, password string) *gRPCClientBasicAuthentication {
-	return &gRPCClientBasicAuthentication{
+	return &gRPCAccessAuthentication{
 		credentials: &authpb.Credentials{
 			Username: user,
 			Password: password,
@@ -81,6 +85,94 @@ func GRPCDialOptions(ctx context.Context) ([]grpc.DialOption, error) {
 // GRPCListenOptions
 func GRPCListenOptions(ctx context.Context) ([]grpc.DialOption, error) {
 	return nil, nil
+}
+
+type gRPCServerAccessAuthentication struct {
+	access  string
+	methods []string
+}
+
+func (gi *gRPCServerAccessAuthentication) InterceptUnary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	start := time.Now()
+
+	methodName := path.Base(info.FullMethod)
+	var (
+		rsp interface{}
+		err error
+	)
+
+	for _, method := range gi.methods {
+		if method == methodName {
+			md, ok := metadata.FromIncomingContext(ctx)
+			if !ok {
+				err = errors.Forbidden
+			}
+
+			authorizationValues := md.Get("authorization")
+			if len(authorizationValues) == 0 {
+				err = errors.Forbidden
+			}
+
+			authorization := strings.TrimPrefix(authorizationValues[0], "Access ")
+			if authorization != gi.access {
+				err = errors.Forbidden
+			}
+			break
+		}
+	}
+
+	if err == nil {
+		rsp, err = handler(ctx, req)
+	}
+
+	log.Printf("gRPC request - Method:%s\tDuration:%s\tError:%v\n",
+		methodName,
+		time.Since(start),
+		err)
+
+	return rsp, err
+}
+
+func (gi *gRPCServerAccessAuthentication) InterceptStream(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	start := time.Now()
+	methodName := path.Base(info.FullMethod)
+
+	var err error
+	for _, method := range gi.methods {
+		if method == methodName {
+			md, ok := metadata.FromIncomingContext(ss.Context())
+			if !ok {
+				err = errors.Forbidden
+			}
+
+			authorizationValues := md.Get("authorization")
+			if len(authorizationValues) == 0 {
+				err = errors.Forbidden
+			}
+
+			authorization := strings.TrimPrefix(authorizationValues[0], "Access ")
+			if authorization != gi.access {
+				err = errors.Forbidden
+			}
+			break
+		}
+	}
+	if err == nil {
+		err = handler(srv, newWrappedStream(ss))
+	}
+
+	log.Printf("gRPC request - Method:%s\tDuration:%s\tError:%v\n",
+		methodName,
+		time.Since(start),
+		err)
+	return err
+}
+
+func NewGRPCServerAccessAuthentication(access *configs.Access, methods ...string) *gRPCServerAccessAuthentication {
+	return &gRPCServerAccessAuthentication{
+		access:  fmt.Sprintf("%s:%s", access.Access, access.Secret),
+		methods: methods,
+	}
 }
 
 type gRPCServerAuthenticationInterceptor struct {

@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -1309,6 +1311,44 @@ type UsersServiceServer interface {
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	DeleteUserSession(UsersService_DeleteUserSessionServer) error
+}
+
+// UnimplementedUsersServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedUsersServiceServer struct {
+}
+
+func (*UnimplementedUsersServiceServer) CreateGroup(ctx context.Context, req *CreateGroupRequest) (*CreateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (*UnimplementedUsersServiceServer) GetGroup(ctx context.Context, req *GetGroupRequest) (*GetGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroup not implemented")
+}
+func (*UnimplementedUsersServiceServer) StreamSubGroups(req *StreamSubGroupsRequest, srv UsersService_StreamSubGroupsServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamSubGroups not implemented")
+}
+func (*UnimplementedUsersServiceServer) ListSubGroup(ctx context.Context, req *ListSubGroupRequest) (*ListSubGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSubGroup not implemented")
+}
+func (*UnimplementedUsersServiceServer) DeleteGroup(ctx context.Context, req *DeleteGroupRequest) (*DeleteGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroup not implemented")
+}
+func (*UnimplementedUsersServiceServer) AddUser(ctx context.Context, req *AddUserRequest) (*AddUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
+}
+func (*UnimplementedUsersServiceServer) MoveUser(ctx context.Context, req *MoveUserRequest) (*MoveUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveUser not implemented")
+}
+func (*UnimplementedUsersServiceServer) GetUserStream(req *GetUserStreamRequest, srv UsersService_GetUserStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetUserStream not implemented")
+}
+func (*UnimplementedUsersServiceServer) ListUsers(ctx context.Context, req *ListUsersRequest) (*ListUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (*UnimplementedUsersServiceServer) DeleteUser(ctx context.Context, req *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (*UnimplementedUsersServiceServer) DeleteUserSession(srv UsersService_DeleteUserSessionServer) error {
+	return status.Errorf(codes.Unimplemented, "method DeleteUserSession not implemented")
 }
 
 func RegisterUsersServiceServer(s *grpc.Server, srv UsersServiceServer) {
