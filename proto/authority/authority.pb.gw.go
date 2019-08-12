@@ -87,10 +87,7 @@ func request_AuthorityService_ValidateAuth_0(ctx context.Context, marshaler runt
 	var protoReq ValidateAuthRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AuthorityService_ValidateAuth_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_AuthorityService_ValidateAuth_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -221,13 +218,13 @@ func RegisterAuthorityServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_AuthorityService_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "app", "register"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "app", "register"}, ""))
 
-	pattern_AuthorityService_SignKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "sign", "key"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_SignKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "sign", "key"}, ""))
 
-	pattern_AuthorityService_SignCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "app", "sign", "cert"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_SignCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "app", "sign", "cert"}, ""))
 
-	pattern_AuthorityService_ValidateAuth_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "validate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_ValidateAuth_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "validate"}, ""))
 )
 
 var (

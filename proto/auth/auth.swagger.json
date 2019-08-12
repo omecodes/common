@@ -14,8 +14,257 @@
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/api/v1/account/create": {
+      "post": {
+        "operationId": "CreateCredentials",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbCreateCredentialsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authpbCreateCredentialsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    },
+    "/api/v1/email/validate": {
+      "get": {
+        "operationId": "ValidateEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbValidateEmailResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "info",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    },
+    "/api/v1/email/validation/trigger": {
+      "post": {
+        "operationId": "TriggerEmailValidation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbTriggerEmailValidationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authpbTriggerEmailValidationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    },
+    "/api/v1/jwt/get": {
+      "post": {
+        "operationId": "Authenticate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbGetTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authpbAuthenticateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    },
+    "/api/v1/jwt/revoke": {
+      "get": {
+        "operationId": "RevokeToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbRevokeTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token.header.typ",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.header.alg",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.iss",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.sub",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.aud",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.exp",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "token.claims.nbf",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "token.claims.iat",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "token.claims.jti",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.version",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.scope",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "token.claims.origin",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.claims.data",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token.signature",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    },
+    "/api/v1/password/update": {
+      "post": {
+        "operationId": "SetPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbSetPasswordResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authpbSetPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "IDMService"
+        ]
+      }
+    }
+  },
   "definitions": {
+    "authpbAuthenticateRequest": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
     "authpbClaims": {
       "type": "object",
       "properties": {
@@ -57,6 +306,14 @@
         },
         "data": {
           "type": "string"
+        }
+      }
+    },
+    "authpbCreateCredentialsRequest": {
+      "type": "object",
+      "properties": {
+        "credentials": {
+          "$ref": "#/definitions/authpbCredentials"
         }
       }
     },
@@ -104,25 +361,6 @@
         }
       }
     },
-    "authpbGetAuthorizationCodeResponse": {
-      "type": "object",
-      "properties": {
-        "code_challenge": {
-          "type": "string"
-        }
-      }
-    },
-    "authpbGetOAuthAccessTokenResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "$ref": "#/definitions/authpbToken"
-        }
-      }
-    },
-    "authpbGetResetPasswordEmailTokenResponse": {
-      "type": "object"
-    },
     "authpbGetTokenResponse": {
       "type": "object",
       "properties": {
@@ -144,6 +382,23 @@
         "count": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "authpbSetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "old_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
         }
       }
     },
@@ -180,6 +435,20 @@
           "type": "string"
         }
       }
+    },
+    "authpbTriggerEmailValidationRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbTriggerEmailValidationResponse": {
+      "type": "object"
+    },
+    "authpbValidateEmailResponse": {
+      "type": "object"
     }
   }
 }

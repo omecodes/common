@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package authpb;
 
+import "google/api/annotations.proto";
+
 enum TokenPurpose {
     AUTHENTICATION = 0;
     RESOURCES_ACCESS = 1;
@@ -78,15 +80,39 @@ message DeleteTokenResponse {
 }
 
 service IDMService {
-    rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse);
-    rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
-    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
-    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
-
-    rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
+    rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse) {
+        option(google.api.http) = {
+            post: "/api/v1/account/create";
+            body: "*";
+        };
+    };
+    rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse){
+        option(google.api.http) = {
+            post: "/api/v1/jwt/get";
+            body: "*";
+        };
+    };
+    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse){
+        option(google.api.http).get = "/api/v1/jwt/revoke";
+    };
+    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse) {
+        option(google.api.http) = {
+            post: "/api/v1/password/update";
+            body: "*";
+        };
+    };
+    rpc ValidateEmail(ValidateEmailRequest) returns (ValidateEmailResponse){
+        option(google.api.http).get = "/api/v1/email/validate";
+    };
+    rpc TriggerEmailValidation(TriggerEmailValidationRequest) returns (TriggerEmailValidationResponse) {
+        option(google.api.http) = {
+            post: "/api/v1/email/validation/trigger";
+            body: "*";
+        };
+    };
+    /*rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
     rpc GetOAuthAccessToken (GetOAuthAccessTokenRequest) returns (GetOAuthAccessTokenResponse);
-    rpc GetEmailValidationToken (GetEmailValidationTokenRequest) returns (GetTokenResponse);
-    rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);
+    rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);*/
 }
 
 message CreateCredentialsRequest {
@@ -106,31 +132,17 @@ message GetTokenResponse {
     uint32 code = 2;
 }
 
-message GetAuthorizationCodeRequest {
-    string client_id = 1;
-    repeated string scope = 2;
-    string code_verifier = 3;
-    string code_verifier_method = 4;
+message ValidateEmailRequest{
+    string info = 1;
 }
-message GetAuthorizationCodeResponse {
-    string code_challenge = 1;
+message ValidateEmailResponse {
+
 }
 
-message GetOAuthAccessTokenRequest {
-    string client_id = 1;
-    bytes code = 2;
-    string state = 3;
-    string code_verifier = 4;
-    repeated string scope = 5;
-}
-message GetOAuthAccessTokenResponse {
-    Token token = 1;
-}
-
-message GetEmailValidationTokenRequest {
+message TriggerEmailValidationRequest {
     string email = 1;
-    string user = 2;
 }
+message TriggerEmailValidationResponse {}
 
 message RevokeTokenRequest {
     Token token = 1;
@@ -155,9 +167,23 @@ message SetPasswordResponse {
     bool already_used = 1;
 }
 
-message FindUserRequest {
-    string subject = 1;
+message GetAuthorizationCodeRequest {
+    string client_id = 1;
+    repeated string scope = 2;
+    string code_verifier = 3;
+    string code_verifier_method = 4;
 }
-message FindUserResponse {
-    bool exists = 1;
+message GetAuthorizationCodeResponse {
+    string code_challenge = 1;
+}
+
+message GetOAuthAccessTokenRequest {
+    string client_id = 1;
+    bytes code = 2;
+    string state = 3;
+    string code_verifier = 4;
+    repeated string scope = 5;
+}
+message GetOAuthAccessTokenResponse {
+    Token token = 1;
 }

@@ -20,7 +20,7 @@ func NewMailer(cfg conf.Map) (*defaultMailer, error) {
 	dm := &defaultMailer{}
 	var ok bool
 
-	dm.server, ok = cfg.GetString("server")
+	dm.server, ok = cfg.GetString("host")
 	if !ok {
 		return nil, errors.BadInput
 	}
