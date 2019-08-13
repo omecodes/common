@@ -12,6 +12,10 @@ cd authority
 ./compile.sh
 cd ..
 
+cd config
+./compile.sh
+cd ..
+
 cd registry
 ./compile.sh
 cd ..

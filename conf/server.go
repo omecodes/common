@@ -2,135 +2,123 @@ package conf
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/pydio/cells/common/config"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/futils"
+	"github.com/zoenion/common/gateway"
 	http_helper "github.com/zoenion/common/http-helper"
-	"log"
-	"net/http"
+	"github.com/zoenion/common/proto/config"
+	"google.golang.org/grpc"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 )
 
+type ServerInfo struct {
+	GRPC                    string
+	HTTP                    string
+	TLS                     *tls.Config
+	accessKey, accessSecret string
+	Filename                string
+}
+
 type Server struct {
-	filename string
+	cfgLock  sync.Mutex
+	authLock sync.Mutex
+	info     *ServerInfo
 	address  string
-	sync.Mutex
-	authStore       map[string]string
-	requireResponse *http_helper.RequireAuth
-	data            Map
-	apiSrv          *http.Server
+	data     Map
+	gateway  *gateway.Gateway
+}
+
+func (s *Server) Set(ctx context.Context, in *configpb.SetRequest) (*configpb.SetResponse, error) {
+	s.cfgLock.Lock()
+	defer s.cfgLock.Unlock()
+
+	cfg := config.Map{}
+	err := json.Unmarshal(in.Value, &cfg)
+	if err != nil {
+		return nil, fmt.Errorf("could not decode config: %s", err)
+	}
+
+	s.data.Set(in.Key, cfg)
+	rsp := &configpb.SetResponse{}
+
+	err = s.data.Save(s.info.Filename, os.ModePerm)
+	if err != nil {
+		err = fmt.Errorf("could not save configs: %s", err)
+	}
+	return rsp, err
+}
+
+func (s *Server) Get(ctx context.Context, in *configpb.GetRequest) (*configpb.GetResponse, error) {
+	s.cfgLock.Lock()
+	defer s.cfgLock.Unlock()
+
+	cfg := s.data.GetConf(in.Key)
+	if cfg != nil {
+		return nil, errors.NotFound
+	}
+	var err error
+	rsp := &configpb.GetResponse{}
+	rsp.Value, err = json.Marshal(cfg)
+
+	return rsp, err
+}
+
+func (s *Server) Delete(ctx context.Context, in *configpb.DeleteRequest) (*configpb.DeleteResponse, error) {
+	s.cfgLock.Lock()
+	defer s.cfgLock.Unlock()
+
+	s.data.Del(in.Key)
+	err := s.data.Save(s.info.Filename, os.ModePerm)
+	if err != nil {
+		err = fmt.Errorf("could not save configs: %s", err)
+	}
+	return &configpb.DeleteResponse{}, err
 }
 
 func (s *Server) Start() (err error) {
-
-	router := mux.NewRouter()
-
-	router.PathPrefix(RouteSet).HandlerFunc(s.apiSet).Methods(http.MethodPost).Name("configs.set")
-	router.PathPrefix(RouteGet).HandlerFunc(s.apiGet).Methods(http.MethodGet).Name("configs.get")
-	router.PathPrefix(RouteDel).HandlerFunc(s.apiDel).Methods(http.MethodDelete).Name("configs.del")
-
-	s.apiSrv = &http.Server{
-		Addr:    s.address,
-		Handler: router,
-	}
-
-	err = s.apiSrv.ListenAndServe()
-	if err == nil {
-		log.Println(fmt.Sprintf("API SERVER: http://%s", s.apiSrv.Addr))
-		log.Println("API Accesses:")
-		for k, v := range s.authStore {
-			log.Printf("%s:%s\n", k, v)
-		}
-	}
-	return err
+	return s.gateway.Start()
 }
 
 func (s *Server) Stop() error {
-	return s.apiSrv.Shutdown(context.Background())
+	s.gateway.Stop()
+	return nil
 }
 
-func (s *Server) apiGet(w http.ResponseWriter, r *http.Request) {
-	s.Lock()
-	defer s.Unlock()
-	path := strings.Replace(r.URL.Path, RouteGet, "", 1)
-	s.data.GetConf(path)
-}
-
-func (s *Server) apiSet(w http.ResponseWriter, r *http.Request) {
-	s.Lock()
-	defer s.Unlock()
-	path := strings.Replace(r.URL.Path, RouteSet, "", 1)
-
-	var m Map
-	err := json.NewDecoder(r.Body).Decode(&m)
-	if err != nil {
-		http_helper.WriteError(w, err)
-		return
-	}
-
-	s.data.Set(path, m)
-	if err := s.data.Save(s.filename, os.ModePerm); err != nil {
-		http_helper.WriteError(w, err)
-	}
-}
-
-func (s *Server) apiDel(w http.ResponseWriter, r *http.Request) {
-	s.Lock()
-	defer s.Unlock()
-	path := strings.Replace(r.URL.Path, RouteDel, "", 1)
-	s.data.Del(path)
-	if err := s.data.Save(s.filename, os.ModePerm); err != nil {
-		http_helper.WriteError(w, err)
-	}
-}
-
-func NewServer(cfgFilename string) (*Server, error) {
+func NewServer(name string, info *ServerInfo) (*Server, error) {
 	s := new(Server)
 	var err error
-	cfgFilename, err = filepath.Abs(cfgFilename)
+
+	info.Filename, err = filepath.Abs(info.Filename)
 	if err != nil {
 		return nil, err
 	}
 
-	conf := Map{}
-	err = Load(cfgFilename, &conf)
-	if err != nil {
-		log.Println(err)
-		log.Printf("dir must contain conf.json file formatted as below \n%s")
-		return nil, errors.New("could not load configs file at " + cfgFilename)
-	}
-
-	address, ok := conf.GetString("address")
-	if !ok {
-		return nil, errors.New("invalid configs file")
-	}
-	s.address = address
-
-	storeFilename, ok := conf.GetString("store")
-	if !ok {
-		return nil, errors.New("invalid configs file")
-	}
-
-	s.filename = storeFilename
-	s.requireResponse = &http_helper.RequireAuth{
-		Type:  "Basic",
-		Realm: "conf-server",
-	}
-
-	if authStore := conf.GetConf("auth"); authStore != nil {
-		s.authStore = map[string]string{}
-		for k, v := range authStore {
-			s.authStore[k] = v.(string)
-		}
-	}
 	s.data = Map{}
-	if futils.FileExists(s.filename) {
-		err = Load(s.filename, &s.data)
+	if futils.FileExists(info.Filename) {
+		err = Load(info.Filename, &s.data)
 	}
+
+	gc := &gateway.Config{
+		Name: name,
+		Tls:  info.TLS,
+		HTTP: &gateway.HTTP{
+			Address:        info.HTTP,
+			WireGRPCFunc:   configpb.RegisterConfigHandlerFromEndpoint,
+			MiddlewareList: []http_helper.HttpMiddleware{},
+		},
+		GRPC: &gateway.GRPC{
+			Address: info.GRPC,
+			RegisterHandlerFunc: func(srv *grpc.Server) {
+				configpb.RegisterConfigServer(srv, s)
+			},
+		},
+	}
+	s.gateway = gateway.New(gc)
 	return s, err
 }
