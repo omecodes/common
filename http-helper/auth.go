@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	auth "github.com/abbot/go-http-auth"
+	"github.com/zoenion/common/configs"
 	"github.com/zoenion/common/errors"
 	authpb "github.com/zoenion/common/proto/auth"
 	"log"
@@ -126,9 +127,9 @@ func NewBearerAuthenticationMiddleware(jwtVerifier JwtVerifier, wrappers ...Requ
 
 // ProxyAuthentication
 type APIAccessAuthorization struct {
-	realm       string
-	credentials *authpb.Credentials
-	wrappers    []RequestWrapper
+	realm    string
+	access   *configs.Access
+	wrappers []RequestWrapper
 }
 
 func (pam *APIAccessAuthorization) Handle(next http.HandlerFunc) http.HandlerFunc {
@@ -141,7 +142,7 @@ func (pam *APIAccessAuthorization) Handle(next http.HandlerFunc) http.HandlerFun
 		}
 
 		parts := strings.Split(authentication, ":")
-		if len(parts) != 2 || pam.credentials.Username != parts[0] || pam.credentials.Password != parts[1] {
+		if len(parts) != 2 || pam.access.Access != parts[0] || pam.access.Secret != parts[1] {
 			log.Println("Api access refused")
 			WriteResponse(w, http.StatusUnauthorized, "API access refused")
 			return
@@ -154,10 +155,10 @@ func (pam *APIAccessAuthorization) Handle(next http.HandlerFunc) http.HandlerFun
 	}
 }
 
-func NewAPIAuthenticationMiddleware(realm string, credentials *authpb.Credentials, wrappers ...RequestWrapper) *APIAccessAuthorization {
+func NewAPIAuthenticationMiddleware(realm string, access *configs.Access, wrappers ...RequestWrapper) *APIAccessAuthorization {
 	return &APIAccessAuthorization{
-		realm:       realm,
-		credentials: credentials,
-		wrappers:    wrappers,
+		realm:    realm,
+		access:   access,
+		wrappers: wrappers,
 	}
 }

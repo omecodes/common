@@ -3,9 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
-	"github.com/zoenion/common/configs"
 	"github.com/zoenion/common/errors"
-	authpb "github.com/zoenion/common/proto/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"log"
@@ -15,12 +13,12 @@ import (
 )
 
 type gRPCClientBasicAuthentication struct {
-	credentials *authpb.Credentials
+	user, password string
 }
 
 func (g *gRPCClientBasicAuthentication) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"authorization": fmt.Sprintf("Basic %s:%s", g.credentials.Username, g.credentials.Password),
+		"authorization": fmt.Sprintf("Basic %s:%s", g.user, g.password),
 	}, nil
 }
 
@@ -29,11 +27,9 @@ func (g *gRPCClientBasicAuthentication) RequireTransportSecurity() bool {
 }
 
 func NewGRPCBasicAuthentication(user, password string) *gRPCClientBasicAuthentication {
-	return &gRPCAccessAuthentication{
-		credentials: &authpb.Credentials{
-			Username: user,
-			Password: password,
-		},
+	return &gRPCClientBasicAuthentication{
+		user:     user,
+		password: password,
 	}
 }
 
@@ -51,42 +47,11 @@ func (g *gRPCClientTokenAuth) RequireTransportSecurity() bool {
 	return true
 }
 
-func NewGRPCTokenAuthentication(t string) *gRPCClientTokenAuth {
+func NewGRPCClientTokenAuthentication(t string) *gRPCClientTokenAuth {
 	return &gRPCClientTokenAuth{token: t}
 }
 
-type gRPCClientChallengeAuthentication struct {
-	credentials *authpb.Credentials
-	nonce       []byte
-}
-
-func (g *gRPCClientChallengeAuthentication) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	return map[string]string{
-		"authorization": "Zoenion ",
-	}, nil
-}
-
-func (g *gRPCClientChallengeAuthentication) RequireTransportSecurity() bool {
-	return false
-}
-
-func NewGRPCChallengeAuthentication(credentials *authpb.Credentials, nonce []byte) *gRPCClientChallengeAuthentication {
-	return &gRPCClientChallengeAuthentication{
-		credentials: credentials,
-		nonce:       nonce,
-	}
-}
-
-// GRPCDialOptions
-func GRPCDialOptions(ctx context.Context) ([]grpc.DialOption, error) {
-	return nil, nil
-}
-
-// GRPCListenOptions
-func GRPCListenOptions(ctx context.Context) ([]grpc.DialOption, error) {
-	return nil, nil
-}
-
+//
 type gRPCServerAccessAuthentication struct {
 	access  string
 	methods []string
@@ -161,16 +126,13 @@ func (gi *gRPCServerAccessAuthentication) InterceptStream(srv interface{}, ss gr
 		err = handler(srv, newWrappedStream(ss))
 	}
 
-	log.Printf("gRPC request - Method:%s\tDuration:%s\tError:%v\n",
-		methodName,
-		time.Since(start),
-		err)
+	log.Printf("gRPC request - Method:%s\tDuration:%s\tError:%v\n", methodName, time.Since(start), err)
 	return err
 }
 
-func NewGRPCServerAccessAuthentication(access *configs.Access, methods ...string) *gRPCServerAccessAuthentication {
+func NewGRPCServerAccessAuthentication(accessKey, accessSecret string, methods ...string) *gRPCServerAccessAuthentication {
 	return &gRPCServerAccessAuthentication{
-		access:  fmt.Sprintf("%s:%s", access.Access, access.Secret),
+		access:  fmt.Sprintf("%s:%s", accessKey, accessSecret),
 		methods: methods,
 	}
 }
