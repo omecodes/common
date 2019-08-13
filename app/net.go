@@ -2,18 +2,18 @@ package app
 
 import "fmt"
 
-func (a *Vars) GRPCAddress() string {
-	addr := a.Domain
+func (v *Vars) GRPCAddress() string {
+	addr := v.Domain
 	if addr == "" {
-		addr = a.IP
+		addr = v.IP
 	}
-	return fmt.Sprintf("%s:%s", addr, a.GatewayGRPCPort)
+	return fmt.Sprintf("%s:%s", addr, v.GatewayGRPCPort)
 }
 
-func (a *Vars) HTTPAddress() string {
-	addr := a.Domain
+func (v *Vars) HTTPAddress() string {
+	addr := v.Domain
 	if addr == "" {
-		addr = a.IP
+		addr = v.IP
 	}
-	return fmt.Sprintf("%s:%s", addr, a.GatewayHTTPPort)
+	return fmt.Sprintf("%s:%s", addr, v.GatewayHTTPPort)
 }
