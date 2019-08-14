@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/zoenion/common/conf"
 	registrypb "github.com/zoenion/common/proto/registry"
 	"log"
 )
@@ -12,6 +13,7 @@ type Node interface {
 	Init(vars *Vars) error
 	Start() error
 	RegistryInfo() *registrypb.Application
+	SharedConfigs() chan conf.Map
 	Stop()
 }
 
@@ -65,4 +67,10 @@ func StopNode(node Node, vars *Vars) error {
 		return err
 	}
 	return nil
+}
+
+func publishConfigs(node Node, vars *Vars) {
+	if vars.ConfigServer != "" {
+
+	}
 }

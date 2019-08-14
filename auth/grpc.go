@@ -12,6 +12,27 @@ import (
 	"time"
 )
 
+type gRPCClientApiAccessCredentials struct {
+	key, secret string
+}
+
+func (g *gRPCClientApiAccessCredentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{
+		"authorization": fmt.Sprintf("Access %s:%s", g.key, g.secret),
+	}, nil
+}
+
+func (g *gRPCClientApiAccessCredentials) RequireTransportSecurity() bool {
+	return true
+}
+
+func NewGRPCClientApiAccessCredentials(key, secret string) *gRPCClientApiAccessCredentials {
+	return &gRPCClientApiAccessCredentials{
+		key:    key,
+		secret: secret,
+	}
+}
+
 type gRPCClientBasicAuthentication struct {
 	user, password string
 }

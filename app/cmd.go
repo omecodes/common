@@ -1,52 +1,16 @@
 package app
 
 import (
-	"crypto"
-	"crypto/x509"
 	"errors"
 	"fmt"
-	registrypb "github.com/zoenion/common/proto/registry"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc/credentials"
-
 	"github.com/zoenion/common/prompt"
 )
-
-type Vars struct {
-	Name         string
-	Dir          string
-	Domain       string
-	IP           string
-	ConfigServer string
-
-	Registry       string
-	Namespace      string
-	RegistryID     string
-	registryClient registrypb.RegistryClient
-
-	GRPCAuthorityAddress        string
-	AuthorityCertPath           string
-	AuthorityCredentials        string
-	authorityCert               *x509.Certificate
-	authorityGRPCAuthentication credentials.PerRPCCredentials
-
-	GatewayGRPCPort string
-	GatewayHTTPPort string
-
-	gRPCAuthorityCredentials credentials.TransportCredentials
-	serviceCert              *x509.Certificate
-	serviceKey               crypto.PrivateKey
-}
-
-type ConfigVars struct {
-	Dir  string
-	Name string
-}
 
 var (
 	Vendor = "Zoenion"

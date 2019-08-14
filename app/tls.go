@@ -124,7 +124,7 @@ func loadSignedKeyPair(v *Vars) error {
 	return nil
 }
 
-func ServiceProviderServerTLS(v *Vars) *tls.Config {
+func serviceProviderServerTLS(v *Vars) *tls.Config {
 	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
 		return nil
 	}
@@ -145,7 +145,7 @@ func ServiceProviderServerTLS(v *Vars) *tls.Config {
 	}
 }
 
-func ServiceProviderClientTLS(v *Vars) *tls.Config {
+func serviceProviderClientTLS(v *Vars) *tls.Config {
 	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
 		return nil
 	}

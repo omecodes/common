@@ -2,7 +2,10 @@ package app
 
 import (
 	"fmt"
+	"github.com/zoenion/common/app/net"
 	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/errors"
+	configpb "github.com/zoenion/common/proto/config"
 	"path/filepath"
 )
 
@@ -22,4 +25,22 @@ func LoadConfigs(dir string) (conf.Map, error) {
 		return nil, fmt.Errorf("could not load configs: %s", err)
 	}
 	return cfg, nil
+}
+
+func configClient(v *Vars) (configpb.ConfigClient, error) {
+	if v.configClient != nil {
+		return v.configClient, nil
+	}
+
+	if v.ConfigServer == "" {
+		return nil, errors.NotFound
+	}
+
+	conn, err := net.GRPCMutualTlsDial(v.ConfigServer, v.authorityCert, v.serviceCert, v.serviceKey)
+	if err != nil {
+		return nil, err
+	}
+
+	v.configClient = configpb.NewConfigClient(conn)
+	return v.configClient, nil
 }
