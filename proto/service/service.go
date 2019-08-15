@@ -1,4 +1,4 @@
-package registrypb
+package servicepb
 
 import (
 	"google.golang.org/grpc"

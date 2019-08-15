@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	configpb "github.com/zoenion/common/proto/config"
-	registrypb "github.com/zoenion/common/proto/registry"
+	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -22,7 +22,7 @@ type Vars struct {
 	Registry       string
 	Namespace      string
 	RegistryID     string
-	registryClient registrypb.RegistryClient
+	registryClient servicepb.RegistryClient
 
 	GRPCAuthorityAddress        string
 	AuthorityCertPath           string

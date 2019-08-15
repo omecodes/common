@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "registry.proto",
+    "title": "service.proto",
     "version": "version not set"
   },
   "schemes": [
@@ -15,20 +15,20 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/app/deregister/{id}": {
+    "/api/v1/services/deregister/{registry_id}": {
       "get": {
         "operationId": "Deregister",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/registrypbDeregisterResponse"
+              "$ref": "#/definitions/servicepbDeregisterResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "registry_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -39,20 +39,20 @@
         ]
       }
     },
-    "/api/v1/app/get/{id}": {
+    "/api/v1/services/get/{registry_id}": {
       "get": {
         "operationId": "Get",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/registrypbGetResponse"
+              "$ref": "#/definitions/servicepbGetResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "registry_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -63,14 +63,14 @@
         ]
       }
     },
-    "/api/v1/app/list": {
+    "/api/v1/services/list": {
       "get": {
         "operationId": "List",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/registrypbListResponse"
+              "$ref": "#/definitions/servicepbListResponse"
             }
           }
         },
@@ -87,14 +87,14 @@
         ]
       }
     },
-    "/api/v1/app/register": {
+    "/api/v1/services/register": {
       "post": {
         "operationId": "Register",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/registrypbRegisterResponse"
+              "$ref": "#/definitions/servicepbRegisterResponse"
             }
           }
         },
@@ -104,8 +104,48 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/registrypbRegisterRequest"
+              "$ref": "#/definitions/servicepbRegisterRequest"
             }
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    },
+    "/api/v1/services/search": {
+      "get": {
+        "operationId": "Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/servicepbSearchResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Unknown",
+              "Authority",
+              "IDM",
+              "UsersHierarchy",
+              "UserInfo",
+              "ConfigsStore",
+              "Storage"
+            ],
+            "default": "Unknown"
           }
         ],
         "tags": [
@@ -115,7 +155,18 @@
     }
   },
   "definitions": {
-    "registrypbApplication": {
+    "servicepbDeregisterResponse": {
+      "type": "object"
+    },
+    "servicepbGetResponse": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/servicepbInfo"
+        }
+      }
+    },
+    "servicepbInfo": {
       "type": "object",
       "properties": {
         "name": {
@@ -124,13 +175,16 @@
         "namespace": {
           "type": "string"
         },
+        "type": {
+          "$ref": "#/definitions/servicepbType"
+        },
         "label": {
           "type": "string"
         },
         "nodes": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/registrypbNode"
+            "$ref": "#/definitions/servicepbNode"
           }
         },
         "meta": {
@@ -141,29 +195,18 @@
         }
       }
     },
-    "registrypbDeregisterResponse": {
-      "type": "object"
-    },
-    "registrypbGetResponse": {
-      "type": "object",
-      "properties": {
-        "application": {
-          "$ref": "#/definitions/registrypbApplication"
-        }
-      }
-    },
-    "registrypbListResponse": {
+    "servicepbListResponse": {
       "type": "object",
       "properties": {
         "applications": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/registrypbApplication"
+            "$ref": "#/definitions/servicepbInfo"
           }
         }
       }
     },
-    "registrypbNode": {
+    "servicepbNode": {
       "type": "object",
       "properties": {
         "protocol": {
@@ -172,12 +215,8 @@
         "address": {
           "type": "string"
         },
-        "private": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "ping_address": {
-          "type": "string"
+        "security": {
+          "$ref": "#/definitions/servicepbSecurity"
         },
         "ttl": {
           "type": "string",
@@ -185,21 +224,54 @@
         }
       }
     },
-    "registrypbRegisterRequest": {
+    "servicepbRegisterRequest": {
       "type": "object",
       "properties": {
-        "application": {
-          "$ref": "#/definitions/registrypbApplication"
+        "service": {
+          "$ref": "#/definitions/servicepbInfo"
         }
       }
     },
-    "registrypbRegisterResponse": {
+    "servicepbRegisterResponse": {
       "type": "object",
       "properties": {
-        "id": {
+        "registry_id": {
           "type": "string"
         }
       }
+    },
+    "servicepbSearchResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/servicepbInfo"
+          }
+        }
+      }
+    },
+    "servicepbSecurity": {
+      "type": "string",
+      "enum": [
+        "None",
+        "ServerTLS",
+        "MutualTLS"
+      ],
+      "default": "None"
+    },
+    "servicepbType": {
+      "type": "string",
+      "enum": [
+        "Unknown",
+        "Authority",
+        "IDM",
+        "UsersHierarchy",
+        "UserInfo",
+        "ConfigsStore",
+        "Storage"
+      ],
+      "default": "Unknown"
     }
   }
 }

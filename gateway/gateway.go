@@ -8,7 +8,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/zoenion/common"
 	http_helper "github.com/zoenion/common/http-helper"
-	registrypb "github.com/zoenion/common/proto/registry"
+	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -69,7 +69,7 @@ func (g *Gateway) Stop() {
 	}
 }
 
-func (g *Gateway) RunningNodes() []*registrypb.Node {
+func (g *Gateway) RunningNodes() []*servicepb.Node {
 	if !g.running {
 		log.Println("could not get running node, gateway is not running")
 		return nil
@@ -79,9 +79,9 @@ func (g *Gateway) RunningNodes() []*registrypb.Node {
 		return nil
 	}
 
-	var nodes []*registrypb.Node
+	var nodes []*servicepb.Node
 	if g.config.HTTP != nil {
-		nodes = append(nodes, &registrypb.Node{
+		nodes = append(nodes, &servicepb.Node{
 			Address:  g.config.HTTP.Address,
 			Ttl:      -1,
 			Protocol: common.ProtocolHTTP,
@@ -89,7 +89,7 @@ func (g *Gateway) RunningNodes() []*registrypb.Node {
 	}
 
 	if g.config.GRPC != nil {
-		nodes = append(nodes, &registrypb.Node{
+		nodes = append(nodes, &servicepb.Node{
 			Address:  g.config.GRPC.Address,
 			Ttl:      -1,
 			Protocol: common.ProtocolGRPC,

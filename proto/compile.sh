@@ -16,7 +16,7 @@ cd config
 ./compile.sh
 cd ..
 
-cd registry
+cd service
 ./compile.sh
 cd ..
 

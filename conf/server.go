@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/pydio/cells/common/config"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/futils"
 	"github.com/zoenion/common/gateway"
@@ -38,7 +37,7 @@ func (s *Server) Set(ctx context.Context, in *configpb.SetRequest) (*configpb.Se
 	s.cfgLock.Lock()
 	defer s.cfgLock.Unlock()
 
-	cfg := config.Map{}
+	cfg := Map{}
 	err := json.Unmarshal(in.Value, &cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not decode config: %s", err)
