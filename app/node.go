@@ -2,10 +2,14 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/zoenion/common/app/net"
 	"github.com/zoenion/common/conf"
+	configpb "github.com/zoenion/common/proto/config"
 	servicepb "github.com/zoenion/common/proto/service"
 	"log"
+	"time"
 )
 
 type Node interface {
@@ -56,7 +60,7 @@ func StartNode(node Node, vars *Vars) error {
 	}
 
 	if vars.ConfigServer != "" {
-
+		go publishConfigs(node, vars)
 	}
 	return nil
 }
@@ -74,7 +78,39 @@ func StopNode(node Node, vars *Vars) error {
 }
 
 func publishConfigs(node Node, vars *Vars) {
-	if vars.ConfigServer != "" {
+	vars.configChanInput = make(chan conf.Map, 1)
+	node.ShareState(vars.configChanInput)
+	for {
+		if vars.configClient == nil {
+			for {
+				conn, err := net.GRPCMutualTlsDial(vars.ConfigServer, vars.authorityCert, vars.serviceCert, vars.serviceKey)
+				if err != nil {
+					log.Printf("could not create secure connection to config server: %s\n", err)
+					<-time.After(time.Second * 3)
+					continue
+				}
+				vars.configClient = configpb.NewConfigClient(conn)
+				break
+			}
+		}
 
+		state, ok := <-vars.configChanInput
+		if !ok {
+			log.Println("stopped sharing state")
+			return
+		}
+
+		stateBytes, err := json.Marshal(state)
+		if err != nil {
+			log.Fatalf("could not encode state: %s\n", err)
+		}
+
+		_, err = vars.configClient.Set(context.Background(), &configpb.SetRequest{
+			Key:   "",
+			Value: stateBytes,
+		})
+		if err != nil {
+			log.Fatalf("could not set config: %s\n", err)
+		}
 	}
 }

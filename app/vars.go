@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"crypto/x509"
 	"fmt"
+	"github.com/zoenion/common/conf"
 	configpb "github.com/zoenion/common/proto/config"
 	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc/credentials"
@@ -16,8 +17,10 @@ type Vars struct {
 	IP       string
 	Insecure bool
 
-	ConfigServer string
-	configClient configpb.ConfigClient
+	ConfigServer    string
+	configClient    configpb.ConfigClient
+	configChanInput chan conf.Map
+	lastState       conf.Map
 
 	Registry       string
 	Namespace      string

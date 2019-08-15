@@ -17,7 +17,18 @@ enum Type {
 enum Security {
     None = 0;
     ServerTLS = 1;
-    MutualTLS = 3;
+    MutualTLS = 2;
+}
+
+enum Status {
+    Unknown = 0;
+    Running = 1;
+    Stopped = 2;
+}
+
+message State {
+    Status status = 1;
+    map<string, string> metadata = 2;
 }
 
 message Node {

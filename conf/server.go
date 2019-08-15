@@ -17,8 +17,7 @@ import (
 )
 
 type ServerInfo struct {
-	GRPC                    string
-	HTTP                    string
+	Address                 string
 	TLS                     *tls.Config
 	accessKey, accessSecret string
 	Filename                string
@@ -107,12 +106,12 @@ func NewServer(name string, info *ServerInfo) (*Server, error) {
 		Name: name,
 		Tls:  info.TLS,
 		HTTP: &gateway.HTTP{
-			Address:        info.HTTP,
+			Address:        fmt.Sprintf("%s:", info.Address),
 			WireGRPCFunc:   configpb.RegisterConfigHandlerFromEndpoint,
 			MiddlewareList: []http_helper.HttpMiddleware{},
 		},
 		GRPC: &gateway.GRPC{
-			Address: info.GRPC,
+			Address: fmt.Sprintf("%s:", info.Address),
 			RegisterHandlerFunc: func(srv *grpc.Server) {
 				configpb.RegisterConfigServer(srv, s)
 			},

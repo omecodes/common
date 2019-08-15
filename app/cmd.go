@@ -53,13 +53,13 @@ func CMD(use string, node Node) *cobra.Command {
 	startCMD.PersistentFlags().StringVar(&vars.Dir, "dir", "", "Configs directory path")
 	startCMD.PersistentFlags().StringVar(&vars.GatewayGRPCPort, "grpc", "", "GRPC listen address")
 	startCMD.PersistentFlags().StringVar(&vars.GatewayHTTPPort, "http", "", "HTTP listen address")
-	startCMD.PersistentFlags().StringVar(&vars.Registry, "registry", "", "ArgRegistry location")
-	startCMD.PersistentFlags().StringVar(&vars.ConfigServer, "cfg-server", "", "Config server location")
+	startCMD.PersistentFlags().StringVar(&vars.Registry, "registry-grpc", "", "ArgRegistry location")
+	startCMD.PersistentFlags().StringVar(&vars.ConfigServer, "cfg-server-grpc", "", "Config server location")
 	startCMD.PersistentFlags().StringVar(&vars.IP, "ip", "", "Network address to bind to")
 	startCMD.PersistentFlags().StringVar(&vars.Domain, "domain", "", "ArgDomain name")
 	startCMD.PersistentFlags().StringVar(&vars.Namespace, "namespace", "", "Group identifier for registry")
 	startCMD.PersistentFlags().StringVar(&vars.AuthorityCertPath, "authority-cert", "", "Authority certificate path")
-	startCMD.PersistentFlags().StringVar(&vars.GRPCAuthorityAddress, "authority", "", "Authority address location")
+	startCMD.PersistentFlags().StringVar(&vars.GRPCAuthorityAddress, "authority-grpc", "", "Authority address location")
 	startCMD.PersistentFlags().StringVar(&vars.AuthorityCredentials, "authority-cred", "", "Authority access credentials")
 
 	command := &cobra.Command{
@@ -101,7 +101,7 @@ func validateRunVars(vars *Vars) error {
 
 	if vars.GRPCAuthorityAddress != "" || vars.AuthorityCertPath != "" || vars.AuthorityCredentials != "" {
 		if vars.GRPCAuthorityAddress == "" || vars.AuthorityCertPath == "" || vars.AuthorityCredentials == "" {
-			return fmt.Errorf("to enable connection to authority %s, %s and %s flags must me passed", vars.GRPCAuthorityAddress, vars.AuthorityCertPath, vars.AuthorityCredentials)
+			return fmt.Errorf("to enable connection to authority --authority-grpc, --authority-cert and --authority-cred flags must me passed")
 		}
 	}
 

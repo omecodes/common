@@ -56,6 +56,8 @@ func loadSignedKeyPair(v *Vars) error {
 		return fmt.Errorf("could not load authority certificate: %s", err)
 	}
 
+	v.authorityCert = authorityCert
+
 	name := strcase.ToSnake(v.Name)
 	certFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.crt", name))
 	keyFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.key", name))
@@ -124,7 +126,7 @@ func loadSignedKeyPair(v *Vars) error {
 	return nil
 }
 
-func serviceProviderServerTLS(v *Vars) *tls.Config {
+func ServerMutualTLS(v *Vars) *tls.Config {
 	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
 		return nil
 	}
@@ -134,18 +136,18 @@ func serviceProviderServerTLS(v *Vars) *tls.Config {
 
 	tlsCert := tls.Certificate{
 		Certificate: [][]byte{v.serviceCert.Raw},
-		PrivateKey:  v.serviceKey.(*ecdsa.PrivateKey),
+		PrivateKey:  v.serviceKey,
 	}
 
 	return &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
 		ClientCAs:    CAPool,
-		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientAuth:   tls.RequestClientCert,
 		ServerName:   v.Domain,
 	}
 }
 
-func serviceProviderClientTLS(v *Vars) *tls.Config {
+func ClientMutualTLS(v *Vars) *tls.Config {
 	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
 		return nil
 	}
