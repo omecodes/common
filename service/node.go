@@ -1,13 +1,13 @@
-package app
+package service
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/zoenion/common/app/net"
 	"github.com/zoenion/common/conf"
 	configpb "github.com/zoenion/common/proto/config"
 	servicepb "github.com/zoenion/common/proto/service"
+	"github.com/zoenion/common/service/net"
 	"log"
 	"time"
 )

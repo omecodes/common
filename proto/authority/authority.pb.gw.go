@@ -221,11 +221,11 @@ func RegisterAuthorityServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_AuthorityService_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "app", "register"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "service", "register"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_AuthorityService_SignKey_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "sign", "key"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_AuthorityService_SignCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "app", "sign", "cert"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_AuthorityService_SignCertificate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "service", "sign", "cert"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_AuthorityService_ValidateAuth_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "auth", "validate"}, "", runtime.AssumeColonVerbOpt(true)))
 )

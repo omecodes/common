@@ -6,7 +6,7 @@ import (
 )
 
 type Service struct {
-	App      App    `json:"app"`
+	App      App    `json:"service"`
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Database string `json:"database"`

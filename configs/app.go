@@ -6,7 +6,7 @@ import (
 )
 
 type App struct {
-	Name                     string       `json:"app"`
+	Name                     string       `json:"service"`
 	Environment              *Environment `json:"environment"`
 	Mailer                   *Mailer      `json:"mailer"`
 	Registry                 string       `json:"registry"`

@@ -1,11 +1,11 @@
-package app
+package service
 
 import (
 	"fmt"
-	"github.com/zoenion/common/app/net"
 	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/errors"
 	configpb "github.com/zoenion/common/proto/config"
+	"github.com/zoenion/common/service/net"
 	"path/filepath"
 )
 

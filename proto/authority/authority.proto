@@ -68,7 +68,7 @@ message ValidateAuthResponse {
 service AuthorityService {
     rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
         option(google.api.http) = {
-            post: "/api/v1/app/register";
+            post: "/api/v1/service/register";
             body: "*";
         };
     };
@@ -80,7 +80,7 @@ service AuthorityService {
     };
     rpc SignCertificate(SignCertificateRequest)returns(SignCertificateResponse){
         option(google.api.http) = {
-            post: "/api/v1/app/sign/cert";
+            post: "/api/v1/service/sign/cert";
             body:"*";
         };
     };
