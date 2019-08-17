@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/services/deregister/{registry_id}": {
+    "/api/services/deregister/{registry_id}": {
       "get": {
         "operationId": "Deregister",
         "responses": {
@@ -39,7 +39,7 @@
         ]
       }
     },
-    "/api/v1/services/get/{registry_id}": {
+    "/api/services/get/{registry_id}": {
       "get": {
         "operationId": "Get",
         "responses": {
@@ -63,7 +63,7 @@
         ]
       }
     },
-    "/api/v1/services/list": {
+    "/api/services/list": {
       "get": {
         "operationId": "List",
         "responses": {
@@ -87,7 +87,7 @@
         ]
       }
     },
-    "/api/v1/services/register": {
+    "/api/services/register": {
       "post": {
         "operationId": "Register",
         "responses": {
@@ -113,7 +113,7 @@
         ]
       }
     },
-    "/api/v1/services/search": {
+    "/api/services/search": {
       "get": {
         "operationId": "Search",
         "responses": {
@@ -137,7 +137,7 @@
             "required": false,
             "type": "string",
             "enum": [
-              "Unknown",
+              "UnknownType",
               "Authority",
               "IDM",
               "UsersHierarchy",
@@ -145,7 +145,7 @@
               "ConfigsStore",
               "Storage"
             ],
-            "default": "Unknown"
+            "default": "UnknownType"
           }
         ],
         "tags": [
@@ -155,8 +155,69 @@
     }
   },
   "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
     "servicepbDeregisterResponse": {
       "type": "object"
+    },
+    "servicepbEvent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/servicepbEventType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/definitions/servicepbInfo"
+        }
+      }
+    },
+    "servicepbEventType": {
+      "type": "string",
+      "enum": [
+        "UnknownEvent",
+        "Registered",
+        "DeRegistered",
+        "Updated"
+      ],
+      "default": "UnknownEvent"
     },
     "servicepbGetResponse": {
       "type": "object",
@@ -263,7 +324,7 @@
     "servicepbType": {
       "type": "string",
       "enum": [
-        "Unknown",
+        "UnknownType",
         "Authority",
         "IDM",
         "UsersHierarchy",
@@ -271,7 +332,21 @@
         "ConfigsStore",
         "Storage"
       ],
-      "default": "Unknown"
+      "default": "UnknownType"
+    }
+  },
+  "x-stream-definitions": {
+    "servicepbEvent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/servicepbEvent"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of servicepbEvent"
     }
   }
 }

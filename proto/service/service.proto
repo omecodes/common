@@ -5,7 +5,7 @@ package servicepb;
 import "google/api/annotations.proto";
 
 enum Type {
-    Unknown = 0;
+    UnknownType = 0;
     Authority = 1;
     IDM = 2;
     UsersHierarchy = 3;
@@ -21,9 +21,16 @@ enum Security {
 }
 
 enum Status {
-    Unknown = 0;
+    UnknownStatus = 0;
     Running = 1;
     Stopped = 2;
+}
+
+enum EventType {
+    UnknownEvent = 0;
+    Registered = 1;
+    DeRegistered = 2;
+    Updated = 3;
 }
 
 message State {
@@ -45,6 +52,12 @@ message Info {
     string label = 4;
     repeated Node nodes = 5;
     map<string, string> meta = 6;
+}
+
+message Event {
+    EventType type = 1;
+    string name = 2;
+    Info info = 3;
 }
 
 message RegisterRequest {
@@ -81,23 +94,28 @@ message SearchResponse {
     repeated Info services = 1;
 }
 
+message ListenRequest {
+    string namespace = 1;
+}
+
 service Registry {
-    rpc Register(RegisterRequest) returns (RegisterResponse) {
+    rpc Register(RegisterRequest) returns (RegisterResponse){
         option(google.api.http) = {
-            post: "/api/v1/services/register";
+            post: "/api/services/register";
             body: "*";
         };
     };
     rpc Deregister(DeregisterRequest)returns(DeregisterResponse){
-            option(google.api.http).get = "/api/v1/services/deregister/{registry_id}";
+            option(google.api.http).get = "/api/services/deregister/{registry_id}";
     };
     rpc List(ListRequest)returns(ListResponse){
-            option(google.api.http).get = "/api/v1/services/list";
+            option(google.api.http).get = "/api/services/list";
     };
     rpc Get(GetRequest)returns(GetResponse){
-        option(google.api.http).get = "/api/v1/services/get/{registry_id}";
+        option(google.api.http).get = "/api/services/get/{registry_id}";
     };
     rpc Search(SearchRequest) returns (SearchResponse) {
-        option(google.api.http).get = "/api/v1/services/search";
+        option(google.api.http).get = "/api/services/search";
     };
+    rpc Listen(ListenRequest) returns (stream Event);
 }

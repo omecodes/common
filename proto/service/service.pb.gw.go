@@ -281,15 +281,15 @@ func RegisterRegistryHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 }
 
 var (
-	pattern_Registry_Register_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "services", "register"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Registry_Register_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "services", "register"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Registry_Deregister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "services", "deregister", "registry_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Registry_Deregister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "services", "deregister", "registry_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Registry_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "services", "list"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Registry_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "services", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Registry_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "services", "get", "registry_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Registry_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "services", "get", "registry_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Registry_Search_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "services", "search"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Registry_Search_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "services", "search"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
