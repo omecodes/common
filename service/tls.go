@@ -15,31 +15,14 @@ import (
 	"github.com/zoenion/common/futils"
 	authoritypb "github.com/zoenion/common/proto/authority"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-func authorityTransportCredentials(a *Vars) (credentials.TransportCredentials, error) {
-	if a.gRPCAuthorityCredentials != nil {
-		return a.gRPCAuthorityCredentials, nil
-	}
-
-	if a.AuthorityCertPath == "" {
-		return nil, errors.BadInput
-	}
-	if !futils.FileExists(a.AuthorityCertPath) {
-		return nil, errors.NotFound
-	}
-	var err error
-	a.gRPCAuthorityCredentials, err = credentials.NewClientTLSFromFile(a.AuthorityCertPath, "")
-	return a.gRPCAuthorityCredentials, err
-}
-
 func loadSignedKeyPair(v *Vars) error {
-	if v.serviceCert != nil && v.serviceKey != nil {
+	if v.loaded.serviceCert != nil && v.loaded.serviceKey != nil {
 		return nil
 	}
 
@@ -56,7 +39,7 @@ func loadSignedKeyPair(v *Vars) error {
 		return fmt.Errorf("could not load authority certificate: %s", err)
 	}
 
-	v.authorityCert = authorityCert
+	v.loaded.authorityCert = authorityCert
 
 	name := strcase.ToSnake(v.Name)
 	certFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.crt", name))
@@ -64,11 +47,11 @@ func loadSignedKeyPair(v *Vars) error {
 
 	shouldGenerateNewPair := !futils.FileExists(certFilename) || !futils.FileExists(keyFilename)
 	if !shouldGenerateNewPair {
-		v.serviceKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
+		v.loaded.serviceKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
 		if err != nil {
 			return fmt.Errorf("could not load private key: %s", err)
 		}
-		v.serviceCert, err = crypto2.LoadCertificate(certFilename)
+		v.loaded.serviceCert, err = crypto2.LoadCertificate(certFilename)
 		if err != nil {
 			return fmt.Errorf("could not load certificate: %s", err)
 		}
@@ -77,31 +60,26 @@ func loadSignedKeyPair(v *Vars) error {
 	CAPool := x509.NewCertPool()
 	CAPool.AddCert(authorityCert)
 
-	if v.serviceCert != nil {
-		_, err = v.serviceCert.Verify(x509.VerifyOptions{Roots: CAPool})
-		if err != nil || time.Now().After(v.serviceCert.NotAfter) || time.Now().Before(v.serviceCert.NotBefore) {
+	if v.loaded.serviceCert != nil {
+		_, err = v.loaded.serviceCert.Verify(x509.VerifyOptions{Roots: CAPool})
+		if err != nil || time.Now().After(v.loaded.serviceCert.NotAfter) || time.Now().Before(v.loaded.serviceCert.NotBefore) {
 			shouldGenerateNewPair = true
 		}
 	}
 
 	if shouldGenerateNewPair {
-		v.serviceKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		v.loaded.serviceKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 		if err != nil {
 			return fmt.Errorf("could not generate key pair: %s", err)
 		}
-		pub := v.serviceKey.(*ecdsa.PrivateKey).PublicKey
+		pub := v.loaded.serviceKey.(*ecdsa.PrivateKey).PublicKey
 
-		v.gRPCAuthorityCredentials, err = authorityTransportCredentials(v)
-		if err != nil {
-			return err
-		}
-
-		if v.authorityGRPCAuthentication == nil {
+		if v.loaded.authorityClientAuthentication == nil {
 			parts := strings.Split(v.AuthorityCredentials, ":")
-			v.authorityGRPCAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
+			v.loaded.authorityClientAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
 		}
 
-		conn, err := grpc.Dial(v.GRPCAuthorityAddress, grpc.WithTransportCredentials(v.gRPCAuthorityCredentials), grpc.WithPerRPCCredentials(v.authorityGRPCAuthentication))
+		conn, err := grpc.Dial(v.AuthorityGRPC, grpc.WithTransportCredentials(v.loaded.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(v.loaded.authorityClientAuthentication))
 		client := authoritypb.NewAuthorityServiceClient(conn)
 		rsp, err := client.SignCertificate(context.Background(), &authoritypb.SignCertificateRequest{
 			Template: &authoritypb.CertificateTemplate{
@@ -115,28 +93,28 @@ func loadSignedKeyPair(v *Vars) error {
 			return fmt.Errorf("could not sign certificate: %s", err)
 		}
 
-		v.serviceCert, err = x509.ParseCertificate(rsp.RawCertificate)
+		v.loaded.serviceCert, err = x509.ParseCertificate(rsp.RawCertificate)
 		if err != nil {
 			return err
 		}
 
-		_ = crypto2.StoreCertificate(v.serviceCert, certFilename, os.ModePerm)
-		_ = crypto2.StorePrivateKey(v.serviceKey, nil, keyFilename)
+		_ = crypto2.StoreCertificate(v.loaded.serviceCert, certFilename, os.ModePerm)
+		_ = crypto2.StorePrivateKey(v.loaded.serviceKey, nil, keyFilename)
 	}
 	return nil
 }
 
 func ServerMutualTLS(v *Vars) *tls.Config {
-	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
+	if v.loaded.serviceKey == nil || v.loaded.serviceCert == nil || v.loaded.authorityCert == nil {
 		return nil
 	}
 
 	CAPool := x509.NewCertPool()
-	CAPool.AddCert(v.authorityCert)
+	CAPool.AddCert(v.loaded.authorityCert)
 
 	tlsCert := tls.Certificate{
-		Certificate: [][]byte{v.serviceCert.Raw},
-		PrivateKey:  v.serviceKey,
+		Certificate: [][]byte{v.loaded.serviceCert.Raw},
+		PrivateKey:  v.loaded.serviceKey,
 	}
 
 	return &tls.Config{
@@ -148,16 +126,16 @@ func ServerMutualTLS(v *Vars) *tls.Config {
 }
 
 func ClientMutualTLS(v *Vars) *tls.Config {
-	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
+	if v.loaded.serviceKey == nil || v.loaded.serviceCert == nil || v.loaded.authorityCert == nil {
 		return nil
 	}
 
 	CAPool := x509.NewCertPool()
-	CAPool.AddCert(v.authorityCert)
+	CAPool.AddCert(v.loaded.authorityCert)
 
 	tlsCert := tls.Certificate{
-		Certificate: [][]byte{v.serviceCert.Raw},
-		PrivateKey:  v.serviceKey.(*ecdsa.PrivateKey),
+		Certificate: [][]byte{v.loaded.serviceCert.Raw},
+		PrivateKey:  v.loaded.serviceKey.(*ecdsa.PrivateKey),
 	}
 
 	return &tls.Config{

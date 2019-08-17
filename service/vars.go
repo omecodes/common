@@ -4,41 +4,40 @@ import (
 	"crypto"
 	"crypto/x509"
 	"fmt"
-	"github.com/zoenion/common/conf"
-	configpb "github.com/zoenion/common/proto/config"
 	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc/credentials"
 )
 
+type loaded struct {
+	registryClient                    servicepb.RegistryClient
+	authorityCert                     *x509.Certificate
+	authorityClientAuthentication     credentials.PerRPCCredentials
+	authorityGRPCTransportCredentials credentials.TransportCredentials
+	serviceCert                       *x509.Certificate
+	serviceKey                        crypto.PrivateKey
+}
+
 type Vars struct {
-	Name     string
-	Dir      string
-	Domain   string
-	IP       string
-	Insecure bool
+	Name            string
+	Dir             string
+	Domain          string
+	IP              string
+	CertificatePath string
+	KeyPath         string
 
-	ConfigServer    string
-	configClient    configpb.ConfigClient
-	configChanInput chan conf.Map
-	lastState       conf.Map
+	Registry         string
+	Namespace        string
+	RegistryID       string
+	RegistryCertPath string
 
-	Registry       string
-	Namespace      string
-	RegistryID     string
-	registryClient servicepb.RegistryClient
-
-	GRPCAuthorityAddress        string
-	AuthorityCertPath           string
-	AuthorityCredentials        string
-	authorityCert               *x509.Certificate
-	authorityGRPCAuthentication credentials.PerRPCCredentials
+	AuthorityGRPC        string
+	AuthorityCertPath    string
+	AuthorityCredentials string
 
 	GatewayGRPCPort string
 	GatewayHTTPPort string
 
-	gRPCAuthorityCredentials credentials.TransportCredentials
-	serviceCert              *x509.Certificate
-	serviceKey               crypto.PrivateKey
+	loaded
 }
 
 type ConfigVars struct {
