@@ -2,8 +2,34 @@ package configs
 
 import (
 	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/database"
+	"github.com/zoenion/common/network"
 	"github.com/zoenion/common/prompt"
 )
+
+const (
+	ConfDatabase = "database"
+	ConfAdmin    = "admin"
+	ConfMailer   = "mailer"
+	ConfAccess   = "access"
+)
+
+type Access struct {
+	Key    string `json:"key"`
+	Secret string `json:"secret"`
+}
+
+func (access *Access) Prompt() error {
+	var err error
+
+	access.Key, err = prompt.TextWithDefault("key", access.Key, false)
+	if err != nil {
+		return err
+	}
+
+	access.Secret, err = prompt.Password("secret")
+	return err
+}
 
 type Databases map[string]conf.Map
 
@@ -152,4 +178,79 @@ func RedisPrompt(old conf.Map) (conf.Map, error) {
 		"host":     host,
 		"password": password,
 	}, nil
+}
+
+func SQLitePrompt(old conf.Map) (conf.Map, error) {
+	var dbFilepath string
+
+	if old != nil {
+		dbFilepath, _ = old.GetString("path")
+	}
+
+	p, err := prompt.TextWithDefault("store path", dbFilepath, false)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := database.SQLiteConfig(p)
+	return cfg, nil
+}
+
+type Mailer struct {
+	Server   string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+}
+
+func (mailer *Mailer) Prompt() error {
+	var err error
+
+	mailer.Server, err = prompt.TextWithDefault("server", mailer.Server, false)
+	if err != nil {
+		return err
+	}
+
+	port, err := prompt.IntegerWithDefaultValue("Port", int64(mailer.Port))
+	if err != nil {
+		return nil
+	}
+	mailer.Port = int(port)
+
+	mailer.User, err = prompt.TextWithDefault("User", mailer.User, false)
+	if err != nil {
+		return err
+	}
+
+	mailer.Password, err = prompt.Password("Password")
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (mailer *Mailer) ToConf() conf.Map {
+	cfg := conf.Map{}
+	cfg["host"] = mailer.Server
+	cfg["port"] = mailer.Port
+	cfg["user"] = mailer.User
+	cfg["password"] = mailer.Password
+	return cfg
+}
+
+type Network struct {
+	IP     string `json:"ip"`
+	Domain string `json:"domain"`
+}
+
+func (n *Network) Prompt() error {
+	var err error
+
+	addrList := network.LocalAddresses()
+	n.IP, err = prompt.Selection("ip", addrList)
+	if err != nil {
+		return err
+	}
+	n.Domain, err = prompt.TextWithDefault("domain", n.Domain, true)
+	return err
 }
