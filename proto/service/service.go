@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
@@ -24,7 +25,7 @@ func NewClient(serverAddr string, opts ...grpc.DialOption) (RegistryClient, erro
 	return NewRegistryClient(conn), nil
 }
 
-type Registry struct {
+type SyncRegistry struct {
 	servicesLock sync.Mutex
 	handlersLock sync.Mutex
 	services     map[string]*Info
@@ -37,7 +38,7 @@ type Registry struct {
 	eventHandlers []RegistryEventHandler
 }
 
-func (r *Registry) Connect() error {
+func (r *SyncRegistry) Connect() error {
 	if r.conn != nil && r.conn.GetState() == connectivity.Ready {
 		return nil
 	}
@@ -51,12 +52,17 @@ func (r *Registry) Connect() error {
 		opts = append(opts, grpc.WithInsecure())
 	}
 
+	attempt := 0
 	for !r.stop || r.conn != nil && r.conn.GetState() != connectivity.Ready {
+		attempt++
 		var err error
 		r.conn, err = grpc.Dial(r.serverAddress, opts...)
 		if err != nil {
-			log.Printf("connection to registry server failed: %s", err)
+			log.Printf("connection to registry server failed: %s\n", err)
 			<-time.After(time.Second * 3)
+			if attempt == 3 {
+				return fmt.Errorf("could not connect to server: %s", err)
+			}
 		}
 	}
 
@@ -65,7 +71,7 @@ func (r *Registry) Connect() error {
 	return nil
 }
 
-func (r *Registry) Disconnect() error {
+func (r *SyncRegistry) Disconnect() error {
 	r.stop = true
 	r.disconnected()
 	if r.conn != nil {
@@ -74,12 +80,29 @@ func (r *Registry) Disconnect() error {
 	return nil
 }
 
-func (r *Registry) AddEventHandler(h RegistryEventHandler) {
-	r.servicesLock.Lock()
-	defer r.servicesLock.Lock()
+func (r *SyncRegistry) Register(i *Info) (string, error) {
+	err := r.Connect()
+	if err != nil {
+		return "", fmt.Errorf("could not connect to server: %s", err)
+	}
+	rsp, err := r.client.Register(context.Background(), &RegisterRequest{})
+	if err != nil {
+		return "", err
+	}
+	return rsp.RegistryId, nil
 }
 
-func (r *Registry) GetAddress(namespace string, name string, protocol string) (string, error) {
+func (r *SyncRegistry) Deregister(id string) error {
+	err := r.Connect()
+	if err != nil {
+		return fmt.Errorf("could not connect to server: %s", err)
+	}
+
+	_, err = r.client.Deregister(context.Background(), &DeregisterRequest{RegistryId: id})
+	return err
+}
+
+func (r *SyncRegistry) GetAddress(namespace string, name string, protocol string) (string, error) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
 
@@ -94,17 +117,32 @@ func (r *Registry) GetAddress(namespace string, name string, protocol string) (s
 	return "", nil
 }
 
-func (r *Registry) saveService(info *Info) {
+func (r *SyncRegistry) AddEventHandler(h RegistryEventHandler) {
+	r.handlersLock.Lock()
+	defer r.handlersLock.Lock()
+	r.eventHandlers = append(r.eventHandlers, h)
+}
+
+func (r *SyncRegistry) dispatchEvent(e Event) {
+	r.handlersLock.Lock()
+	r.handlersLock.Unlock()
+
+	for _, handler := range r.eventHandlers {
+		handler.Handle(&e)
+	}
+}
+
+func (r *SyncRegistry) saveService(info *Info) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
 	r.services[info.Namespace+"::"+info.Name] = info
 }
 
-func (r *Registry) deleteService(name string) {
+func (r *SyncRegistry) deleteService(name string) {
 	delete(r.services, name)
 }
 
-func (r *Registry) connected() {
+func (r *SyncRegistry) connected() {
 	ctx := context.Background()
 	stream, err := r.client.Listen(ctx, &ListenRequest{})
 	if err != nil {
@@ -130,12 +168,12 @@ func (r *Registry) connected() {
 	}
 }
 
-func (r *Registry) disconnected() {
+func (r *SyncRegistry) disconnected() {
 	r.services = nil
 }
 
-func NewRegistry(server string, cert *x509.Certificate) *Registry {
-	return &Registry{
+func NewSyncRegistry(server string, cert *x509.Certificate) *SyncRegistry {
+	return &SyncRegistry{
 		serverCert:    cert,
 		serverAddress: server,
 	}
