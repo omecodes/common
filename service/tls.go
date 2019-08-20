@@ -26,24 +26,24 @@ func loadSignedKeyPair(v *Vars) error {
 		return nil
 	}
 
-	if v.AuthorityCertPath == "" {
+	if v.authorityCertPath == "" {
 		return errors.BadInput
 	}
 
-	v.AuthorityCertPath, _ = filepath.Abs(v.AuthorityCertPath)
-	if !futils.FileExists(v.AuthorityCertPath) {
+	v.authorityCertPath, _ = filepath.Abs(v.authorityCertPath)
+	if !futils.FileExists(v.authorityCertPath) {
 		return errors.NotFound
 	}
-	authorityCert, err := crypto2.LoadCertificate(v.AuthorityCertPath)
+	authorityCert, err := crypto2.LoadCertificate(v.authorityCertPath)
 	if err != nil {
 		return fmt.Errorf("could not load authority certificate: %s", err)
 	}
 
 	v.loaded.authorityCert = authorityCert
 
-	name := strcase.ToSnake(v.Name)
-	certFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.crt", name))
-	keyFilename := filepath.Join(v.Dir, fmt.Sprintf("%s.key", name))
+	name := strcase.ToSnake(v.name)
+	certFilename := filepath.Join(v.dir, fmt.Sprintf("%s.crt", name))
+	keyFilename := filepath.Join(v.dir, fmt.Sprintf("%s.key", name))
 
 	shouldGenerateNewPair := !futils.FileExists(certFilename) || !futils.FileExists(keyFilename)
 	if !shouldGenerateNewPair {
@@ -75,17 +75,17 @@ func loadSignedKeyPair(v *Vars) error {
 		pub := v.loaded.serviceKey.(*ecdsa.PrivateKey).PublicKey
 
 		if v.loaded.authorityClientAuthentication == nil {
-			parts := strings.Split(v.AuthorityCredentials, ":")
+			parts := strings.Split(v.authorityCredentials, ":")
 			v.loaded.authorityClientAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
 		}
 
-		conn, err := grpc.Dial(v.AuthorityGRPC, grpc.WithTransportCredentials(v.loaded.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(v.loaded.authorityClientAuthentication))
+		conn, err := grpc.Dial(v.authorityGRPC, grpc.WithTransportCredentials(v.loaded.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(v.loaded.authorityClientAuthentication))
 		client := authoritypb.NewAuthorityServiceClient(conn)
 		rsp, err := client.SignCertificate(context.Background(), &authoritypb.SignCertificateRequest{
 			Template: &authoritypb.CertificateTemplate{
-				Domains:     []string{v.Domain},
-				Addresses:   []string{v.IP},
-				ServiceName: strcase.ToDelimited(v.Name, '.'),
+				Domains:     []string{v.domain},
+				Addresses:   []string{v.ip},
+				ServiceName: strcase.ToDelimited(v.name, '.'),
 				PublicKey:   elliptic.Marshal(elliptic.P256(), pub.X, pub.Y),
 			},
 		})
@@ -121,12 +121,12 @@ func ServerMutualTLS(v *Vars) *tls.Config {
 		Certificates: []tls.Certificate{tlsCert},
 		ClientCAs:    CAPool,
 		ClientAuth:   tls.RequestClientCert,
-		ServerName:   v.Domain,
+		ServerName:   v.domain,
 	}
 }
 
 func ClientMutualTLS(v *Vars) *tls.Config {
-	if v.loaded.serviceKey == nil || v.loaded.serviceCert == nil || v.loaded.authorityCert == nil {
+	if v.serviceKey == nil || v.serviceCert == nil || v.authorityCert == nil {
 		return nil
 	}
 

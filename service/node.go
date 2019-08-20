@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	servicepb "github.com/zoenion/common/proto/service"
 	"log"
@@ -16,9 +15,7 @@ type Node interface {
 }
 
 func StartNode(node Node, v *Vars) error {
-	ctx := context.Background()
-
-	if v.AuthorityGRPC != "" {
+	if v.authorityGRPC != "" {
 		if err := loadSignedKeyPair(v); err != nil {
 			return fmt.Errorf("could not load certificate/key: %s", err)
 		}
@@ -32,14 +29,15 @@ func StartNode(node Node, v *Vars) error {
 		return err
 	}
 
-	if v.Registry != "" {
+	if v.registryAddress != "" {
 		if ai := node.Info(); ai != nil {
-			rsp, err := v.loaded.registryClient.Register(ctx, &servicepb.RegisterRequest{Service: ai})
+			ai.Namespace = v.namespace
+			registryID, err := v.registry.Register(ai)
 			if err != nil {
 				log.Printf("could not register %s: %s\n", ai.Name, err)
 			} else {
-				v.RegistryID = rsp.RegistryId
-				log.Printf("%s registered as %s", v.Name, rsp.RegistryId)
+				log.Printf("%s registered as %s", v.name, registryID)
+				v.registryID = registryID
 			}
 		}
 	}
@@ -48,9 +46,9 @@ func StartNode(node Node, v *Vars) error {
 
 func StopNode(node Node, v *Vars) {
 	defer node.Stop()
-	if v.Registry != "" {
-		if _, err := v.loaded.registryClient.Deregister(context.Background(), &servicepb.DeregisterRequest{RegistryId: v.RegistryID}); err != nil {
-			log.Printf("could not deregister from registry: %s\n", err)
+	if v.registryAddress != "" {
+		if err := v.registry.Deregister(v.registryID); err != nil {
+			log.Printf("could not deregister from registryAddress: %s\n", err)
 		}
 	}
 }

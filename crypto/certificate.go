@@ -72,7 +72,13 @@ func serviceExtKeyUsage() []x509.ExtKeyUsage {
 }
 
 func serviceKeyUsage() x509.KeyUsage {
-	return x509.KeyUsageKeyEncipherment | x509.KeyUsageDataEncipherment
+	return x509.KeyUsageDigitalSignature |
+		x509.KeyUsageContentCommitment |
+		x509.KeyUsageKeyEncipherment |
+		x509.KeyUsageDataEncipherment |
+		x509.KeyUsageKeyAgreement |
+		x509.KeyUsageCertSign |
+		x509.KeyUsageCRLSign
 }
 
 //GenerateCACertificate generates a certificate for a CA

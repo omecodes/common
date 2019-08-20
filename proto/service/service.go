@@ -3,7 +3,6 @@ package servicepb
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -25,29 +24,28 @@ func NewClient(serverAddr string, opts ...grpc.DialOption) (RegistryClient, erro
 	return NewRegistryClient(conn), nil
 }
 
-type SyncRegistry struct {
+type SyncedRegistry struct {
 	servicesLock sync.Mutex
 	handlersLock sync.Mutex
 	services     map[string]*Info
 	client       RegistryClient
 
-	serverCert    *x509.Certificate
+	tlsConfig     *tls.Config
 	serverAddress string
 	stop          bool
 	conn          *grpc.ClientConn
 	eventHandlers []RegistryEventHandler
 }
 
-func (r *SyncRegistry) Connect() error {
+func (r *SyncedRegistry) Connect() error {
 	if r.conn != nil && r.conn.GetState() == connectivity.Ready {
 		return nil
 	}
 
 	var opts []grpc.DialOption
 
-	if r.serverCert != nil {
-		tlsCert := &tls.Certificate{Certificate: [][]byte{r.serverCert.Raw}}
-		opts = append(opts, grpc.WithTransportCredentials(credentials.NewServerTLSFromCert(tlsCert)))
+	if r.tlsConfig != nil {
+		opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(r.tlsConfig)))
 	} else {
 		opts = append(opts, grpc.WithInsecure())
 	}
@@ -63,6 +61,8 @@ func (r *SyncRegistry) Connect() error {
 			if attempt == 3 {
 				return fmt.Errorf("could not connect to server: %s", err)
 			}
+		} else {
+			break
 		}
 	}
 
@@ -71,7 +71,7 @@ func (r *SyncRegistry) Connect() error {
 	return nil
 }
 
-func (r *SyncRegistry) Disconnect() error {
+func (r *SyncedRegistry) Disconnect() error {
 	r.stop = true
 	r.disconnected()
 	if r.conn != nil {
@@ -80,19 +80,19 @@ func (r *SyncRegistry) Disconnect() error {
 	return nil
 }
 
-func (r *SyncRegistry) Register(i *Info) (string, error) {
+func (r *SyncedRegistry) Register(i *Info) (string, error) {
 	err := r.Connect()
 	if err != nil {
 		return "", fmt.Errorf("could not connect to server: %s", err)
 	}
-	rsp, err := r.client.Register(context.Background(), &RegisterRequest{})
+	rsp, err := r.client.Register(context.Background(), &RegisterRequest{Service: i})
 	if err != nil {
 		return "", err
 	}
 	return rsp.RegistryId, nil
 }
 
-func (r *SyncRegistry) Deregister(id string) error {
+func (r *SyncedRegistry) Deregister(id string) error {
 	err := r.Connect()
 	if err != nil {
 		return fmt.Errorf("could not connect to server: %s", err)
@@ -102,7 +102,7 @@ func (r *SyncRegistry) Deregister(id string) error {
 	return err
 }
 
-func (r *SyncRegistry) GetAddress(namespace string, name string, protocol string) (string, error) {
+func (r *SyncedRegistry) GetAddress(namespace string, name string, protocol string) (string, error) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
 
@@ -117,13 +117,13 @@ func (r *SyncRegistry) GetAddress(namespace string, name string, protocol string
 	return "", nil
 }
 
-func (r *SyncRegistry) AddEventHandler(h RegistryEventHandler) {
+func (r *SyncedRegistry) AddEventHandler(h RegistryEventHandler) {
 	r.handlersLock.Lock()
 	defer r.handlersLock.Lock()
 	r.eventHandlers = append(r.eventHandlers, h)
 }
 
-func (r *SyncRegistry) dispatchEvent(e Event) {
+func (r *SyncedRegistry) dispatchEvent(e Event) {
 	r.handlersLock.Lock()
 	r.handlersLock.Unlock()
 
@@ -132,17 +132,17 @@ func (r *SyncRegistry) dispatchEvent(e Event) {
 	}
 }
 
-func (r *SyncRegistry) saveService(info *Info) {
+func (r *SyncedRegistry) saveService(info *Info) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
 	r.services[info.Namespace+"::"+info.Name] = info
 }
 
-func (r *SyncRegistry) deleteService(name string) {
+func (r *SyncedRegistry) deleteService(name string) {
 	delete(r.services, name)
 }
 
-func (r *SyncRegistry) connected() {
+func (r *SyncedRegistry) connected() {
 	ctx := context.Background()
 	stream, err := r.client.Listen(ctx, &ListenRequest{})
 	if err != nil {
@@ -168,13 +168,14 @@ func (r *SyncRegistry) connected() {
 	}
 }
 
-func (r *SyncRegistry) disconnected() {
+func (r *SyncedRegistry) disconnected() {
 	r.services = nil
 }
 
-func NewSyncRegistry(server string, cert *x509.Certificate) *SyncRegistry {
-	return &SyncRegistry{
-		serverCert:    cert,
+func NewSyncRegistry(server string, tlsConfig *tls.Config) *SyncedRegistry {
+	return &SyncedRegistry{
+		services:      map[string]*Info{},
+		tlsConfig:     tlsConfig,
 		serverAddress: server,
 	}
 }
