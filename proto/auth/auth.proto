@@ -4,13 +4,13 @@ package authpb;
 
 import "google/api/annotations.proto";
 
-enum TokenPurpose {
+enum JWTPurpose {
     AUTHENTICATION = 0;
     RESOURCES_ACCESS = 1;
     VALIDATION = 2;
 }
 
-enum TokenState {
+enum JWTState {
     VALID = 0;
     NOT_VALID = 1;
     EXPIRED = 2;
@@ -19,7 +19,7 @@ enum TokenState {
     NOT_EFFECTIVE = 5;
 }
 
-message TokenHeader {
+message JWTHeader {
     string typ = 1;
     string alg = 2;
 }
@@ -38,58 +38,64 @@ message Claims {
     string data = 11;
 }
 
-message Token {
-    TokenHeader header = 1;
+message JWT {
+    JWTHeader header = 1;
     Claims claims = 2;
     string signature = 3;
 }
 
-message Credentials  {
+message Credentials {
     string username = 1;
     string email = 2;
     string password = 3;
 }
 
-message TokenEvent {
-    string jti = 1;
-    TokenState state = 2;
-}
-
-enum FeedAction {
+enum EventAction {
     Delete = 0;
     Save = 1;
 }
 
-service TokenStoreService {
-    rpc FeedSession(stream FeedRequest) returns (stream FeedResponse);
-    rpc FindToken(FindTokenRequest) returns (FindTokenResponse) {
-        option(google.api.http).get = "/api/v1/token/registered/{jti}";
+service JWTStore {
+    rpc Feed (stream JwtEvent) returns (stream FeedResponse);
+    rpc Listen (ListenRequest) returns (stream JwtEvent);
+    rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
+        option(google.api.http).get = "/api/v1/jwt-store/find/{jti}";
     };
 }
 
-message FeedRequest {
+message JwtInfo {
     string jti = 1;
-    string nbf = 2;
-    string exp = 3;
-    string signature = 4;
+    int64 nbf = 2;
+    int64 exp = 3;
+    JWTState state = 4;
+}
+
+message JwtEvent {
+    EventAction action = 1;
+    JwtInfo info = 2;
 }
 message FeedResponse {
-
+    string error = 1;
+    string jti = 2;
 }
 
-message FindTokenRequest {
+message FindJWTRequest {
     string jti = 1;
+    string signature = 2;
 }
-message FindTokenResponse {
+message FindJWTResponse {
     string found = 1;
 }
 
-message DeleteTokenRequest {
+message DeleteJWTRequest {
     string jti = 1;
 }
-message DeleteTokenResponse {
+message DeleteJWTResponse {
     uint32 count = 1;
 }
+
+message ListenRequest {}
+
 
 service IDMService {
     rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse) {
@@ -98,33 +104,33 @@ service IDMService {
             body: "*";
         };
     };
-    rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse){
+    rpc Authenticate(AuthenticateRequest)returns(GetTokenResponse){
         option(google.api.http) = {
             post: "/api/v1/jwt/get";
-            body: "*";
+            body:"*";
         };
     };
-    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse){
+    rpc RevokeToken(RevokeTokenRequest)returns(RevokeTokenResponse){
         option(google.api.http).get = "/api/v1/jwt/revoke";
     };
-    rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse) {
+    rpc SetPassword(SetPasswordRequest)returns(SetPasswordResponse){
         option(google.api.http) = {
             post: "/api/v1/password/update";
-            body: "*";
+            body:"*";
         };
     };
-    rpc ValidateEmail(ValidateEmailRequest) returns (ValidateEmailResponse){
+    rpc ValidateEmail(ValidateEmailRequest)returns(ValidateEmailResponse){
         option(google.api.http).get = "/api/v1/email/validate";
     };
-    rpc TriggerEmailValidation(TriggerEmailValidationRequest) returns (TriggerEmailValidationResponse) {
+    rpc TriggerEmailValidation(TriggerEmailValidationRequest)returns(TriggerEmailValidationResponse){
         option(google.api.http) = {
             post: "/api/v1/email/validation/trigger";
-            body: "*";
+            body:"*";
         };
     };
-    /*rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
-    rpc GetOAuthAccessToken (GetOAuthAccessTokenRequest) returns (GetOAuthAccessTokenResponse);
-    rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);*/
+/*rpc GetAuthorizationCode (GetAuthorizationCodeRequest) returns (GetAuthorizationCodeResponse);
+rpc GetOAuthAccessToken (GetOAuthAccessTokenRequest) returns (GetOAuthAccessTokenResponse);
+rpc GetResetPasswordEmailToken (GetResetPasswordEmailTokenRequest) returns (GetResetPasswordEmailTokenResponse);*/
 }
 
 message CreateCredentialsRequest {
@@ -140,7 +146,7 @@ message AuthenticateRequest {
     string password = 2;
 }
 message GetTokenResponse {
-    Token token = 1;
+    JWT jwt = 1;
     uint32 code = 2;
 }
 
@@ -157,7 +163,7 @@ message TriggerEmailValidationRequest {
 message TriggerEmailValidationResponse {}
 
 message RevokeTokenRequest {
-    Token token = 1;
+    JWT jwt = 1;
 }
 message RevokeTokenResponse {
 }
@@ -197,5 +203,5 @@ message GetOAuthAccessTokenRequest {
     repeated string scope = 5;
 }
 message GetOAuthAccessTokenResponse {
-    Token token = 1;
+    JWT jwt = 1;
 }

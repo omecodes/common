@@ -9,8 +9,6 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -25,46 +23,46 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type TokenPurpose int32
+type JWTPurpose int32
 
 const (
-	TokenPurpose_AUTHENTICATION   TokenPurpose = 0
-	TokenPurpose_RESOURCES_ACCESS TokenPurpose = 1
-	TokenPurpose_VALIDATION       TokenPurpose = 2
+	JWTPurpose_AUTHENTICATION   JWTPurpose = 0
+	JWTPurpose_RESOURCES_ACCESS JWTPurpose = 1
+	JWTPurpose_VALIDATION       JWTPurpose = 2
 )
 
-var TokenPurpose_name = map[int32]string{
+var JWTPurpose_name = map[int32]string{
 	0: "AUTHENTICATION",
 	1: "RESOURCES_ACCESS",
 	2: "VALIDATION",
 }
 
-var TokenPurpose_value = map[string]int32{
+var JWTPurpose_value = map[string]int32{
 	"AUTHENTICATION":   0,
 	"RESOURCES_ACCESS": 1,
 	"VALIDATION":       2,
 }
 
-func (x TokenPurpose) String() string {
-	return proto.EnumName(TokenPurpose_name, int32(x))
+func (x JWTPurpose) String() string {
+	return proto.EnumName(JWTPurpose_name, int32(x))
 }
 
-func (TokenPurpose) EnumDescriptor() ([]byte, []int) {
+func (JWTPurpose) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{0}
 }
 
-type TokenState int32
+type JWTState int32
 
 const (
-	TokenState_VALID         TokenState = 0
-	TokenState_NOT_VALID     TokenState = 1
-	TokenState_EXPIRED       TokenState = 2
-	TokenState_REVOKED       TokenState = 3
-	TokenState_NOT_SIGNED    TokenState = 4
-	TokenState_NOT_EFFECTIVE TokenState = 5
+	JWTState_VALID         JWTState = 0
+	JWTState_NOT_VALID     JWTState = 1
+	JWTState_EXPIRED       JWTState = 2
+	JWTState_REVOKED       JWTState = 3
+	JWTState_NOT_SIGNED    JWTState = 4
+	JWTState_NOT_EFFECTIVE JWTState = 5
 )
 
-var TokenState_name = map[int32]string{
+var JWTState_name = map[int32]string{
 	0: "VALID",
 	1: "NOT_VALID",
 	2: "EXPIRED",
@@ -73,7 +71,7 @@ var TokenState_name = map[int32]string{
 	5: "NOT_EFFECTIVE",
 }
 
-var TokenState_value = map[string]int32{
+var JWTState_value = map[string]int32{
 	"VALID":         0,
 	"NOT_VALID":     1,
 	"EXPIRED":       2,
@@ -82,40 +80,40 @@ var TokenState_value = map[string]int32{
 	"NOT_EFFECTIVE": 5,
 }
 
-func (x TokenState) String() string {
-	return proto.EnumName(TokenState_name, int32(x))
+func (x JWTState) String() string {
+	return proto.EnumName(JWTState_name, int32(x))
 }
 
-func (TokenState) EnumDescriptor() ([]byte, []int) {
+func (JWTState) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{1}
 }
 
-type FeedAction int32
+type EventAction int32
 
 const (
-	FeedAction_Delete FeedAction = 0
-	FeedAction_Save   FeedAction = 1
+	EventAction_Delete EventAction = 0
+	EventAction_Save   EventAction = 1
 )
 
-var FeedAction_name = map[int32]string{
+var EventAction_name = map[int32]string{
 	0: "Delete",
 	1: "Save",
 }
 
-var FeedAction_value = map[string]int32{
+var EventAction_value = map[string]int32{
 	"Delete": 0,
 	"Save":   1,
 }
 
-func (x FeedAction) String() string {
-	return proto.EnumName(FeedAction_name, int32(x))
+func (x EventAction) String() string {
+	return proto.EnumName(EventAction_name, int32(x))
 }
 
-func (FeedAction) EnumDescriptor() ([]byte, []int) {
+func (EventAction) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{2}
 }
 
-type TokenHeader struct {
+type JWTHeader struct {
 	Typ                  string   `protobuf:"bytes,1,opt,name=typ,proto3" json:"typ,omitempty"`
 	Alg                  string   `protobuf:"bytes,2,opt,name=alg,proto3" json:"alg,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -123,39 +121,39 @@ type TokenHeader struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *TokenHeader) Reset()         { *m = TokenHeader{} }
-func (m *TokenHeader) String() string { return proto.CompactTextString(m) }
-func (*TokenHeader) ProtoMessage()    {}
-func (*TokenHeader) Descriptor() ([]byte, []int) {
+func (m *JWTHeader) Reset()         { *m = JWTHeader{} }
+func (m *JWTHeader) String() string { return proto.CompactTextString(m) }
+func (*JWTHeader) ProtoMessage()    {}
+func (*JWTHeader) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{0}
 }
 
-func (m *TokenHeader) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TokenHeader.Unmarshal(m, b)
+func (m *JWTHeader) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JWTHeader.Unmarshal(m, b)
 }
-func (m *TokenHeader) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TokenHeader.Marshal(b, m, deterministic)
+func (m *JWTHeader) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JWTHeader.Marshal(b, m, deterministic)
 }
-func (m *TokenHeader) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TokenHeader.Merge(m, src)
+func (m *JWTHeader) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JWTHeader.Merge(m, src)
 }
-func (m *TokenHeader) XXX_Size() int {
-	return xxx_messageInfo_TokenHeader.Size(m)
+func (m *JWTHeader) XXX_Size() int {
+	return xxx_messageInfo_JWTHeader.Size(m)
 }
-func (m *TokenHeader) XXX_DiscardUnknown() {
-	xxx_messageInfo_TokenHeader.DiscardUnknown(m)
+func (m *JWTHeader) XXX_DiscardUnknown() {
+	xxx_messageInfo_JWTHeader.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TokenHeader proto.InternalMessageInfo
+var xxx_messageInfo_JWTHeader proto.InternalMessageInfo
 
-func (m *TokenHeader) GetTyp() string {
+func (m *JWTHeader) GetTyp() string {
 	if m != nil {
 		return m.Typ
 	}
 	return ""
 }
 
-func (m *TokenHeader) GetAlg() string {
+func (m *JWTHeader) GetAlg() string {
 	if m != nil {
 		return m.Alg
 	}
@@ -281,55 +279,55 @@ func (m *Claims) GetData() string {
 	return ""
 }
 
-type Token struct {
-	Header               *TokenHeader `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
-	Claims               *Claims      `protobuf:"bytes,2,opt,name=claims,proto3" json:"claims,omitempty"`
-	Signature            string       `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
+type JWT struct {
+	Header               *JWTHeader `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	Claims               *Claims    `protobuf:"bytes,2,opt,name=claims,proto3" json:"claims,omitempty"`
+	Signature            string     `protobuf:"bytes,3,opt,name=signature,proto3" json:"signature,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
-func (m *Token) Reset()         { *m = Token{} }
-func (m *Token) String() string { return proto.CompactTextString(m) }
-func (*Token) ProtoMessage()    {}
-func (*Token) Descriptor() ([]byte, []int) {
+func (m *JWT) Reset()         { *m = JWT{} }
+func (m *JWT) String() string { return proto.CompactTextString(m) }
+func (*JWT) ProtoMessage()    {}
+func (*JWT) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{2}
 }
 
-func (m *Token) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Token.Unmarshal(m, b)
+func (m *JWT) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JWT.Unmarshal(m, b)
 }
-func (m *Token) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Token.Marshal(b, m, deterministic)
+func (m *JWT) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JWT.Marshal(b, m, deterministic)
 }
-func (m *Token) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Token.Merge(m, src)
+func (m *JWT) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JWT.Merge(m, src)
 }
-func (m *Token) XXX_Size() int {
-	return xxx_messageInfo_Token.Size(m)
+func (m *JWT) XXX_Size() int {
+	return xxx_messageInfo_JWT.Size(m)
 }
-func (m *Token) XXX_DiscardUnknown() {
-	xxx_messageInfo_Token.DiscardUnknown(m)
+func (m *JWT) XXX_DiscardUnknown() {
+	xxx_messageInfo_JWT.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Token proto.InternalMessageInfo
+var xxx_messageInfo_JWT proto.InternalMessageInfo
 
-func (m *Token) GetHeader() *TokenHeader {
+func (m *JWT) GetHeader() *JWTHeader {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *Token) GetClaims() *Claims {
+func (m *JWT) GetClaims() *Claims {
 	if m != nil {
 		return m.Claims
 	}
 	return nil
 }
 
-func (m *Token) GetSignature() string {
+func (m *JWT) GetSignature() string {
 	if m != nil {
 		return m.Signature
 	}
@@ -391,117 +389,119 @@ func (m *Credentials) GetPassword() string {
 	return ""
 }
 
-type TokenEvent struct {
-	Jti                  string     `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
-	State                TokenState `protobuf:"varint,2,opt,name=state,proto3,enum=authpb.TokenState" json:"state,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *TokenEvent) Reset()         { *m = TokenEvent{} }
-func (m *TokenEvent) String() string { return proto.CompactTextString(m) }
-func (*TokenEvent) ProtoMessage()    {}
-func (*TokenEvent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{4}
-}
-
-func (m *TokenEvent) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TokenEvent.Unmarshal(m, b)
-}
-func (m *TokenEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TokenEvent.Marshal(b, m, deterministic)
-}
-func (m *TokenEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TokenEvent.Merge(m, src)
-}
-func (m *TokenEvent) XXX_Size() int {
-	return xxx_messageInfo_TokenEvent.Size(m)
-}
-func (m *TokenEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_TokenEvent.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_TokenEvent proto.InternalMessageInfo
-
-func (m *TokenEvent) GetJti() string {
-	if m != nil {
-		return m.Jti
-	}
-	return ""
-}
-
-func (m *TokenEvent) GetState() TokenState {
-	if m != nil {
-		return m.State
-	}
-	return TokenState_VALID
-}
-
-type FeedRequest struct {
+type JwtInfo struct {
 	Jti                  string   `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
-	Nbf                  string   `protobuf:"bytes,2,opt,name=nbf,proto3" json:"nbf,omitempty"`
-	Exp                  string   `protobuf:"bytes,3,opt,name=exp,proto3" json:"exp,omitempty"`
-	Signature            string   `protobuf:"bytes,4,opt,name=signature,proto3" json:"signature,omitempty"`
+	Nbf                  int64    `protobuf:"varint,2,opt,name=nbf,proto3" json:"nbf,omitempty"`
+	Exp                  int64    `protobuf:"varint,3,opt,name=exp,proto3" json:"exp,omitempty"`
+	State                JWTState `protobuf:"varint,4,opt,name=state,proto3,enum=authpb.JWTState" json:"state,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *FeedRequest) Reset()         { *m = FeedRequest{} }
-func (m *FeedRequest) String() string { return proto.CompactTextString(m) }
-func (*FeedRequest) ProtoMessage()    {}
-func (*FeedRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{5}
+func (m *JwtInfo) Reset()         { *m = JwtInfo{} }
+func (m *JwtInfo) String() string { return proto.CompactTextString(m) }
+func (*JwtInfo) ProtoMessage()    {}
+func (*JwtInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8bbd6f3875b0e874, []int{4}
 }
 
-func (m *FeedRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FeedRequest.Unmarshal(m, b)
+func (m *JwtInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JwtInfo.Unmarshal(m, b)
 }
-func (m *FeedRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FeedRequest.Marshal(b, m, deterministic)
+func (m *JwtInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JwtInfo.Marshal(b, m, deterministic)
 }
-func (m *FeedRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FeedRequest.Merge(m, src)
+func (m *JwtInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JwtInfo.Merge(m, src)
 }
-func (m *FeedRequest) XXX_Size() int {
-	return xxx_messageInfo_FeedRequest.Size(m)
+func (m *JwtInfo) XXX_Size() int {
+	return xxx_messageInfo_JwtInfo.Size(m)
 }
-func (m *FeedRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_FeedRequest.DiscardUnknown(m)
+func (m *JwtInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_JwtInfo.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_FeedRequest proto.InternalMessageInfo
+var xxx_messageInfo_JwtInfo proto.InternalMessageInfo
 
-func (m *FeedRequest) GetJti() string {
+func (m *JwtInfo) GetJti() string {
 	if m != nil {
 		return m.Jti
 	}
 	return ""
 }
 
-func (m *FeedRequest) GetNbf() string {
+func (m *JwtInfo) GetNbf() int64 {
 	if m != nil {
 		return m.Nbf
 	}
-	return ""
+	return 0
 }
 
-func (m *FeedRequest) GetExp() string {
+func (m *JwtInfo) GetExp() int64 {
 	if m != nil {
 		return m.Exp
 	}
-	return ""
+	return 0
 }
 
-func (m *FeedRequest) GetSignature() string {
+func (m *JwtInfo) GetState() JWTState {
 	if m != nil {
-		return m.Signature
+		return m.State
 	}
-	return ""
+	return JWTState_VALID
+}
+
+type JwtEvent struct {
+	Action               EventAction `protobuf:"varint,1,opt,name=action,proto3,enum=authpb.EventAction" json:"action,omitempty"`
+	Info                 *JwtInfo    `protobuf:"bytes,2,opt,name=info,proto3" json:"info,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *JwtEvent) Reset()         { *m = JwtEvent{} }
+func (m *JwtEvent) String() string { return proto.CompactTextString(m) }
+func (*JwtEvent) ProtoMessage()    {}
+func (*JwtEvent) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8bbd6f3875b0e874, []int{5}
+}
+
+func (m *JwtEvent) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JwtEvent.Unmarshal(m, b)
+}
+func (m *JwtEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JwtEvent.Marshal(b, m, deterministic)
+}
+func (m *JwtEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JwtEvent.Merge(m, src)
+}
+func (m *JwtEvent) XXX_Size() int {
+	return xxx_messageInfo_JwtEvent.Size(m)
+}
+func (m *JwtEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_JwtEvent.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_JwtEvent proto.InternalMessageInfo
+
+func (m *JwtEvent) GetAction() EventAction {
+	if m != nil {
+		return m.Action
+	}
+	return EventAction_Delete
+}
+
+func (m *JwtEvent) GetInfo() *JwtInfo {
+	if m != nil {
+		return m.Info
+	}
+	return nil
 }
 
 type FeedResponse struct {
+	Error                string   `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
+	Jti                  string   `protobuf:"bytes,2,opt,name=jti,proto3" json:"jti,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -532,161 +532,214 @@ func (m *FeedResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_FeedResponse proto.InternalMessageInfo
 
-type FindTokenRequest struct {
-	Jti                  string   `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+func (m *FeedResponse) GetError() string {
+	if m != nil {
+		return m.Error
+	}
+	return ""
 }
 
-func (m *FindTokenRequest) Reset()         { *m = FindTokenRequest{} }
-func (m *FindTokenRequest) String() string { return proto.CompactTextString(m) }
-func (*FindTokenRequest) ProtoMessage()    {}
-func (*FindTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{7}
-}
-
-func (m *FindTokenRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FindTokenRequest.Unmarshal(m, b)
-}
-func (m *FindTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FindTokenRequest.Marshal(b, m, deterministic)
-}
-func (m *FindTokenRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FindTokenRequest.Merge(m, src)
-}
-func (m *FindTokenRequest) XXX_Size() int {
-	return xxx_messageInfo_FindTokenRequest.Size(m)
-}
-func (m *FindTokenRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_FindTokenRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FindTokenRequest proto.InternalMessageInfo
-
-func (m *FindTokenRequest) GetJti() string {
+func (m *FeedResponse) GetJti() string {
 	if m != nil {
 		return m.Jti
 	}
 	return ""
 }
 
-type FindTokenResponse struct {
+type FindJWTRequest struct {
+	Jti                  string   `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
+	Signature            string   `protobuf:"bytes,2,opt,name=signature,proto3" json:"signature,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FindJWTRequest) Reset()         { *m = FindJWTRequest{} }
+func (m *FindJWTRequest) String() string { return proto.CompactTextString(m) }
+func (*FindJWTRequest) ProtoMessage()    {}
+func (*FindJWTRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8bbd6f3875b0e874, []int{7}
+}
+
+func (m *FindJWTRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindJWTRequest.Unmarshal(m, b)
+}
+func (m *FindJWTRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindJWTRequest.Marshal(b, m, deterministic)
+}
+func (m *FindJWTRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindJWTRequest.Merge(m, src)
+}
+func (m *FindJWTRequest) XXX_Size() int {
+	return xxx_messageInfo_FindJWTRequest.Size(m)
+}
+func (m *FindJWTRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindJWTRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FindJWTRequest proto.InternalMessageInfo
+
+func (m *FindJWTRequest) GetJti() string {
+	if m != nil {
+		return m.Jti
+	}
+	return ""
+}
+
+func (m *FindJWTRequest) GetSignature() string {
+	if m != nil {
+		return m.Signature
+	}
+	return ""
+}
+
+type FindJWTResponse struct {
 	Found                string   `protobuf:"bytes,1,opt,name=found,proto3" json:"found,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *FindTokenResponse) Reset()         { *m = FindTokenResponse{} }
-func (m *FindTokenResponse) String() string { return proto.CompactTextString(m) }
-func (*FindTokenResponse) ProtoMessage()    {}
-func (*FindTokenResponse) Descriptor() ([]byte, []int) {
+func (m *FindJWTResponse) Reset()         { *m = FindJWTResponse{} }
+func (m *FindJWTResponse) String() string { return proto.CompactTextString(m) }
+func (*FindJWTResponse) ProtoMessage()    {}
+func (*FindJWTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{8}
 }
 
-func (m *FindTokenResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FindTokenResponse.Unmarshal(m, b)
+func (m *FindJWTResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FindJWTResponse.Unmarshal(m, b)
 }
-func (m *FindTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FindTokenResponse.Marshal(b, m, deterministic)
+func (m *FindJWTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FindJWTResponse.Marshal(b, m, deterministic)
 }
-func (m *FindTokenResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FindTokenResponse.Merge(m, src)
+func (m *FindJWTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FindJWTResponse.Merge(m, src)
 }
-func (m *FindTokenResponse) XXX_Size() int {
-	return xxx_messageInfo_FindTokenResponse.Size(m)
+func (m *FindJWTResponse) XXX_Size() int {
+	return xxx_messageInfo_FindJWTResponse.Size(m)
 }
-func (m *FindTokenResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_FindTokenResponse.DiscardUnknown(m)
+func (m *FindJWTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_FindJWTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_FindTokenResponse proto.InternalMessageInfo
+var xxx_messageInfo_FindJWTResponse proto.InternalMessageInfo
 
-func (m *FindTokenResponse) GetFound() string {
+func (m *FindJWTResponse) GetFound() string {
 	if m != nil {
 		return m.Found
 	}
 	return ""
 }
 
-type DeleteTokenRequest struct {
+type DeleteJWTRequest struct {
 	Jti                  string   `protobuf:"bytes,1,opt,name=jti,proto3" json:"jti,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteTokenRequest) Reset()         { *m = DeleteTokenRequest{} }
-func (m *DeleteTokenRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteTokenRequest) ProtoMessage()    {}
-func (*DeleteTokenRequest) Descriptor() ([]byte, []int) {
+func (m *DeleteJWTRequest) Reset()         { *m = DeleteJWTRequest{} }
+func (m *DeleteJWTRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteJWTRequest) ProtoMessage()    {}
+func (*DeleteJWTRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{9}
 }
 
-func (m *DeleteTokenRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteTokenRequest.Unmarshal(m, b)
+func (m *DeleteJWTRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteJWTRequest.Unmarshal(m, b)
 }
-func (m *DeleteTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteTokenRequest.Marshal(b, m, deterministic)
+func (m *DeleteJWTRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteJWTRequest.Marshal(b, m, deterministic)
 }
-func (m *DeleteTokenRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteTokenRequest.Merge(m, src)
+func (m *DeleteJWTRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteJWTRequest.Merge(m, src)
 }
-func (m *DeleteTokenRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteTokenRequest.Size(m)
+func (m *DeleteJWTRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteJWTRequest.Size(m)
 }
-func (m *DeleteTokenRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteTokenRequest.DiscardUnknown(m)
+func (m *DeleteJWTRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteJWTRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteTokenRequest proto.InternalMessageInfo
+var xxx_messageInfo_DeleteJWTRequest proto.InternalMessageInfo
 
-func (m *DeleteTokenRequest) GetJti() string {
+func (m *DeleteJWTRequest) GetJti() string {
 	if m != nil {
 		return m.Jti
 	}
 	return ""
 }
 
-type DeleteTokenResponse struct {
+type DeleteJWTResponse struct {
 	Count                uint32   `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteTokenResponse) Reset()         { *m = DeleteTokenResponse{} }
-func (m *DeleteTokenResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteTokenResponse) ProtoMessage()    {}
-func (*DeleteTokenResponse) Descriptor() ([]byte, []int) {
+func (m *DeleteJWTResponse) Reset()         { *m = DeleteJWTResponse{} }
+func (m *DeleteJWTResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteJWTResponse) ProtoMessage()    {}
+func (*DeleteJWTResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8bbd6f3875b0e874, []int{10}
 }
 
-func (m *DeleteTokenResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteTokenResponse.Unmarshal(m, b)
+func (m *DeleteJWTResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteJWTResponse.Unmarshal(m, b)
 }
-func (m *DeleteTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteTokenResponse.Marshal(b, m, deterministic)
+func (m *DeleteJWTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteJWTResponse.Marshal(b, m, deterministic)
 }
-func (m *DeleteTokenResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteTokenResponse.Merge(m, src)
+func (m *DeleteJWTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteJWTResponse.Merge(m, src)
 }
-func (m *DeleteTokenResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteTokenResponse.Size(m)
+func (m *DeleteJWTResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteJWTResponse.Size(m)
 }
-func (m *DeleteTokenResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteTokenResponse.DiscardUnknown(m)
+func (m *DeleteJWTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteJWTResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteTokenResponse proto.InternalMessageInfo
+var xxx_messageInfo_DeleteJWTResponse proto.InternalMessageInfo
 
-func (m *DeleteTokenResponse) GetCount() uint32 {
+func (m *DeleteJWTResponse) GetCount() uint32 {
 	if m != nil {
 		return m.Count
 	}
 	return 0
 }
+
+type ListenRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ListenRequest) Reset()         { *m = ListenRequest{} }
+func (m *ListenRequest) String() string { return proto.CompactTextString(m) }
+func (*ListenRequest) ProtoMessage()    {}
+func (*ListenRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8bbd6f3875b0e874, []int{11}
+}
+
+func (m *ListenRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListenRequest.Unmarshal(m, b)
+}
+func (m *ListenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListenRequest.Marshal(b, m, deterministic)
+}
+func (m *ListenRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListenRequest.Merge(m, src)
+}
+func (m *ListenRequest) XXX_Size() int {
+	return xxx_messageInfo_ListenRequest.Size(m)
+}
+func (m *ListenRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListenRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListenRequest proto.InternalMessageInfo
 
 type CreateCredentialsRequest struct {
 	Credentials          *Credentials `protobuf:"bytes,1,opt,name=credentials,proto3" json:"credentials,omitempty"`
@@ -699,7 +752,7 @@ func (m *CreateCredentialsRequest) Reset()         { *m = CreateCredentialsReque
 func (m *CreateCredentialsRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateCredentialsRequest) ProtoMessage()    {}
 func (*CreateCredentialsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{11}
+	return fileDescriptor_8bbd6f3875b0e874, []int{12}
 }
 
 func (m *CreateCredentialsRequest) XXX_Unmarshal(b []byte) error {
@@ -739,7 +792,7 @@ func (m *CreateCredentialsResponse) Reset()         { *m = CreateCredentialsResp
 func (m *CreateCredentialsResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateCredentialsResponse) ProtoMessage()    {}
 func (*CreateCredentialsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{12}
+	return fileDescriptor_8bbd6f3875b0e874, []int{13}
 }
 
 func (m *CreateCredentialsResponse) XXX_Unmarshal(b []byte) error {
@@ -786,7 +839,7 @@ func (m *AuthenticateRequest) Reset()         { *m = AuthenticateRequest{} }
 func (m *AuthenticateRequest) String() string { return proto.CompactTextString(m) }
 func (*AuthenticateRequest) ProtoMessage()    {}
 func (*AuthenticateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{13}
+	return fileDescriptor_8bbd6f3875b0e874, []int{14}
 }
 
 func (m *AuthenticateRequest) XXX_Unmarshal(b []byte) error {
@@ -822,7 +875,7 @@ func (m *AuthenticateRequest) GetPassword() string {
 }
 
 type GetTokenResponse struct {
-	Token                *Token   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Jwt                  *JWT     `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt,omitempty"`
 	Code                 uint32   `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -833,7 +886,7 @@ func (m *GetTokenResponse) Reset()         { *m = GetTokenResponse{} }
 func (m *GetTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetTokenResponse) ProtoMessage()    {}
 func (*GetTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{14}
+	return fileDescriptor_8bbd6f3875b0e874, []int{15}
 }
 
 func (m *GetTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -854,9 +907,9 @@ func (m *GetTokenResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetTokenResponse proto.InternalMessageInfo
 
-func (m *GetTokenResponse) GetToken() *Token {
+func (m *GetTokenResponse) GetJwt() *JWT {
 	if m != nil {
-		return m.Token
+		return m.Jwt
 	}
 	return nil
 }
@@ -879,7 +932,7 @@ func (m *ValidateEmailRequest) Reset()         { *m = ValidateEmailRequest{} }
 func (m *ValidateEmailRequest) String() string { return proto.CompactTextString(m) }
 func (*ValidateEmailRequest) ProtoMessage()    {}
 func (*ValidateEmailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{15}
+	return fileDescriptor_8bbd6f3875b0e874, []int{16}
 }
 
 func (m *ValidateEmailRequest) XXX_Unmarshal(b []byte) error {
@@ -917,7 +970,7 @@ func (m *ValidateEmailResponse) Reset()         { *m = ValidateEmailResponse{} }
 func (m *ValidateEmailResponse) String() string { return proto.CompactTextString(m) }
 func (*ValidateEmailResponse) ProtoMessage()    {}
 func (*ValidateEmailResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{16}
+	return fileDescriptor_8bbd6f3875b0e874, []int{17}
 }
 
 func (m *ValidateEmailResponse) XXX_Unmarshal(b []byte) error {
@@ -949,7 +1002,7 @@ func (m *TriggerEmailValidationRequest) Reset()         { *m = TriggerEmailValid
 func (m *TriggerEmailValidationRequest) String() string { return proto.CompactTextString(m) }
 func (*TriggerEmailValidationRequest) ProtoMessage()    {}
 func (*TriggerEmailValidationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{17}
+	return fileDescriptor_8bbd6f3875b0e874, []int{18}
 }
 
 func (m *TriggerEmailValidationRequest) XXX_Unmarshal(b []byte) error {
@@ -987,7 +1040,7 @@ func (m *TriggerEmailValidationResponse) Reset()         { *m = TriggerEmailVali
 func (m *TriggerEmailValidationResponse) String() string { return proto.CompactTextString(m) }
 func (*TriggerEmailValidationResponse) ProtoMessage()    {}
 func (*TriggerEmailValidationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{18}
+	return fileDescriptor_8bbd6f3875b0e874, []int{19}
 }
 
 func (m *TriggerEmailValidationResponse) XXX_Unmarshal(b []byte) error {
@@ -1009,7 +1062,7 @@ func (m *TriggerEmailValidationResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_TriggerEmailValidationResponse proto.InternalMessageInfo
 
 type RevokeTokenRequest struct {
-	Token                *Token   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Jwt                  *JWT     `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1019,7 +1072,7 @@ func (m *RevokeTokenRequest) Reset()         { *m = RevokeTokenRequest{} }
 func (m *RevokeTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*RevokeTokenRequest) ProtoMessage()    {}
 func (*RevokeTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{19}
+	return fileDescriptor_8bbd6f3875b0e874, []int{20}
 }
 
 func (m *RevokeTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1040,9 +1093,9 @@ func (m *RevokeTokenRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RevokeTokenRequest proto.InternalMessageInfo
 
-func (m *RevokeTokenRequest) GetToken() *Token {
+func (m *RevokeTokenRequest) GetJwt() *JWT {
 	if m != nil {
-		return m.Token
+		return m.Jwt
 	}
 	return nil
 }
@@ -1057,7 +1110,7 @@ func (m *RevokeTokenResponse) Reset()         { *m = RevokeTokenResponse{} }
 func (m *RevokeTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*RevokeTokenResponse) ProtoMessage()    {}
 func (*RevokeTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{20}
+	return fileDescriptor_8bbd6f3875b0e874, []int{21}
 }
 
 func (m *RevokeTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1090,7 +1143,7 @@ func (m *GetResetPasswordEmailTokenRequest) Reset()         { *m = GetResetPassw
 func (m *GetResetPasswordEmailTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*GetResetPasswordEmailTokenRequest) ProtoMessage()    {}
 func (*GetResetPasswordEmailTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{21}
+	return fileDescriptor_8bbd6f3875b0e874, []int{22}
 }
 
 func (m *GetResetPasswordEmailTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1135,7 +1188,7 @@ func (m *GetResetPasswordEmailTokenResponse) Reset()         { *m = GetResetPass
 func (m *GetResetPasswordEmailTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetResetPasswordEmailTokenResponse) ProtoMessage()    {}
 func (*GetResetPasswordEmailTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{22}
+	return fileDescriptor_8bbd6f3875b0e874, []int{23}
 }
 
 func (m *GetResetPasswordEmailTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1170,7 +1223,7 @@ func (m *SetPasswordRequest) Reset()         { *m = SetPasswordRequest{} }
 func (m *SetPasswordRequest) String() string { return proto.CompactTextString(m) }
 func (*SetPasswordRequest) ProtoMessage()    {}
 func (*SetPasswordRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{23}
+	return fileDescriptor_8bbd6f3875b0e874, []int{24}
 }
 
 func (m *SetPasswordRequest) XXX_Unmarshal(b []byte) error {
@@ -1230,7 +1283,7 @@ func (m *SetPasswordResponse) Reset()         { *m = SetPasswordResponse{} }
 func (m *SetPasswordResponse) String() string { return proto.CompactTextString(m) }
 func (*SetPasswordResponse) ProtoMessage()    {}
 func (*SetPasswordResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{24}
+	return fileDescriptor_8bbd6f3875b0e874, []int{25}
 }
 
 func (m *SetPasswordResponse) XXX_Unmarshal(b []byte) error {
@@ -1272,7 +1325,7 @@ func (m *GetAuthorizationCodeRequest) Reset()         { *m = GetAuthorizationCod
 func (m *GetAuthorizationCodeRequest) String() string { return proto.CompactTextString(m) }
 func (*GetAuthorizationCodeRequest) ProtoMessage()    {}
 func (*GetAuthorizationCodeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{25}
+	return fileDescriptor_8bbd6f3875b0e874, []int{26}
 }
 
 func (m *GetAuthorizationCodeRequest) XXX_Unmarshal(b []byte) error {
@@ -1332,7 +1385,7 @@ func (m *GetAuthorizationCodeResponse) Reset()         { *m = GetAuthorizationCo
 func (m *GetAuthorizationCodeResponse) String() string { return proto.CompactTextString(m) }
 func (*GetAuthorizationCodeResponse) ProtoMessage()    {}
 func (*GetAuthorizationCodeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{26}
+	return fileDescriptor_8bbd6f3875b0e874, []int{27}
 }
 
 func (m *GetAuthorizationCodeResponse) XXX_Unmarshal(b []byte) error {
@@ -1375,7 +1428,7 @@ func (m *GetOAuthAccessTokenRequest) Reset()         { *m = GetOAuthAccessTokenR
 func (m *GetOAuthAccessTokenRequest) String() string { return proto.CompactTextString(m) }
 func (*GetOAuthAccessTokenRequest) ProtoMessage()    {}
 func (*GetOAuthAccessTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{27}
+	return fileDescriptor_8bbd6f3875b0e874, []int{28}
 }
 
 func (m *GetOAuthAccessTokenRequest) XXX_Unmarshal(b []byte) error {
@@ -1432,7 +1485,7 @@ func (m *GetOAuthAccessTokenRequest) GetScope() []string {
 }
 
 type GetOAuthAccessTokenResponse struct {
-	Token                *Token   `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Jwt                  *JWT     `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1442,7 +1495,7 @@ func (m *GetOAuthAccessTokenResponse) Reset()         { *m = GetOAuthAccessToken
 func (m *GetOAuthAccessTokenResponse) String() string { return proto.CompactTextString(m) }
 func (*GetOAuthAccessTokenResponse) ProtoMessage()    {}
 func (*GetOAuthAccessTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8bbd6f3875b0e874, []int{28}
+	return fileDescriptor_8bbd6f3875b0e874, []int{29}
 }
 
 func (m *GetOAuthAccessTokenResponse) XXX_Unmarshal(b []byte) error {
@@ -1463,28 +1516,29 @@ func (m *GetOAuthAccessTokenResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetOAuthAccessTokenResponse proto.InternalMessageInfo
 
-func (m *GetOAuthAccessTokenResponse) GetToken() *Token {
+func (m *GetOAuthAccessTokenResponse) GetJwt() *JWT {
 	if m != nil {
-		return m.Token
+		return m.Jwt
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterEnum("authpb.TokenPurpose", TokenPurpose_name, TokenPurpose_value)
-	proto.RegisterEnum("authpb.TokenState", TokenState_name, TokenState_value)
-	proto.RegisterEnum("authpb.FeedAction", FeedAction_name, FeedAction_value)
-	proto.RegisterType((*TokenHeader)(nil), "authpb.TokenHeader")
+	proto.RegisterEnum("authpb.JWTPurpose", JWTPurpose_name, JWTPurpose_value)
+	proto.RegisterEnum("authpb.JWTState", JWTState_name, JWTState_value)
+	proto.RegisterEnum("authpb.EventAction", EventAction_name, EventAction_value)
+	proto.RegisterType((*JWTHeader)(nil), "authpb.JWTHeader")
 	proto.RegisterType((*Claims)(nil), "authpb.Claims")
-	proto.RegisterType((*Token)(nil), "authpb.Token")
+	proto.RegisterType((*JWT)(nil), "authpb.JWT")
 	proto.RegisterType((*Credentials)(nil), "authpb.Credentials")
-	proto.RegisterType((*TokenEvent)(nil), "authpb.TokenEvent")
-	proto.RegisterType((*FeedRequest)(nil), "authpb.FeedRequest")
+	proto.RegisterType((*JwtInfo)(nil), "authpb.JwtInfo")
+	proto.RegisterType((*JwtEvent)(nil), "authpb.JwtEvent")
 	proto.RegisterType((*FeedResponse)(nil), "authpb.FeedResponse")
-	proto.RegisterType((*FindTokenRequest)(nil), "authpb.FindTokenRequest")
-	proto.RegisterType((*FindTokenResponse)(nil), "authpb.FindTokenResponse")
-	proto.RegisterType((*DeleteTokenRequest)(nil), "authpb.DeleteTokenRequest")
-	proto.RegisterType((*DeleteTokenResponse)(nil), "authpb.DeleteTokenResponse")
+	proto.RegisterType((*FindJWTRequest)(nil), "authpb.FindJWTRequest")
+	proto.RegisterType((*FindJWTResponse)(nil), "authpb.FindJWTResponse")
+	proto.RegisterType((*DeleteJWTRequest)(nil), "authpb.DeleteJWTRequest")
+	proto.RegisterType((*DeleteJWTResponse)(nil), "authpb.DeleteJWTResponse")
+	proto.RegisterType((*ListenRequest)(nil), "authpb.ListenRequest")
 	proto.RegisterType((*CreateCredentialsRequest)(nil), "authpb.CreateCredentialsRequest")
 	proto.RegisterType((*CreateCredentialsResponse)(nil), "authpb.CreateCredentialsResponse")
 	proto.RegisterType((*AuthenticateRequest)(nil), "authpb.AuthenticateRequest")
@@ -1508,95 +1562,100 @@ func init() {
 func init() { proto.RegisterFile("auth.proto", fileDescriptor_8bbd6f3875b0e874) }
 
 var fileDescriptor_8bbd6f3875b0e874 = []byte{
-	// 1404 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0xd1, 0x52, 0xdb, 0x46,
-	0x17, 0x8e, 0x00, 0x1b, 0x7c, 0x64, 0xf8, 0xcd, 0x42, 0x12, 0xc5, 0x90, 0xfc, 0xb0, 0x49, 0x18,
-	0x4a, 0x66, 0xe2, 0x84, 0x4e, 0x66, 0xda, 0x4c, 0x6f, 0x5c, 0x23, 0xc0, 0x93, 0x06, 0x52, 0xd9,
-	0x30, 0x9d, 0x49, 0x67, 0x3c, 0x6b, 0xe9, 0x60, 0x04, 0x42, 0x72, 0xa5, 0x95, 0x69, 0x92, 0xe9,
-	0x4d, 0xa7, 0x6f, 0xd0, 0x5e, 0xf7, 0xb6, 0x0f, 0xd1, 0xab, 0x3e, 0x43, 0xdf, 0xa0, 0xd3, 0x07,
-	0xe9, 0xec, 0x6a, 0x65, 0x4b, 0xc6, 0x90, 0xf6, 0x6e, 0xcf, 0xd9, 0x4f, 0xe7, 0x9c, 0xfd, 0xf6,
-	0xec, 0xf9, 0x6c, 0x00, 0x16, 0xf3, 0xd3, 0xa7, 0xfd, 0x30, 0xe0, 0x01, 0x29, 0x8a, 0x75, 0xbf,
-	0x5b, 0x5d, 0xed, 0x05, 0x41, 0xcf, 0xc3, 0x1a, 0xeb, 0xbb, 0x35, 0xe6, 0xfb, 0x01, 0x67, 0xdc,
-	0x0d, 0xfc, 0x28, 0x41, 0xd1, 0xe7, 0xa0, 0xb7, 0x83, 0x73, 0xf4, 0xf7, 0x91, 0x39, 0x18, 0x92,
-	0x0a, 0x4c, 0xf3, 0x77, 0x7d, 0x43, 0x5b, 0xd3, 0x36, 0x4b, 0x96, 0x58, 0x0a, 0x0f, 0xf3, 0x7a,
-	0xc6, 0x54, 0xe2, 0x61, 0x5e, 0x8f, 0xfe, 0xa5, 0x41, 0xb1, 0xe1, 0x31, 0xf7, 0x22, 0x12, 0x9b,
-	0x6e, 0x14, 0xa5, 0x70, 0x37, 0x92, 0x9e, 0x28, 0xee, 0xa6, 0xf0, 0x28, 0xee, 0xca, 0x00, 0xb1,
-	0x63, 0x4c, 0xab, 0x00, 0xb1, 0x23, 0x3c, 0xf8, 0x7d, 0xdf, 0x98, 0x59, 0xd3, 0x36, 0xa7, 0x2d,
-	0xb1, 0x14, 0x1e, 0xbf, 0x7b, 0x62, 0x14, 0x12, 0x8f, 0xdf, 0x3d, 0x91, 0x91, 0x19, 0x37, 0x8a,
-	0x89, 0xc7, 0x65, 0x5c, 0x78, 0xce, 0xb8, 0x6b, 0xcc, 0x26, 0x71, 0xce, 0xb8, 0x4b, 0x0c, 0x98,
-	0x1d, 0x60, 0x18, 0xb9, 0x81, 0x6f, 0xcc, 0x49, 0x6f, 0x6a, 0x92, 0x65, 0x28, 0x44, 0x76, 0xd0,
-	0x47, 0xa3, 0xb4, 0x36, 0xbd, 0x59, 0xb2, 0x12, 0x83, 0xdc, 0x81, 0x62, 0x10, 0xba, 0x3d, 0xd7,
-	0x37, 0x40, 0xc2, 0x95, 0x45, 0x08, 0xcc, 0x38, 0x8c, 0x33, 0x43, 0x97, 0x5e, 0xb9, 0xa6, 0xef,
-	0xa1, 0x20, 0x79, 0x21, 0x4f, 0xa0, 0x78, 0x2a, 0xb9, 0x91, 0xa7, 0xd4, 0xb7, 0x97, 0x9e, 0x26,
-	0xbc, 0x3e, 0xcd, 0xd0, 0x66, 0x29, 0x08, 0xd9, 0x80, 0xa2, 0x2d, 0x99, 0x91, 0x04, 0xe8, 0xdb,
-	0x0b, 0x29, 0x38, 0xe1, 0xcb, 0x52, 0xbb, 0x64, 0x15, 0x4a, 0x91, 0xdb, 0xf3, 0x19, 0x8f, 0x43,
-	0x54, 0xcc, 0x8c, 0x1c, 0xf4, 0x2d, 0xe8, 0x8d, 0x10, 0x1d, 0xf4, 0xb9, 0xcb, 0xbc, 0x88, 0x54,
-	0x61, 0x2e, 0x8e, 0x30, 0xf4, 0xd9, 0x05, 0x2a, 0xa6, 0x87, 0xb6, 0x38, 0x28, 0x5e, 0x30, 0xd7,
-	0x53, 0x84, 0x27, 0x86, 0xf8, 0xa2, 0xcf, 0xa2, 0xe8, 0x32, 0x08, 0x53, 0xde, 0x87, 0x36, 0xdd,
-	0x07, 0x90, 0x95, 0x9b, 0x03, 0xf4, 0x87, 0xa4, 0x6a, 0x23, 0x52, 0x37, 0xa1, 0x10, 0x71, 0xc6,
-	0x51, 0x46, 0x5c, 0xd8, 0x26, 0xb9, 0xe3, 0xb6, 0xc4, 0x8e, 0x95, 0x00, 0x28, 0x03, 0x7d, 0x17,
-	0xd1, 0xb1, 0xf0, 0xbb, 0x18, 0xa3, 0x49, 0xa1, 0xd4, 0xad, 0xaa, 0x5e, 0x50, 0xb7, 0x2a, 0x6e,
-	0x5e, 0xf5, 0x82, 0xb8, 0xf9, 0x1c, 0x13, 0x33, 0xe3, 0x4c, 0x2c, 0x40, 0x39, 0x49, 0x11, 0xf5,
-	0x03, 0x3f, 0x42, 0xfa, 0x08, 0x2a, 0xbb, 0xae, 0xef, 0xc8, 0x5a, 0xae, 0xcd, 0x4b, 0x3f, 0x81,
-	0xc5, 0x0c, 0x2a, 0xf9, 0x54, 0x30, 0x75, 0x12, 0xc4, 0xbe, 0xa3, 0x80, 0x89, 0x41, 0x37, 0x80,
-	0xec, 0xa0, 0x87, 0x1c, 0x3f, 0x12, 0xf2, 0x09, 0x2c, 0xe5, 0x70, 0xa3, 0xa0, 0x76, 0x10, 0xfb,
-	0x5c, 0x42, 0xe7, 0xad, 0xc4, 0xa0, 0x5f, 0x83, 0xd1, 0x08, 0x91, 0x71, 0xcc, 0xdc, 0x62, 0x1a,
-	0xfa, 0x05, 0xe8, 0xf6, 0xc8, 0x3b, 0xde, 0x53, 0xd9, 0x0f, 0xb2, 0x38, 0xfa, 0x16, 0xee, 0x4d,
-	0x08, 0xa9, 0xaa, 0xb8, 0x0f, 0x20, 0x1a, 0xa2, 0xc3, 0xd9, 0x39, 0xfa, 0x32, 0xe4, 0x9c, 0x55,
-	0x12, 0x9e, 0xb6, 0x70, 0x90, 0xff, 0x83, 0x2e, 0xdb, 0x42, 0xed, 0x4f, 0xc9, 0x7d, 0x90, 0x2e,
-	0x09, 0xa0, 0xaf, 0x60, 0xa9, 0x1e, 0xf3, 0x53, 0x11, 0xd6, 0x16, 0xf7, 0xab, 0x4a, 0x35, 0x60,
-	0x36, 0x8a, 0xbb, 0x67, 0x68, 0x73, 0xc5, 0x44, 0x6a, 0xe6, 0xfa, 0x6b, 0x6a, 0xac, 0xbf, 0x5e,
-	0x41, 0x65, 0x0f, 0x79, 0x9e, 0xa6, 0x87, 0x50, 0xe0, 0x41, 0x5a, 0x9b, 0xbe, 0x3d, 0x9f, 0xeb,
-	0x29, 0x2b, 0xd9, 0x13, 0xaf, 0xd0, 0x0e, 0x9c, 0xa4, 0xef, 0xe6, 0x2d, 0xb9, 0xa6, 0x5b, 0xb0,
-	0x7c, 0xcc, 0x3c, 0xd7, 0x61, 0x1c, 0x4d, 0x51, 0x6f, 0x5a, 0x1a, 0x81, 0x19, 0xd7, 0x3f, 0x09,
-	0x54, 0x5d, 0x72, 0x4d, 0xef, 0xc2, 0xed, 0x31, 0xac, 0x6a, 0x9a, 0x17, 0x70, 0xbf, 0x1d, 0xba,
-	0xbd, 0x1e, 0x86, 0xd2, 0xaf, 0x40, 0x6e, 0x30, 0xbc, 0xee, 0xe1, 0x23, 0xd2, 0x32, 0x8f, 0x88,
-	0xae, 0xc1, 0x83, 0xeb, 0x3e, 0x53, 0x81, 0x3f, 0x07, 0x62, 0xe1, 0x20, 0x38, 0xcf, 0x37, 0xcf,
-	0xbf, 0x39, 0x2c, 0xbd, 0x0d, 0x4b, 0xb9, 0x4f, 0x55, 0xc4, 0x6f, 0x61, 0x7d, 0x0f, 0xb9, 0x85,
-	0x11, 0xf2, 0x37, 0x8a, 0x50, 0x99, 0x3c, 0x97, 0x60, 0x62, 0xb9, 0x64, 0x1d, 0xca, 0x36, 0xf3,
-	0xbc, 0x2e, 0xb3, 0xcf, 0x3b, 0x71, 0x98, 0x0e, 0x04, 0x3d, 0xf5, 0x1d, 0x85, 0x1e, 0x7d, 0x04,
-	0xf4, 0xa6, 0xe8, 0xaa, 0x86, 0x9f, 0x34, 0x20, 0xad, 0x11, 0x22, 0x43, 0xb9, 0x68, 0xa9, 0x94,
-	0x72, 0xb1, 0xbe, 0x66, 0xfa, 0xac, 0x43, 0x39, 0xf0, 0x9c, 0xce, 0xd8, 0x04, 0xd2, 0x03, 0xcf,
-	0x49, 0x63, 0x0a, 0x88, 0x8f, 0x97, 0x23, 0x48, 0xf2, 0xf0, 0x75, 0x1f, 0x2f, 0x53, 0x08, 0xfd,
-	0x0c, 0x96, 0x72, 0x55, 0xa8, 0x56, 0x5a, 0x87, 0x32, 0xf3, 0x42, 0x64, 0xce, 0xbb, 0x4e, 0x1c,
-	0xa1, 0xa3, 0xba, 0x5d, 0x57, 0xbe, 0xa3, 0x08, 0x1d, 0xfa, 0x9b, 0x06, 0x2b, 0x7b, 0xc8, 0x45,
-	0x4b, 0x07, 0xa1, 0xfb, 0x5e, 0xde, 0x59, 0x23, 0x70, 0x86, 0x7d, 0xbd, 0x02, 0x25, 0xdb, 0x73,
-	0xd1, 0xe7, 0x1d, 0x37, 0x9d, 0x06, 0x73, 0x89, 0xa3, 0xe9, 0x8c, 0x94, 0x63, 0x2a, 0xab, 0x1c,
-	0x0f, 0x61, 0x5e, 0xf4, 0x63, 0x67, 0x80, 0xa1, 0x7b, 0xe2, 0x62, 0xa8, 0xce, 0x54, 0x16, 0xce,
-	0x63, 0xe5, 0x23, 0xcf, 0x60, 0x39, 0x07, 0xea, 0x5c, 0x20, 0x3f, 0x0d, 0xd2, 0xc3, 0x91, 0x2c,
-	0xf6, 0xb5, 0xdc, 0xa1, 0x26, 0xac, 0x4e, 0x2e, 0x54, 0x1d, 0xf6, 0x31, 0x2c, 0xc8, 0x88, 0xf6,
-	0x29, 0xf3, 0x3c, 0xf4, 0x7b, 0xe9, 0xfc, 0x97, 0xc5, 0x34, 0x52, 0x27, 0xfd, 0x55, 0x83, 0xea,
-	0x1e, 0xf2, 0x43, 0x11, 0xa8, 0x6e, 0xdb, 0x18, 0x45, 0xb9, 0x7e, 0xb9, 0xf1, 0xbc, 0xd9, 0x57,
-	0x57, 0x4e, 0x5e, 0x9d, 0xe4, 0x40, 0x4a, 0x40, 0x72, 0xca, 0xc4, 0xb8, 0xca, 0xc1, 0xcc, 0x04,
-	0x0e, 0x86, 0xf4, 0x15, 0x32, 0xf4, 0xd1, 0x2f, 0xe5, 0x85, 0x5c, 0xad, 0xef, 0x3f, 0x8c, 0x87,
-	0xad, 0x7d, 0x28, 0x4b, 0xfb, 0x4d, 0x1c, 0xf6, 0x83, 0x08, 0x09, 0x81, 0x85, 0xfa, 0x51, 0x7b,
-	0xdf, 0x3c, 0x68, 0x37, 0x1b, 0xf5, 0x76, 0xf3, 0xf0, 0xa0, 0x72, 0x8b, 0x2c, 0x43, 0xc5, 0x32,
-	0x5b, 0x87, 0x47, 0x56, 0xc3, 0x6c, 0x75, 0xea, 0x8d, 0x86, 0xd9, 0x6a, 0x55, 0x34, 0xb2, 0x00,
-	0x70, 0x5c, 0xff, 0xaa, 0xb9, 0x93, 0xa0, 0xa6, 0xb6, 0x6c, 0xa5, 0x80, 0x52, 0xcc, 0x48, 0x09,
-	0x0a, 0x72, 0xb7, 0x72, 0x8b, 0xcc, 0x43, 0xe9, 0xe0, 0xb0, 0xdd, 0x49, 0x4c, 0x8d, 0xe8, 0x30,
-	0x6b, 0x7e, 0xf3, 0xa6, 0x69, 0x99, 0x3b, 0x95, 0x29, 0x61, 0x58, 0xe6, 0xf1, 0xe1, 0x2b, 0x73,
-	0xa7, 0x32, 0x2d, 0x22, 0x0a, 0x60, 0xab, 0xb9, 0x77, 0x60, 0xee, 0x54, 0x66, 0xc8, 0x22, 0xcc,
-	0x0b, 0xdb, 0xdc, 0xdd, 0x35, 0x1b, 0xed, 0xe6, 0xb1, 0x59, 0x29, 0x6c, 0x51, 0x00, 0xa1, 0x5c,
-	0x75, 0x5b, 0x5c, 0x2a, 0x01, 0x28, 0x26, 0xf2, 0x51, 0xb9, 0x45, 0xe6, 0x60, 0xa6, 0xc5, 0x06,
-	0x58, 0xd1, 0xb6, 0x7f, 0xd7, 0x60, 0x51, 0x55, 0x12, 0x84, 0xd8, 0xc2, 0x70, 0xe0, 0xda, 0x48,
-	0xbe, 0x48, 0x64, 0xb5, 0x85, 0x91, 0xfc, 0x29, 0x33, 0xd4, 0x86, 0x8c, 0xd6, 0x56, 0x97, 0xf3,
-	0xce, 0x84, 0xc7, 0x4d, 0xed, 0x99, 0x46, 0x4e, 0xa1, 0x34, 0xd4, 0x3e, 0x62, 0x0c, 0x61, 0x63,
-	0xa2, 0x59, 0xbd, 0x37, 0x61, 0x47, 0xbd, 0xff, 0x8d, 0x1f, 0xff, 0xfc, 0xfb, 0xe7, 0xa9, 0x35,
-	0xf2, 0x40, 0xfe, 0x62, 0x1c, 0x3c, 0xaf, 0x49, 0xfe, 0x6b, 0x21, 0xf6, 0xdc, 0x88, 0x63, 0x88,
-	0x4e, 0xed, 0xc3, 0x19, 0x77, 0x7f, 0xd8, 0xfe, 0xa3, 0x00, 0xd0, 0xdc, 0x79, 0x9d, 0x96, 0xfd,
-	0x01, 0x16, 0xaf, 0x28, 0x14, 0x59, 0xcb, 0x08, 0xdb, 0x44, 0x3d, 0xac, 0xae, 0xdf, 0x80, 0x50,
-	0x05, 0xad, 0xcb, 0x82, 0x56, 0xe8, 0x9d, 0xb4, 0x20, 0x66, 0x4b, 0x9d, 0xad, 0xd9, 0xf2, 0x93,
-	0x97, 0xda, 0x16, 0x61, 0x50, 0xce, 0x2a, 0x18, 0x59, 0x49, 0xa3, 0x4e, 0xd0, 0xb5, 0xea, 0x90,
-	0x95, 0x71, 0x9d, 0xa2, 0x55, 0x99, 0x69, 0x99, 0xfe, 0x2f, 0xcd, 0x74, 0x76, 0xc9, 0x6b, 0x3d,
-	0xe4, 0x22, 0x45, 0x17, 0xf4, 0xcc, 0xc4, 0x26, 0xd5, 0x34, 0xc8, 0x55, 0x05, 0xa8, 0xae, 0x4c,
-	0xdc, 0xcb, 0xe7, 0x20, 0x24, 0x9b, 0x23, 0x94, 0x40, 0x72, 0x06, 0x7a, 0x66, 0xe6, 0x8d, 0x72,
-	0x5c, 0x1d, 0xc7, 0xa3, 0x1c, 0x13, 0x86, 0x24, 0xa5, 0x32, 0xc7, 0x2a, 0xbd, 0x9b, 0xe6, 0x48,
-	0x07, 0x6d, 0x2d, 0xee, 0x3b, 0x8a, 0x32, 0x0f, 0xe6, 0x73, 0x72, 0x49, 0x56, 0xd3, 0x88, 0x93,
-	0x14, 0xb7, 0x7a, 0xff, 0x9a, 0x5d, 0x95, 0xf1, 0x81, 0xcc, 0x68, 0x90, 0xe1, 0x1d, 0x49, 0x29,
-	0xa8, 0x0d, 0x14, 0x98, 0xfc, 0xa2, 0xc1, 0x9d, 0xc9, 0x6a, 0x4a, 0x1e, 0x0f, 0x9f, 0xfb, 0x4d,
-	0x22, 0x5d, 0xdd, 0xf8, 0x18, 0x4c, 0x55, 0xf2, 0x44, 0x56, 0xf2, 0x98, 0xae, 0x4d, 0xac, 0xc4,
-	0x0d, 0xfc, 0x1a, 0x4f, 0x02, 0xbc, 0xd4, 0xb6, 0xba, 0x45, 0xf9, 0x27, 0xe8, 0xd3, 0x7f, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0x97, 0xec, 0x80, 0x01, 0x38, 0x0d, 0x00, 0x00,
+	// 1477 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x57, 0x5d, 0x53, 0xdb, 0x46,
+	0x17, 0x8e, 0x6c, 0x63, 0xf0, 0x31, 0x1f, 0x62, 0x21, 0x44, 0xaf, 0x21, 0x79, 0x61, 0xf3, 0x51,
+	0x42, 0xa6, 0x71, 0x4a, 0x26, 0x9d, 0x4e, 0xa6, 0x17, 0x65, 0x8c, 0x20, 0x26, 0x09, 0xa4, 0xb2,
+	0x81, 0xce, 0x24, 0x33, 0x9e, 0xb5, 0xb4, 0x18, 0x81, 0x90, 0x5c, 0x69, 0x65, 0x9a, 0x66, 0x7a,
+	0xd3, 0xe9, 0x3f, 0x68, 0xaf, 0x7b, 0xdb, 0xdf, 0xd1, 0xdf, 0xd0, 0x8b, 0xde, 0x77, 0xfa, 0x43,
+	0x3a, 0xfb, 0x65, 0xcb, 0xd8, 0xa1, 0xbd, 0xd3, 0x9e, 0x7d, 0xf4, 0x9c, 0x73, 0x9e, 0x3d, 0xda,
+	0xc7, 0x06, 0x20, 0x29, 0x3b, 0x7d, 0xdc, 0x8d, 0x23, 0x16, 0xa1, 0x22, 0x7f, 0xee, 0xb6, 0x2b,
+	0x2b, 0x9d, 0x28, 0xea, 0x04, 0xb4, 0x4a, 0xba, 0x7e, 0x95, 0x84, 0x61, 0xc4, 0x08, 0xf3, 0xa3,
+	0x30, 0x91, 0x28, 0x5c, 0x85, 0xd2, 0xde, 0x71, 0xf3, 0x05, 0x25, 0x1e, 0x8d, 0x91, 0x09, 0x79,
+	0xf6, 0xbe, 0x6b, 0x19, 0xab, 0xc6, 0x7a, 0xc9, 0xe1, 0x8f, 0x3c, 0x42, 0x82, 0x8e, 0x95, 0x93,
+	0x11, 0x12, 0x74, 0xf0, 0x5f, 0x06, 0x14, 0x6b, 0x01, 0xf1, 0x2f, 0x12, 0xbe, 0xe9, 0x27, 0x89,
+	0x86, 0xfb, 0x89, 0x88, 0x24, 0x69, 0x5b, 0xc3, 0x93, 0xb4, 0x2d, 0x08, 0x52, 0xcf, 0xca, 0x2b,
+	0x82, 0xd4, 0xe3, 0x11, 0xfa, 0x5d, 0xd7, 0x2a, 0xac, 0x1a, 0xeb, 0x79, 0x87, 0x3f, 0xf2, 0x48,
+	0xd8, 0x3e, 0xb1, 0x26, 0x64, 0x24, 0x6c, 0x9f, 0x08, 0x66, 0xc2, 0xac, 0xa2, 0x8c, 0xf8, 0x84,
+	0xf1, 0xc8, 0x19, 0xf3, 0xad, 0x49, 0xc9, 0x73, 0xc6, 0x7c, 0x64, 0xc1, 0x64, 0x8f, 0xc6, 0x89,
+	0x1f, 0x85, 0xd6, 0x94, 0x88, 0xea, 0x25, 0x5a, 0x84, 0x89, 0xc4, 0x8d, 0xba, 0xd4, 0x2a, 0xad,
+	0xe6, 0xd7, 0x4b, 0x8e, 0x5c, 0xa0, 0x25, 0x28, 0x46, 0xb1, 0xdf, 0xf1, 0x43, 0x0b, 0x04, 0x5c,
+	0xad, 0x10, 0x82, 0x82, 0x47, 0x18, 0xb1, 0xca, 0x22, 0x2a, 0x9e, 0x71, 0x0f, 0xf2, 0x7b, 0xc7,
+	0x4d, 0xf4, 0x10, 0x8a, 0xa7, 0x42, 0x19, 0xd1, 0x63, 0x79, 0x73, 0xfe, 0xb1, 0xd4, 0xf4, 0x71,
+	0x5f, 0x32, 0x47, 0x01, 0xd0, 0x03, 0x28, 0xba, 0x42, 0x15, 0xd1, 0x7c, 0x79, 0x73, 0x56, 0x43,
+	0xa5, 0x56, 0x8e, 0xda, 0x45, 0x2b, 0x50, 0x4a, 0xfc, 0x4e, 0x48, 0x58, 0x1a, 0x53, 0xa5, 0xca,
+	0x20, 0x80, 0xdf, 0x42, 0xb9, 0x16, 0x53, 0x8f, 0x86, 0xcc, 0x27, 0x41, 0x82, 0x2a, 0x30, 0x95,
+	0x26, 0x34, 0x0e, 0xc9, 0x05, 0x55, 0x2a, 0xf7, 0xd7, 0xbc, 0x49, 0x7a, 0x41, 0xfc, 0x40, 0x89,
+	0x2d, 0x17, 0xfc, 0x8d, 0x2e, 0x49, 0x92, 0xcb, 0x28, 0xd6, 0x9a, 0xf7, 0xd7, 0xb8, 0x03, 0x93,
+	0x7b, 0x97, 0xac, 0x1e, 0x9e, 0x44, 0x5a, 0x4d, 0x63, 0xa0, 0xa6, 0x3a, 0x83, 0xdc, 0xd0, 0x19,
+	0xf0, 0x73, 0xca, 0x0f, 0xce, 0xe9, 0x01, 0x4c, 0x24, 0x8c, 0x30, 0x2a, 0xce, 0x6e, 0x76, 0xd3,
+	0xcc, 0xa8, 0xd1, 0xe0, 0x71, 0x47, 0x6e, 0xe3, 0x77, 0x30, 0xb5, 0x77, 0xc9, 0xec, 0x1e, 0x0d,
+	0x19, 0x7a, 0x04, 0x45, 0xe2, 0xf2, 0x81, 0x13, 0xc9, 0x66, 0x37, 0x17, 0xf4, 0x4b, 0x62, 0x7b,
+	0x4b, 0x6c, 0x39, 0x0a, 0x82, 0xee, 0x42, 0xc1, 0x0f, 0x4f, 0x22, 0x25, 0xe1, 0x5c, 0x9f, 0x5f,
+	0x56, 0xed, 0x88, 0x4d, 0xfc, 0x39, 0x4c, 0xef, 0x50, 0xea, 0x39, 0x34, 0xe9, 0x46, 0x61, 0x22,
+	0x85, 0x88, 0xe3, 0x28, 0x56, 0xdd, 0xc8, 0x85, 0xee, 0x30, 0xd7, 0xef, 0x10, 0x7f, 0x05, 0xb3,
+	0x3b, 0x7e, 0xe8, 0xed, 0x1d, 0x37, 0x1d, 0xfa, 0x6d, 0x4a, 0x13, 0x36, 0x46, 0x85, 0xa1, 0xd3,
+	0xc9, 0x5d, 0x3d, 0x9d, 0x4f, 0x60, 0xae, 0xcf, 0x30, 0x48, 0x7e, 0x12, 0xa5, 0xa1, 0xa7, 0x93,
+	0x8b, 0x05, 0xbe, 0x07, 0xe6, 0x36, 0x0d, 0x28, 0xa3, 0xd7, 0x25, 0xc3, 0x0f, 0x61, 0x3e, 0x83,
+	0x1a, 0x10, 0xba, 0x51, 0x1a, 0x32, 0x01, 0x9c, 0x71, 0xe4, 0x02, 0xcf, 0xc1, 0xcc, 0x2b, 0x3f,
+	0x61, 0x34, 0x54, 0x6c, 0xf8, 0x6b, 0xb0, 0x6a, 0x31, 0x25, 0x8c, 0x66, 0xc6, 0x45, 0x67, 0x7a,
+	0x06, 0x65, 0x77, 0x10, 0x55, 0xa3, 0xdb, 0xd7, 0x3d, 0xfb, 0x42, 0x16, 0x87, 0xdf, 0xc2, 0xff,
+	0xc6, 0x50, 0xaa, 0xb2, 0x6e, 0x03, 0xf0, 0xc9, 0x6b, 0x31, 0x72, 0x4e, 0xe5, 0x51, 0x4e, 0x39,
+	0x25, 0x1e, 0x69, 0xf2, 0x00, 0xfa, 0x3f, 0x94, 0xc5, 0xfc, 0xa9, 0xfd, 0x9c, 0xd8, 0x07, 0x11,
+	0x12, 0x00, 0xfc, 0x12, 0x16, 0xb6, 0x52, 0x76, 0xca, 0x69, 0x5d, 0x3e, 0x29, 0xaa, 0x54, 0x0b,
+	0x26, 0x93, 0xb4, 0x7d, 0x46, 0x5d, 0xa6, 0x84, 0xd1, 0xcb, 0xa1, 0x41, 0xce, 0x5d, 0x19, 0x64,
+	0x1b, 0xcc, 0x5d, 0xca, 0x9a, 0xd1, 0x39, 0xd7, 0xa3, 0x5f, 0x60, 0xfe, 0xec, 0x92, 0xa9, 0x66,
+	0xcb, 0x99, 0xc9, 0x74, 0x78, 0x9c, 0x7f, 0xe4, 0x6e, 0xe4, 0xc9, 0x33, 0x9d, 0x71, 0xc4, 0x33,
+	0xde, 0x80, 0xc5, 0x23, 0x12, 0xf8, 0x1e, 0x61, 0xd4, 0xe6, 0x95, 0xea, 0xa2, 0x90, 0x9a, 0x42,
+	0x59, 0x91, 0x1c, 0xba, 0x5b, 0x70, 0xf3, 0x0a, 0x56, 0xe6, 0xc5, 0xcf, 0xe0, 0x76, 0x33, 0xf6,
+	0x3b, 0x1d, 0x1a, 0x8b, 0xb8, 0x02, 0xf1, 0xa1, 0x56, 0x6c, 0xfd, 0xef, 0xd4, 0xc8, 0x7c, 0xa7,
+	0x78, 0x15, 0xee, 0x7c, 0xec, 0x35, 0x45, 0xfc, 0x14, 0x90, 0x43, 0x7b, 0xd1, 0x39, 0x55, 0x7d,
+	0x4a, 0xb6, 0xeb, 0xdb, 0xc4, 0x37, 0x61, 0x61, 0xe8, 0x25, 0xc5, 0xf5, 0x0e, 0xd6, 0x76, 0x29,
+	0x73, 0x68, 0x42, 0xd9, 0x1b, 0x25, 0xa2, 0x48, 0x3b, 0x44, 0x3d, 0xb6, 0x50, 0xb4, 0x06, 0xd3,
+	0x2e, 0x09, 0x82, 0x36, 0x71, 0xcf, 0x5b, 0x69, 0xac, 0x6f, 0x9b, 0xb2, 0x8e, 0x1d, 0xc6, 0x01,
+	0xbe, 0x07, 0xf8, 0x3a, 0x76, 0x55, 0xc3, 0x4f, 0x06, 0xa0, 0xc6, 0x00, 0x91, 0x11, 0x9b, 0x8f,
+	0x91, 0x16, 0x9b, 0x3f, 0x7f, 0xe4, 0x6a, 0x5b, 0x83, 0xe9, 0x28, 0xf0, 0x5a, 0x57, 0xae, 0xb7,
+	0x72, 0x14, 0x78, 0x9a, 0x93, 0x43, 0x42, 0x7a, 0x39, 0x80, 0x14, 0x24, 0x24, 0xa4, 0x97, 0x1a,
+	0x82, 0xbf, 0x80, 0x85, 0xa1, 0x2a, 0xd4, 0xf8, 0xac, 0xc1, 0x34, 0x09, 0x62, 0x4a, 0xbc, 0xf7,
+	0xad, 0x34, 0xa1, 0x9e, 0x9a, 0xf0, 0xb2, 0x8a, 0x1d, 0x26, 0xd4, 0xc3, 0xbf, 0x19, 0xb0, 0xbc,
+	0x4b, 0x19, 0x1f, 0xe3, 0x28, 0xf6, 0xbf, 0x17, 0xa7, 0x55, 0x8b, 0xbc, 0xfe, 0x2c, 0x2f, 0x43,
+	0xc9, 0x0d, 0x7c, 0x1a, 0xb2, 0x96, 0xaf, 0xaf, 0x83, 0x29, 0x19, 0xa8, 0x7b, 0x03, 0x4b, 0xca,
+	0x65, 0x2d, 0xe9, 0x2e, 0xcc, 0xf0, 0x49, 0x6c, 0xf5, 0x68, 0xec, 0x9f, 0xf8, 0x34, 0x56, 0x3d,
+	0x4d, 0xf3, 0xe0, 0x91, 0x8a, 0xa1, 0x27, 0xb0, 0x38, 0x04, 0x6a, 0x5d, 0x50, 0x76, 0x1a, 0xe9,
+	0xe6, 0x50, 0x16, 0xfb, 0x5a, 0xec, 0x60, 0x1b, 0x56, 0xc6, 0x17, 0xaa, 0x9a, 0xbd, 0x0f, 0xb3,
+	0x82, 0xd1, 0x3d, 0x25, 0x41, 0x40, 0xc3, 0x8e, 0x36, 0x17, 0x51, 0x4c, 0x4d, 0x07, 0xf1, 0xaf,
+	0x06, 0x54, 0x76, 0x29, 0x3b, 0xe0, 0x44, 0x5b, 0xae, 0x4b, 0x93, 0x64, 0x68, 0x5e, 0xae, 0xed,
+	0x37, 0xfb, 0xbd, 0x4d, 0xcb, 0xef, 0x4d, 0x68, 0x20, 0xec, 0x43, 0x76, 0x29, 0x17, 0xa3, 0x1a,
+	0x14, 0xc6, 0x68, 0xd0, 0x97, 0x6f, 0x22, 0x23, 0x1f, 0xfe, 0x52, 0x1c, 0xc8, 0x68, 0x7d, 0xff,
+	0xe9, 0x4a, 0xd8, 0xd8, 0x01, 0xd8, 0x3b, 0x6e, 0xbe, 0x49, 0xe3, 0x6e, 0x94, 0x50, 0x84, 0x60,
+	0x76, 0xeb, 0xb0, 0xf9, 0xc2, 0xde, 0x6f, 0xd6, 0x6b, 0x5b, 0xcd, 0xfa, 0xc1, 0xbe, 0x79, 0x03,
+	0x2d, 0x82, 0xe9, 0xd8, 0x8d, 0x83, 0x43, 0xa7, 0x66, 0x37, 0x5a, 0x5b, 0xb5, 0x9a, 0xdd, 0x68,
+	0x98, 0x06, 0x9a, 0x05, 0x38, 0xda, 0x7a, 0x55, 0xdf, 0x96, 0xa8, 0xdc, 0x06, 0x81, 0x29, 0x6d,
+	0x80, 0xa8, 0x04, 0x13, 0x62, 0xcf, 0xbc, 0x81, 0x66, 0xa0, 0xb4, 0x7f, 0xd0, 0x6c, 0xc9, 0xa5,
+	0x81, 0xca, 0x30, 0x69, 0x7f, 0xf3, 0xa6, 0xee, 0xd8, 0xdb, 0x66, 0x8e, 0x2f, 0x1c, 0xfb, 0xe8,
+	0xe0, 0xa5, 0xbd, 0x6d, 0xe6, 0x39, 0x1f, 0x07, 0x36, 0xea, 0xbb, 0xfb, 0xf6, 0xb6, 0x59, 0x40,
+	0xf3, 0x30, 0xc3, 0xd7, 0xf6, 0xce, 0x8e, 0x5d, 0x6b, 0xd6, 0x8f, 0x6c, 0x73, 0x62, 0xe3, 0x2e,
+	0x94, 0x33, 0x76, 0x89, 0x00, 0x8a, 0xd2, 0x38, 0xcc, 0x1b, 0x68, 0x0a, 0x0a, 0x0d, 0xd2, 0xa3,
+	0xa6, 0xb1, 0xf9, 0xa7, 0xa1, 0x0a, 0x89, 0x62, 0x8a, 0x36, 0xa1, 0xc0, 0x4d, 0x12, 0x99, 0x19,
+	0x0f, 0x15, 0x14, 0x95, 0x45, 0x1d, 0xc9, 0x9a, 0xe8, 0xba, 0xf1, 0xc4, 0x40, 0x4f, 0xa1, 0x28,
+	0x4d, 0x06, 0xdd, 0xd4, 0x98, 0x21, 0xd3, 0xa9, 0x8c, 0x90, 0x3d, 0x31, 0x50, 0x1b, 0x4a, 0xdc,
+	0x13, 0x85, 0xf2, 0x68, 0xa9, 0xcf, 0x3d, 0x64, 0xb4, 0x95, 0x5b, 0x23, 0x71, 0x75, 0x29, 0xdc,
+	0xfb, 0xf1, 0x8f, 0xbf, 0x7f, 0xce, 0xdd, 0x41, 0x2b, 0xe2, 0xd7, 0x69, 0xef, 0xb3, 0xea, 0xd9,
+	0x25, 0xfb, 0x34, 0xe1, 0x1d, 0x54, 0x4f, 0xfc, 0xd0, 0xab, 0x7e, 0x38, 0x63, 0xfe, 0x0f, 0x9b,
+	0xbf, 0x4f, 0x00, 0xd4, 0xb7, 0x5f, 0x37, 0x68, 0xdc, 0xf3, 0x5d, 0x8a, 0x3e, 0xc0, 0xfc, 0x88,
+	0x51, 0xa1, 0xd5, 0x8c, 0xbf, 0x8d, 0xb5, 0xc5, 0xca, 0xda, 0x35, 0x08, 0x55, 0xce, 0x9a, 0x28,
+	0x67, 0x19, 0x2f, 0xe9, 0x72, 0x88, 0x2b, 0xfc, 0xb7, 0xea, 0x8a, 0x57, 0x9e, 0x1b, 0x1b, 0x88,
+	0xc0, 0x74, 0xd6, 0xc8, 0xd0, 0xb2, 0x66, 0x1d, 0x63, 0x6f, 0x15, 0x4b, 0x6f, 0x5e, 0xb5, 0x2b,
+	0x5c, 0x11, 0x99, 0x16, 0xf1, 0x5c, 0xa6, 0xf1, 0x6a, 0x87, 0x32, 0x9e, 0xa2, 0x0d, 0xe5, 0xcc,
+	0x25, 0x8e, 0x2a, 0x9a, 0x64, 0xd4, 0x0e, 0x2a, 0xcb, 0x63, 0xf7, 0x86, 0x73, 0x20, 0x94, 0xcd,
+	0x11, 0x0b, 0x20, 0x3a, 0x83, 0x72, 0xe6, 0x1a, 0x1c, 0xe4, 0x18, 0xbd, 0xa1, 0x07, 0x39, 0xc6,
+	0xdc, 0x9b, 0x18, 0x8b, 0x1c, 0x2b, 0xf8, 0x96, 0xce, 0xa1, 0xef, 0xde, 0x6a, 0xda, 0xf5, 0x94,
+	0x64, 0x01, 0xcc, 0x0c, 0x79, 0x27, 0x5a, 0xd1, 0x8c, 0xe3, 0xec, 0xb7, 0x72, 0xfb, 0x23, 0xbb,
+	0x2a, 0xe3, 0x1d, 0x91, 0xd1, 0x42, 0xfd, 0x33, 0x12, 0xee, 0x50, 0xed, 0x29, 0x30, 0xfa, 0xc5,
+	0x80, 0xa5, 0xf1, 0xd6, 0x8a, 0xee, 0x6b, 0xe6, 0x6b, 0x1d, 0xbb, 0xf2, 0xe0, 0xdf, 0x60, 0xaa,
+	0x92, 0x47, 0xa2, 0x92, 0xfb, 0x78, 0x75, 0x6c, 0x25, 0x7e, 0x14, 0x56, 0x99, 0x24, 0x78, 0x6e,
+	0x6c, 0xb4, 0x8b, 0xe2, 0xef, 0xd6, 0xd3, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x67, 0x7b, 0x81,
+	0xab, 0xa2, 0x0d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1607,46 +1666,47 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// TokenStoreServiceClient is the client API for TokenStoreService service.
+// JWTStoreClient is the client API for JWTStore service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TokenStoreServiceClient interface {
-	FeedSession(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_FeedSessionClient, error)
-	FindToken(ctx context.Context, in *FindTokenRequest, opts ...grpc.CallOption) (*FindTokenResponse, error)
+type JWTStoreClient interface {
+	Feed(ctx context.Context, opts ...grpc.CallOption) (JWTStore_FeedClient, error)
+	Listen(ctx context.Context, in *ListenRequest, opts ...grpc.CallOption) (JWTStore_ListenClient, error)
+	FindToken(ctx context.Context, in *FindJWTRequest, opts ...grpc.CallOption) (*FindJWTResponse, error)
 }
 
-type tokenStoreServiceClient struct {
+type jWTStoreClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewTokenStoreServiceClient(cc *grpc.ClientConn) TokenStoreServiceClient {
-	return &tokenStoreServiceClient{cc}
+func NewJWTStoreClient(cc *grpc.ClientConn) JWTStoreClient {
+	return &jWTStoreClient{cc}
 }
 
-func (c *tokenStoreServiceClient) FeedSession(ctx context.Context, opts ...grpc.CallOption) (TokenStoreService_FeedSessionClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_TokenStoreService_serviceDesc.Streams[0], "/authpb.TokenStoreService/FeedSession", opts...)
+func (c *jWTStoreClient) Feed(ctx context.Context, opts ...grpc.CallOption) (JWTStore_FeedClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_JWTStore_serviceDesc.Streams[0], "/authpb.JWTStore/Feed", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &tokenStoreServiceFeedSessionClient{stream}
+	x := &jWTStoreFeedClient{stream}
 	return x, nil
 }
 
-type TokenStoreService_FeedSessionClient interface {
-	Send(*FeedRequest) error
+type JWTStore_FeedClient interface {
+	Send(*JwtEvent) error
 	Recv() (*FeedResponse, error)
 	grpc.ClientStream
 }
 
-type tokenStoreServiceFeedSessionClient struct {
+type jWTStoreFeedClient struct {
 	grpc.ClientStream
 }
 
-func (x *tokenStoreServiceFeedSessionClient) Send(m *FeedRequest) error {
+func (x *jWTStoreFeedClient) Send(m *JwtEvent) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *tokenStoreServiceFeedSessionClient) Recv() (*FeedResponse, error) {
+func (x *jWTStoreFeedClient) Recv() (*FeedResponse, error) {
 	m := new(FeedResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -1654,95 +1714,143 @@ func (x *tokenStoreServiceFeedSessionClient) Recv() (*FeedResponse, error) {
 	return m, nil
 }
 
-func (c *tokenStoreServiceClient) FindToken(ctx context.Context, in *FindTokenRequest, opts ...grpc.CallOption) (*FindTokenResponse, error) {
-	out := new(FindTokenResponse)
-	err := c.cc.Invoke(ctx, "/authpb.TokenStoreService/FindToken", in, out, opts...)
+func (c *jWTStoreClient) Listen(ctx context.Context, in *ListenRequest, opts ...grpc.CallOption) (JWTStore_ListenClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_JWTStore_serviceDesc.Streams[1], "/authpb.JWTStore/Listen", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &jWTStoreListenClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type JWTStore_ListenClient interface {
+	Recv() (*JwtEvent, error)
+	grpc.ClientStream
+}
+
+type jWTStoreListenClient struct {
+	grpc.ClientStream
+}
+
+func (x *jWTStoreListenClient) Recv() (*JwtEvent, error) {
+	m := new(JwtEvent)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *jWTStoreClient) FindToken(ctx context.Context, in *FindJWTRequest, opts ...grpc.CallOption) (*FindJWTResponse, error) {
+	out := new(FindJWTResponse)
+	err := c.cc.Invoke(ctx, "/authpb.JWTStore/FindToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TokenStoreServiceServer is the server API for TokenStoreService service.
-type TokenStoreServiceServer interface {
-	FeedSession(TokenStoreService_FeedSessionServer) error
-	FindToken(context.Context, *FindTokenRequest) (*FindTokenResponse, error)
+// JWTStoreServer is the server API for JWTStore service.
+type JWTStoreServer interface {
+	Feed(JWTStore_FeedServer) error
+	Listen(*ListenRequest, JWTStore_ListenServer) error
+	FindToken(context.Context, *FindJWTRequest) (*FindJWTResponse, error)
 }
 
-// UnimplementedTokenStoreServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTokenStoreServiceServer struct {
+func RegisterJWTStoreServer(s *grpc.Server, srv JWTStoreServer) {
+	s.RegisterService(&_JWTStore_serviceDesc, srv)
 }
 
-func (*UnimplementedTokenStoreServiceServer) FeedSession(srv TokenStoreService_FeedSessionServer) error {
-	return status.Errorf(codes.Unimplemented, "method FeedSession not implemented")
-}
-func (*UnimplementedTokenStoreServiceServer) FindToken(ctx context.Context, req *FindTokenRequest) (*FindTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindToken not implemented")
+func _JWTStore_Feed_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(JWTStoreServer).Feed(&jWTStoreFeedServer{stream})
 }
 
-func RegisterTokenStoreServiceServer(s *grpc.Server, srv TokenStoreServiceServer) {
-	s.RegisterService(&_TokenStoreService_serviceDesc, srv)
-}
-
-func _TokenStoreService_FeedSession_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TokenStoreServiceServer).FeedSession(&tokenStoreServiceFeedSessionServer{stream})
-}
-
-type TokenStoreService_FeedSessionServer interface {
+type JWTStore_FeedServer interface {
 	Send(*FeedResponse) error
-	Recv() (*FeedRequest, error)
+	Recv() (*JwtEvent, error)
 	grpc.ServerStream
 }
 
-type tokenStoreServiceFeedSessionServer struct {
+type jWTStoreFeedServer struct {
 	grpc.ServerStream
 }
 
-func (x *tokenStoreServiceFeedSessionServer) Send(m *FeedResponse) error {
+func (x *jWTStoreFeedServer) Send(m *FeedResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *tokenStoreServiceFeedSessionServer) Recv() (*FeedRequest, error) {
-	m := new(FeedRequest)
+func (x *jWTStoreFeedServer) Recv() (*JwtEvent, error) {
+	m := new(JwtEvent)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func _TokenStoreService_FindToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindTokenRequest)
+func _JWTStore_Listen_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListenRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(JWTStoreServer).Listen(m, &jWTStoreListenServer{stream})
+}
+
+type JWTStore_ListenServer interface {
+	Send(*JwtEvent) error
+	grpc.ServerStream
+}
+
+type jWTStoreListenServer struct {
+	grpc.ServerStream
+}
+
+func (x *jWTStoreListenServer) Send(m *JwtEvent) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _JWTStore_FindToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindJWTRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TokenStoreServiceServer).FindToken(ctx, in)
+		return srv.(JWTStoreServer).FindToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authpb.TokenStoreService/FindToken",
+		FullMethod: "/authpb.JWTStore/FindToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenStoreServiceServer).FindToken(ctx, req.(*FindTokenRequest))
+		return srv.(JWTStoreServer).FindToken(ctx, req.(*FindJWTRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _TokenStoreService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "authpb.TokenStoreService",
-	HandlerType: (*TokenStoreServiceServer)(nil),
+var _JWTStore_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "authpb.JWTStore",
+	HandlerType: (*JWTStoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "FindToken",
-			Handler:    _TokenStoreService_FindToken_Handler,
+			Handler:    _JWTStore_FindToken_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "FeedSession",
-			Handler:       _TokenStoreService_FeedSession_Handler,
+			StreamName:    "Feed",
+			Handler:       _JWTStore_Feed_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "Listen",
+			Handler:       _JWTStore_Listen_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "auth.proto",
@@ -1830,29 +1938,6 @@ type IDMServiceServer interface {
 	SetPassword(context.Context, *SetPasswordRequest) (*SetPasswordResponse, error)
 	ValidateEmail(context.Context, *ValidateEmailRequest) (*ValidateEmailResponse, error)
 	TriggerEmailValidation(context.Context, *TriggerEmailValidationRequest) (*TriggerEmailValidationResponse, error)
-}
-
-// UnimplementedIDMServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedIDMServiceServer struct {
-}
-
-func (*UnimplementedIDMServiceServer) CreateCredentials(ctx context.Context, req *CreateCredentialsRequest) (*CreateCredentialsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateCredentials not implemented")
-}
-func (*UnimplementedIDMServiceServer) Authenticate(ctx context.Context, req *AuthenticateRequest) (*GetTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
-}
-func (*UnimplementedIDMServiceServer) RevokeToken(ctx context.Context, req *RevokeTokenRequest) (*RevokeTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RevokeToken not implemented")
-}
-func (*UnimplementedIDMServiceServer) SetPassword(ctx context.Context, req *SetPasswordRequest) (*SetPasswordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetPassword not implemented")
-}
-func (*UnimplementedIDMServiceServer) ValidateEmail(ctx context.Context, req *ValidateEmailRequest) (*ValidateEmailResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ValidateEmail not implemented")
-}
-func (*UnimplementedIDMServiceServer) TriggerEmailValidation(ctx context.Context, req *TriggerEmailValidationRequest) (*TriggerEmailValidationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TriggerEmailValidation not implemented")
 }
 
 func RegisterIDMServiceServer(s *grpc.Server, srv IDMServiceServer) {

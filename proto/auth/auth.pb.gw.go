@@ -28,8 +28,12 @@ var _ status.Status
 var _ = runtime.String
 var _ = utilities.NewDoubleArray
 
-func request_TokenStoreService_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, client TokenStoreServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FindTokenRequest
+var (
+	filter_JWTStore_FindToken_0 = &utilities.DoubleArray{Encoding: map[string]int{"jti": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+)
+
+func request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, client JWTStoreClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq FindJWTRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -48,6 +52,10 @@ func request_TokenStoreService_FindToken_0(ctx context.Context, marshaler runtim
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "jti", err)
+	}
+
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_JWTStore_FindToken_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.FindToken(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -97,10 +105,7 @@ func request_IDMService_RevokeToken_0(ctx context.Context, marshaler runtime.Mar
 	var protoReq RevokeTokenRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IDMService_RevokeToken_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IDMService_RevokeToken_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -134,10 +139,7 @@ func request_IDMService_ValidateEmail_0(ctx context.Context, marshaler runtime.M
 	var protoReq ValidateEmailRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_IDMService_ValidateEmail_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_IDMService_ValidateEmail_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -163,9 +165,9 @@ func request_IDMService_TriggerEmailValidation_0(ctx context.Context, marshaler 
 
 }
 
-// RegisterTokenStoreServiceHandlerFromEndpoint is same as RegisterTokenStoreServiceHandler but
+// RegisterJWTStoreHandlerFromEndpoint is same as RegisterJWTStoreHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterTokenStoreServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterJWTStoreHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -185,23 +187,23 @@ func RegisterTokenStoreServiceHandlerFromEndpoint(ctx context.Context, mux *runt
 		}()
 	}()
 
-	return RegisterTokenStoreServiceHandler(ctx, mux, conn)
+	return RegisterJWTStoreHandler(ctx, mux, conn)
 }
 
-// RegisterTokenStoreServiceHandler registers the http handlers for service TokenStoreService to "mux".
+// RegisterJWTStoreHandler registers the http handlers for service JWTStore to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterTokenStoreServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterTokenStoreServiceHandlerClient(ctx, mux, NewTokenStoreServiceClient(conn))
+func RegisterJWTStoreHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterJWTStoreHandlerClient(ctx, mux, NewJWTStoreClient(conn))
 }
 
-// RegisterTokenStoreServiceHandlerClient registers the http handlers for service TokenStoreService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "TokenStoreServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "TokenStoreServiceClient"
+// RegisterJWTStoreHandlerClient registers the http handlers for service JWTStore
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "JWTStoreClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "JWTStoreClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "TokenStoreServiceClient" to call the correct interceptors.
-func RegisterTokenStoreServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TokenStoreServiceClient) error {
+// "JWTStoreClient" to call the correct interceptors.
+func RegisterJWTStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, client JWTStoreClient) error {
 
-	mux.Handle("GET", pattern_TokenStoreService_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_JWTStore_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -210,14 +212,14 @@ func RegisterTokenStoreServiceHandlerClient(ctx context.Context, mux *runtime.Se
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TokenStoreService_FindToken_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_JWTStore_FindToken_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_TokenStoreService_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_JWTStore_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -225,11 +227,11 @@ func RegisterTokenStoreServiceHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_TokenStoreService_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "token", "registered", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_JWTStore_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "jwt-store", "find", "jti"}, ""))
 )
 
 var (
-	forward_TokenStoreService_FindToken_0 = runtime.ForwardResponseMessage
+	forward_JWTStore_FindToken_0 = runtime.ForwardResponseMessage
 )
 
 // RegisterIDMServiceHandlerFromEndpoint is same as RegisterIDMServiceHandler but
@@ -394,17 +396,17 @@ func RegisterIDMServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_IDMService_CreateCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "account", "create"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_CreateCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "account", "create"}, ""))
 
-	pattern_IDMService_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "get"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "get"}, ""))
 
-	pattern_IDMService_RevokeToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "revoke"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_RevokeToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "revoke"}, ""))
 
-	pattern_IDMService_SetPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "password", "update"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_SetPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "password", "update"}, ""))
 
-	pattern_IDMService_ValidateEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "email", "validate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_ValidateEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "email", "validate"}, ""))
 
-	pattern_IDMService_TriggerEmailValidation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "email", "validation", "trigger"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_TriggerEmailValidation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "email", "validation", "trigger"}, ""))
 )
 
 var (

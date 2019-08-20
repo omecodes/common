@@ -91,6 +91,36 @@
         ]
       }
     },
+    "/api/v1/jwt-store/find/{jti}": {
+      "get": {
+        "operationId": "FindToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authpbFindJWTResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "jti",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "signature",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "JWTStore"
+        ]
+      }
+    },
     "/api/v1/jwt/get": {
       "post": {
         "operationId": "Authenticate",
@@ -130,70 +160,70 @@
         },
         "parameters": [
           {
-            "name": "token.header.typ",
+            "name": "jwt.header.typ",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.header.alg",
+            "name": "jwt.header.alg",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.iss",
+            "name": "jwt.claims.iss",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.sub",
+            "name": "jwt.claims.sub",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.aud",
+            "name": "jwt.claims.aud",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.exp",
+            "name": "jwt.claims.exp",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "token.claims.nbf",
+            "name": "jwt.claims.nbf",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "token.claims.iat",
+            "name": "jwt.claims.iat",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "int64"
           },
           {
-            "name": "token.claims.jti",
+            "name": "jwt.claims.jti",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.version",
+            "name": "jwt.claims.version",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.scope",
+            "name": "jwt.claims.scope",
             "in": "query",
             "required": false,
             "type": "array",
@@ -203,19 +233,19 @@
             "collectionFormat": "multi"
           },
           {
-            "name": "token.claims.origin",
+            "name": "jwt.claims.origin",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.claims.data",
+            "name": "jwt.claims.data",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "token.signature",
+            "name": "jwt.signature",
             "in": "query",
             "required": false,
             "type": "string"
@@ -249,30 +279,6 @@
         ],
         "tags": [
           "IDMService"
-        ]
-      }
-    },
-    "/api/v1/token/registered/{jti}": {
-      "get": {
-        "operationId": "FindToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbFindTokenResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "jti",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "TokenStoreService"
         ]
       }
     }
@@ -368,10 +374,26 @@
         }
       }
     },
-    "authpbFeedResponse": {
-      "type": "object"
+    "authpbEventAction": {
+      "type": "string",
+      "enum": [
+        "Delete",
+        "Save"
+      ],
+      "default": "Delete"
     },
-    "authpbFindTokenResponse": {
+    "authpbFeedResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "jti": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbFindJWTResponse": {
       "type": "object",
       "properties": {
         "found": {
@@ -382,12 +404,79 @@
     "authpbGetTokenResponse": {
       "type": "object",
       "properties": {
-        "token": {
-          "$ref": "#/definitions/authpbToken"
+        "jwt": {
+          "$ref": "#/definitions/authpbJWT"
         },
         "code": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "authpbJWT": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "$ref": "#/definitions/authpbJWTHeader"
+        },
+        "claims": {
+          "$ref": "#/definitions/authpbClaims"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbJWTHeader": {
+      "type": "object",
+      "properties": {
+        "typ": {
+          "type": "string"
+        },
+        "alg": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbJWTState": {
+      "type": "string",
+      "enum": [
+        "VALID",
+        "NOT_VALID",
+        "EXPIRED",
+        "REVOKED",
+        "NOT_SIGNED",
+        "NOT_EFFECTIVE"
+      ],
+      "default": "VALID"
+    },
+    "authpbJwtEvent": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/authpbEventAction"
+        },
+        "info": {
+          "$ref": "#/definitions/authpbJwtInfo"
+        }
+      }
+    },
+    "authpbJwtInfo": {
+      "type": "object",
+      "properties": {
+        "jti": {
+          "type": "string"
+        },
+        "nbf": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exp": {
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "$ref": "#/definitions/authpbJWTState"
         }
       }
     },
@@ -417,31 +506,6 @@
         "already_used": {
           "type": "boolean",
           "format": "boolean"
-        }
-      }
-    },
-    "authpbToken": {
-      "type": "object",
-      "properties": {
-        "header": {
-          "$ref": "#/definitions/authpbTokenHeader"
-        },
-        "claims": {
-          "$ref": "#/definitions/authpbClaims"
-        },
-        "signature": {
-          "type": "string"
-        }
-      }
-    },
-    "authpbTokenHeader": {
-      "type": "object",
-      "properties": {
-        "typ": {
-          "type": "string"
-        },
-        "alg": {
-          "type": "string"
         }
       }
     },
@@ -509,6 +573,18 @@
         }
       },
       "title": "Stream result of authpbFeedResponse"
+    },
+    "authpbJwtEvent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/authpbJwtEvent"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of authpbJwtEvent"
     }
   }
 }
