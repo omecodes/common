@@ -17,7 +17,7 @@ import (
 )
 
 type TokenVerifier interface {
-	Verify(ctx context.Context, t *Token) (TokenState, error)
+	Verify(ctx context.Context, t *JWT) (JWTState, error)
 }
 
 type tokenVerifier struct {
@@ -25,7 +25,7 @@ type tokenVerifier struct {
 	certificate *x509.Certificate
 }
 
-func (v *tokenVerifier) verifySignature(t *Token) (bool, error) {
+func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
 	if t.Claims == nil {
 		return false, errors.Forbidden
 	}
@@ -64,35 +64,35 @@ func (v *tokenVerifier) verifySignature(t *Token) (bool, error) {
 	}
 }
 
-func (v *tokenVerifier) verifyToken(ctx context.Context, t *Token) (TokenState, error) {
+func (v *tokenVerifier) verifyToken(ctx context.Context, t *JWT) (JWTState, error) {
 	verified, err := v.verifySignature(t)
 	if err != nil {
 		return 0, err
 	}
 
 	if !verified {
-		return TokenState_NOT_SIGNED, nil
+		return JWTState_NOT_SIGNED, nil
 	}
 
 	if t.Claims.Exp != -1 && t.Claims.Exp <= time.Now().Unix() {
-		return TokenState_EXPIRED, nil
+		return JWTState_EXPIRED, nil
 	}
 
 	if t.Claims.Nbf != -1 && t.Claims.Nbf > time.Now().Unix() {
-		return TokenState_NOT_EFFECTIVE, nil
+		return JWTState_NOT_EFFECTIVE, nil
 	}
 
-	return TokenState_VALID, nil
+	return JWTState_VALID, nil
 }
 
-func (v *tokenVerifier) Verify(ctx context.Context, t *Token) (TokenState, error) {
+func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 	if t == nil {
-		return TokenState_NOT_VALID, errors.Forbidden
+		return JWTState_NOT_VALID, errors.Forbidden
 	}
 
 	s, err := v.verifyToken(ctx, t)
 	if err != nil {
-		return TokenState_NOT_VALID, errors.Forbidden
+		return JWTState_NOT_VALID, errors.Forbidden
 	}
 	return s, nil
 }
@@ -103,7 +103,7 @@ func NewTokenVerifier(certificate *x509.Certificate) *tokenVerifier {
 	}
 }
 
-func TokenFromJWT(jwt string) (*Token, error) {
+func TokenFromJWT(jwt string) (*JWT, error) {
 	if jwt == "" {
 		return nil, nil
 	}
@@ -116,8 +116,8 @@ func TokenFromJWT(jwt string) (*Token, error) {
 		return nil, errors.New("missing parts")
 	}
 
-	var t Token
-	t.Header = new(TokenHeader)
+	var t JWT
+	t.Header = new(JWTHeader)
 	t.Claims = new(Claims)
 
 	headerBytes, _ := base64.StdEncoding.DecodeString(parts[0])

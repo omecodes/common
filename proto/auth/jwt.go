@@ -104,3 +104,69 @@ func (s *SyncedJwtStoreClient) State(jti string) (JWTState, error) {
 func NewSyncJwtStoreClient(server string, cert *x509.Certificate) {
 
 }
+
+type JwtFeeder struct {
+	serverAddress string
+	serverCert    *x509.Certificate
+
+	conn   *grpc.ClientConn
+	stream JWTStore_FeedClient
+}
+
+func (f *JwtFeeder) connect() (err error) {
+	if f.conn != nil && f.conn.GetState() == connectivity.Ready {
+		return nil
+	}
+	if f.serverCert != nil {
+		tlsCert := &tls.Certificate{Certificate: [][]byte{f.serverCert.Raw}}
+		f.conn, err = grpc.Dial(f.serverAddress, grpc.WithTransportCredentials(credentials.NewServerTLSFromCert(tlsCert)))
+	} else {
+		f.conn, err = grpc.Dial(f.serverAddress, grpc.WithInsecure())
+	}
+	return err
+}
+
+func (f *JwtFeeder) AddJwt(info *JwtInfo) (err error) {
+	if err = f.connect(); err != nil {
+		return
+	}
+
+	if f.stream == nil {
+		client := NewJWTStoreClient(f.conn)
+		f.stream, err = client.Feed(context.Background())
+		if err != nil {
+			return
+		}
+	}
+
+	return f.stream.Send(&JwtEvent{
+		Info:   info,
+		Action: EventAction_Save,
+	})
+}
+
+func (f *JwtFeeder) Revoke(jti string) (err error) {
+	if err = f.connect(); err != nil {
+		return
+	}
+
+	if f.stream == nil {
+		client := NewJWTStoreClient(f.conn)
+		f.stream, err = client.Feed(context.Background())
+		if err != nil {
+			return
+		}
+	}
+
+	return f.stream.Send(&JwtEvent{
+		Action: EventAction_Delete,
+		Info:   &JwtInfo{Jti: jti},
+	})
+}
+
+func NewJwtFeeder(serverAddress string, serverCert *x509.Certificate) *JwtFeeder {
+	return &JwtFeeder{
+		serverAddress: serverAddress,
+		serverCert:    serverCert,
+	}
+}
