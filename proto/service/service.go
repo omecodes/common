@@ -102,6 +102,10 @@ func (r *SyncedRegistry) Deregister(id string) error {
 	return err
 }
 
+func (r *SyncedRegistry) Get(id string) *Info {
+	return r.get(id)
+}
+
 func (r *SyncedRegistry) GetAddress(namespace string, name string, protocol string) (string, error) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
@@ -132,13 +136,21 @@ func (r *SyncedRegistry) dispatchEvent(e Event) {
 	}
 }
 
+func (r *SyncedRegistry) get(name string) *Info {
+	r.servicesLock.Lock()
+	defer r.servicesLock.Unlock()
+	return r.services[name]
+}
+
 func (r *SyncedRegistry) saveService(info *Info) {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
-	r.services[info.Namespace+"::"+info.Name] = info
+	r.services[info.Namespace+":"+info.Name] = info
 }
 
 func (r *SyncedRegistry) deleteService(name string) {
+	r.servicesLock.Lock()
+	defer r.servicesLock.Unlock()
 	delete(r.services, name)
 }
 
