@@ -15,58 +15,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/app/register": {
-      "post": {
-        "operationId": "RegisterApplication",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authoritypbRegisterApplicationResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authoritypbRegisterApplicationRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthorityService"
-        ]
-      }
-    },
-    "/api/v1/app/sign/cert": {
-      "post": {
-        "operationId": "SignCertificate",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authoritypbSignCertificateResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authoritypbSignCertificateRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthorityService"
-        ]
-      }
-    },
     "/api/v1/auth/validate": {
       "get": {
         "operationId": "ValidateAuth",
@@ -96,6 +44,58 @@
             "in": "query",
             "required": false,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/service/register": {
+      "post": {
+        "operationId": "RegisterApplication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbRegisterApplicationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/v1/service/sign/cert": {
+      "post": {
+        "operationId": "SignCertificate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authoritypbSignCertificateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authoritypbSignCertificateRequest"
+            }
           }
         ],
         "tags": [

@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -1762,6 +1764,20 @@ type JWTStoreServer interface {
 	FindToken(context.Context, *FindJWTRequest) (*FindJWTResponse, error)
 }
 
+// UnimplementedJWTStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedJWTStoreServer struct {
+}
+
+func (*UnimplementedJWTStoreServer) Feed(srv JWTStore_FeedServer) error {
+	return status.Errorf(codes.Unimplemented, "method Feed not implemented")
+}
+func (*UnimplementedJWTStoreServer) Listen(req *ListenRequest, srv JWTStore_ListenServer) error {
+	return status.Errorf(codes.Unimplemented, "method Listen not implemented")
+}
+func (*UnimplementedJWTStoreServer) FindToken(ctx context.Context, req *FindJWTRequest) (*FindJWTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindToken not implemented")
+}
+
 func RegisterJWTStoreServer(s *grpc.Server, srv JWTStoreServer) {
 	s.RegisterService(&_JWTStore_serviceDesc, srv)
 }
@@ -1938,6 +1954,29 @@ type IDMServiceServer interface {
 	SetPassword(context.Context, *SetPasswordRequest) (*SetPasswordResponse, error)
 	ValidateEmail(context.Context, *ValidateEmailRequest) (*ValidateEmailResponse, error)
 	TriggerEmailValidation(context.Context, *TriggerEmailValidationRequest) (*TriggerEmailValidationResponse, error)
+}
+
+// UnimplementedIDMServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedIDMServiceServer struct {
+}
+
+func (*UnimplementedIDMServiceServer) CreateCredentials(ctx context.Context, req *CreateCredentialsRequest) (*CreateCredentialsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCredentials not implemented")
+}
+func (*UnimplementedIDMServiceServer) Authenticate(ctx context.Context, req *AuthenticateRequest) (*GetTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
+}
+func (*UnimplementedIDMServiceServer) RevokeToken(ctx context.Context, req *RevokeTokenRequest) (*RevokeTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeToken not implemented")
+}
+func (*UnimplementedIDMServiceServer) SetPassword(ctx context.Context, req *SetPasswordRequest) (*SetPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetPassword not implemented")
+}
+func (*UnimplementedIDMServiceServer) ValidateEmail(ctx context.Context, req *ValidateEmailRequest) (*ValidateEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateEmail not implemented")
+}
+func (*UnimplementedIDMServiceServer) TriggerEmailValidation(ctx context.Context, req *TriggerEmailValidationRequest) (*TriggerEmailValidationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TriggerEmailValidation not implemented")
 }
 
 func RegisterIDMServiceServer(s *grpc.Server, srv IDMServiceServer) {

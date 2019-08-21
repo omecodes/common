@@ -70,6 +70,10 @@ func (v *Vars) RegistryCert() *x509.Certificate {
 	return v.registryCert
 }
 
+func (v *Vars) Registry() *servicepb.SyncedRegistry {
+	return v.registry
+}
+
 func (v *Vars) AuthorityCert() *x509.Certificate {
 	return v.authorityCert
 }

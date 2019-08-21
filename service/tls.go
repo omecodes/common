@@ -120,7 +120,7 @@ func ServerMutualTLS(v *Vars) *tls.Config {
 	return &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
 		ClientCAs:    CAPool,
-		ClientAuth:   tls.RequestClientCert,
+		ClientAuth:   tls.VerifyClientCertIfGiven,
 		ServerName:   v.domain,
 	}
 }

@@ -1,0 +1,185 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "data.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/data/get/{query.app}/{query.user}/{query.key}": {
+      "get": {
+        "operationId": "Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbGetDataResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query.app",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query.user",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query.key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserDataStore"
+        ]
+      },
+      "delete": {
+        "operationId": "Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteDataResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query.app",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query.user",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "query.key",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserDataStore"
+        ]
+      }
+    },
+    "/api/data/{data.app}/{data.user}": {
+      "post": {
+        "operationId": "Set",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbSetDataResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "data.app",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "data.user",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/datapbSetDataRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserDataStore"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "datapbDeleteDataResponse": {
+      "type": "object"
+    },
+    "datapbFeedResponse": {
+      "type": "object"
+    },
+    "datapbGetDataResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/datapbUserData"
+        }
+      }
+    },
+    "datapbQuery": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "app": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        }
+      }
+    },
+    "datapbSetDataRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/datapbUserData"
+        }
+      }
+    },
+    "datapbSetDataResponse": {
+      "type": "object"
+    },
+    "datapbUserData": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "app": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

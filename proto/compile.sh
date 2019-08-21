@@ -8,6 +8,11 @@ cd auth
 ./compile.sh
 cd ..
 
+
+cd data
+./compile.sh
+cd ..
+
 cd authority
 ./compile.sh
 cd ..

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package datapb;
+
+import "google/api/annotations.proto";
+
+message UserData {
+    string user = 1;
+    string app = 2;
+    string key = 3;
+    string uri = 4;
+}
+
+message Query {
+    string user = 1;
+    string app = 2;
+    string key = 3;
+}
+
+service UserDataStore {
+    rpc Set (SetDataRequest) returns (SetDataResponse) {
+        option (google.api.http) = {
+            post: "/api/data/{data.app}/{data.user}";
+            body: "*";
+        };
+    };
+    rpc Get (GetDataRequest) returns (GetDataResponse) {
+        option (google.api.http).get = "/api/data/get/{query.app}/{query.user}/{query.key}";
+    };
+    rpc Delete (DeleteDataRequest) returns (DeleteDataResponse) {
+        option (google.api.http).delete = "/api/data/get/{query.app}/{query.user}/{query.key}";
+    };
+    rpc Feed(stream UserData) returns (FeedResponse);
+}
+
+message SetDataRequest {
+    UserData data = 1;
+}
+message SetDataResponse {}
+
+message GetDataRequest {
+    Query query = 1;
+}
+message GetDataResponse {
+    UserData data = 1;
+}
+
+message DeleteDataRequest {
+    Query query = 1;
+}
+message DeleteDataResponse {}
+
+message FeedResponse {}
