@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package authoritypb;
+package capb;
 
 import "google/api/annotations.proto";
 

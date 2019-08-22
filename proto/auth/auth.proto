@@ -32,10 +32,11 @@ message Claims {
     int64 nbf = 5;
     int64 iat = 6;
     string jti = 7;
-    string version = 8; // string version
-    repeated string scope = 9; // scope of the token
-    string origin = 10; // location the token was requested from
-    string data = 11;
+    string version = 8;
+    repeated string scope = 9;
+    string requester = 10;
+    string store = 11;
+    string data = 12;
 }
 
 message JWT {

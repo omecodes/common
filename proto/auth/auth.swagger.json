@@ -233,7 +233,13 @@
             "collectionFormat": "multi"
           },
           {
-            "name": "jwt.claims.origin",
+            "name": "jwt.claims.requester",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "jwt.claims.store",
             "in": "query",
             "required": false,
             "type": "string"
@@ -331,7 +337,10 @@
             "type": "string"
           }
         },
-        "origin": {
+        "requester": {
+          "type": "string"
+        },
+        "store": {
           "type": "string"
         },
         "data": {

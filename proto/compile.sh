@@ -13,7 +13,7 @@ cd data
 ./compile.sh
 cd ..
 
-cd authority
+cd ca
 ./compile.sh
 cd ..
 
