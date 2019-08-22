@@ -12,7 +12,6 @@ import (
 	"github.com/zoenion/common/auth"
 	crypto2 "github.com/zoenion/common/crypto"
 	"github.com/zoenion/common/prompt"
-	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -175,9 +174,9 @@ func loadTools(v *Vars) error {
 
 	if v.registryAddress != "" {
 		if v.registrySecure {
-			v.registry = servicepb.NewSyncRegistry(v.registryAddress, ClientMutualTLS(v))
+			v.registry = NewSyncRegistry(v.registryAddress, ClientMutualTLS(v))
 		} else {
-			v.registry = servicepb.NewSyncRegistry(v.registryAddress, nil)
+			v.registry = NewSyncRegistry(v.registryAddress, nil)
 		}
 	}
 	return nil

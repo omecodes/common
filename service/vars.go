@@ -4,12 +4,11 @@ import (
 	"crypto"
 	"crypto/x509"
 	"fmt"
-	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc/credentials"
 )
 
 type loaded struct {
-	registry                          *servicepb.SyncedRegistry
+	registry                          *SyncedRegistry
 	authorityCert                     *x509.Certificate
 	authorityClientAuthentication     credentials.PerRPCCredentials
 	authorityGRPCTransportCredentials credentials.TransportCredentials
@@ -70,7 +69,7 @@ func (v *Vars) RegistryCert() *x509.Certificate {
 	return v.registryCert
 }
 
-func (v *Vars) Registry() *servicepb.SyncedRegistry {
+func (v *Vars) Registry() *SyncedRegistry {
 	return v.registry
 }
 

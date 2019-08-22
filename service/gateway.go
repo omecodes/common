@@ -1,4 +1,4 @@
-package gateway
+package service
 
 import (
 	"context"
@@ -15,16 +15,38 @@ import (
 	"net/http"
 )
 
+type HTTP struct {
+	Address        string
+	WireGRPCFunc   WireEndpointFunc
+	MiddlewareList []http_helper.HttpMiddleware
+}
+
+type GRPC struct {
+	Address             string
+	Interceptor         grpc.UnaryServerInterceptor
+	StreamInterceptor   grpc.StreamServerInterceptor
+	RegisterHandlerFunc func(*grpc.Server)
+}
+
+type GatewayConfig struct {
+	Name string
+	Tls  *tls.Config
+	HTTP *HTTP
+	GRPC *GRPC
+}
+
+type WireEndpointFunc func(ctx context.Context, serveMux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error
+
 type Gateway struct {
 	running                    bool
 	gs                         *grpc.Server
 	hs                         *http.Server
-	config                     *Config
+	config                     *GatewayConfig
 	router                     *mux.Router
 	listenerGRPC, listenerHTTP net.Listener
 }
 
-func New(config *Config) *Gateway {
+func New(config *GatewayConfig) *Gateway {
 	return &Gateway{
 		config: config,
 	}

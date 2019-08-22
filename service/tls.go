@@ -13,7 +13,7 @@ import (
 	crypto2 "github.com/zoenion/common/crypto"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/futils"
-	authoritypb "github.com/zoenion/common/proto/authority"
+	capb "github.com/zoenion/common/proto/ca"
 	"google.golang.org/grpc"
 	"os"
 	"path/filepath"
@@ -80,9 +80,9 @@ func loadSignedKeyPair(v *Vars) error {
 		}
 
 		conn, err := grpc.Dial(v.authorityGRPC, grpc.WithTransportCredentials(v.loaded.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(v.loaded.authorityClientAuthentication))
-		client := authoritypb.NewAuthorityServiceClient(conn)
-		rsp, err := client.SignCertificate(context.Background(), &authoritypb.SignCertificateRequest{
-			Template: &authoritypb.CertificateTemplate{
+		client := capb.NewAuthorityServiceClient(conn)
+		rsp, err := client.SignCertificate(context.Background(), &capb.SignCertificateRequest{
+			Template: &capb.CertificateTemplate{
 				Domains:     []string{v.domain},
 				Addresses:   []string{v.ip},
 				ServiceName: strcase.ToDelimited(v.name, '.'),

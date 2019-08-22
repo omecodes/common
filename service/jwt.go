@@ -4,58 +4,64 @@ import (
 	"context"
 	"crypto/x509"
 	"fmt"
+	"github.com/zoenion/common/data"
 	"github.com/zoenion/common/errors"
 	authpb "github.com/zoenion/common/proto/auth"
-	servicepb "github.com/zoenion/common/proto/service"
-	"log"
+	"path/filepath"
 	"sync"
 )
 
+type JwtRevokedHandlerFunc func()
+
 type jwtVerifier struct {
 	sync.Mutex
-	registry       *servicepb.SyncedRegistry
+	vars           *Vars
+	storesMutex    sync.Mutex
 	tokenVerifiers map[string]authpb.TokenVerifier
-	jwtStore       *authpb.SyncedJwtStoreClient
+	syncedStores   map[string]*SyncedJwtStore
 	CaCert         *x509.Certificate
 }
 
 func (j *jwtVerifier) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTState, error) {
 	issuer := t.Claims.Iss
 
-	state, err := j.jwtStore.State(t.Claims.Jti)
-	if err != nil {
-		return state, err
-	}
-
 	verifier := j.getJwtVerifier(issuer)
 	if verifier == nil {
-		info := j.registry.Get(t.Claims.Iss)
-		if info == nil {
-			return 0, errors.Forbidden
-		}
-
-		strCert, found := info.Meta["certificate"]
-		if !found {
-			return 0, errors.Forbidden
-		}
-
-		issCert, err := x509.ParseCertificate([]byte(strCert))
+		issCert, err := j.vars.Registry().Certificate(issuer)
 		if err != nil {
-			log.Println("could not parse issuer certificate:", err)
 			return 0, errors.Forbidden
 		}
-
 		verifier = authpb.NewTokenVerifier(issCert)
 		j.saveJwtVerifier(t.Claims.Iss, verifier)
 	}
 
-	state, err = verifier.Verify(ctx, t)
+	state, err := verifier.Verify(ctx, t)
 	if err != nil {
 		return 0, fmt.Errorf("failed to verify to token: %s", errors.Internal)
 	}
-
 	if state != authpb.JWTState_VALID {
 		return 0, errors.Forbidden
+	}
+
+	if t.Claims.Store != "" {
+		jwtStore := j.getStore(t.Claims.Store)
+		if jwtStore == nil {
+			ci, err := j.vars.Registry().ConnectionInfo(t.Claims.Store, "gRPC")
+			if err != nil {
+				return 0, errors.Forbidden
+			}
+			dictStore, err := data.NewDictDB(filepath.Join(j.vars.dir, ""))
+			if err != nil {
+				return 0, errors.Internal
+			}
+			jwtStore = NewSyncJwtStore(ci.Address, ci.Certificate, dictStore)
+			j.saveStore(t.Claims.Store, jwtStore)
+		}
+
+		state, err = jwtStore.State(t.Claims.Jti)
+		if err != nil {
+			return state, err
+		}
 	}
 
 	ctx = context.WithValue(ctx, User, t.Claims.Sub)
@@ -74,10 +80,23 @@ func (j *jwtVerifier) getJwtVerifier(name string) authpb.TokenVerifier {
 	return j.tokenVerifiers[name]
 }
 
+func (j *jwtVerifier) getStore(name string) *SyncedJwtStore {
+	j.Lock()
+	defer j.Unlock()
+	return j.syncedStores[name]
+}
+
+func (j *jwtVerifier) saveStore(name string, s *SyncedJwtStore) {
+	j.Lock()
+	defer j.Unlock()
+	j.syncedStores[name] = s
+}
+
 func NewVerifier(v *Vars) (authpb.TokenVerifier, error) {
 	verifier := &jwtVerifier{
-		registry:       v.Registry(),
+		vars:           v,
 		tokenVerifiers: map[string]authpb.TokenVerifier{},
+		syncedStores:   map[string]*SyncedJwtStore{},
 	}
 	return verifier, nil
 }

@@ -1,5 +1,7 @@
 package service
 
+import "crypto/x509"
+
 const (
 	CmdFlagAuthority      = "a-grpc"
 	CmdFlagIP             = "ip"
@@ -15,4 +17,25 @@ const (
 	CmdFlagRegistrySecure = "reg-secure"
 	CmdFlagGRPC           = "grpc"
 	CmdFlagHTTP           = "http"
+	MetaCertificate       = "certificate"
 )
+
+type ContextKey string
+
+const (
+	User            = ContextKey("user")
+	Caller          = ContextKey("caller")
+	Token           = ContextKey("token")
+	PeerIp          = ContextKey("peer-ip")
+	PeerCertificate = ContextKey("peer-certificate")
+)
+
+const (
+	ProtocolGRPC = "gRPC"
+	ProtocolHTTP = "HTTP"
+)
+
+type ConnectionInfo struct {
+	Address     string
+	Certificate *x509.Certificate
+}
