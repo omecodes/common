@@ -22,7 +22,7 @@ type TokenVerifier interface {
 
 type tokenVerifier struct {
 	sync.Mutex
-	certificate *x509.Certificate
+	singerCert *x509.Certificate
 }
 
 func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
@@ -54,7 +54,7 @@ func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
 	hash := sha.Sum(nil)
 
 	if t.Header.Alg == "ecdsa" {
-		key, ok := v.certificate.PublicKey.(*ecdsa.PublicKey)
+		key, ok := v.singerCert.PublicKey.(*ecdsa.PublicKey)
 		if !ok {
 			return false, errors.New("could not verify token with the public key")
 		}
@@ -99,7 +99,7 @@ func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 
 func NewTokenVerifier(certificate *x509.Certificate) *tokenVerifier {
 	return &tokenVerifier{
-		certificate: certificate,
+		singerCert: certificate,
 	}
 }
 
@@ -151,4 +151,23 @@ func TokenFromJWT(jwt string) (*JWT, error) {
 	}
 
 	return &t, nil
+}
+
+type StringTokenVerifier struct {
+	verifier TokenVerifier
+}
+
+func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) error {
+	t, err := TokenFromJWT(jwt)
+	if err != nil {
+		return err
+	}
+	_, err = stv.verifier.Verify(ctx, t)
+	return err
+}
+
+func NewStringTokenVerifier(tv TokenVerifier) *StringTokenVerifier {
+	return &StringTokenVerifier{
+		verifier: tv,
+	}
 }

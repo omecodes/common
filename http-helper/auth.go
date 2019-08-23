@@ -162,3 +162,15 @@ func NewAPIAuthenticationMiddleware(realm string, key string, secret string, wra
 		wrappers: wrappers,
 	}
 }
+
+// Gateway wraps autho
+type GRPCTranslatorAuthorization struct {
+	secret string
+}
+
+func (gt *GRPCTranslatorAuthorization) Handle(new http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authorization := r.Header.Get("authorization")
+		r.Header.Set("authorization", fmt.Sprintf("Gateway %s:%s", gt.secret, authorization))
+	}
+}
