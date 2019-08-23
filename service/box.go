@@ -93,7 +93,7 @@ func (box *Box) HTTPAddress() string {
 	return fmt.Sprintf("%s:%s", addr, box.params.GatewayHTTPPort)
 }
 
-func (box *Box) validateBox() error {
+func (box *Box) validateParams() error {
 	if box.params.Name == "" {
 		return errors.New("command line: --name flags is required")
 	}
@@ -308,15 +308,23 @@ func (box *Box) clientMutualTLS() *tls.Config {
 }
 
 func (box *Box) start(cfg *BoxConfigs) error {
+
+	if cfg.Web.Tls == nil {
+		box.gateway.web.Tls = box.serverMutualTLS()
+	}
+
+	if cfg.Grpc.Tls == nil {
+		box.serverMutualTLS()
+	}
+
 	box.gateway = &gateway{
 		name:        box.params.Name,
-		gRPCTls:     box.serverMutualTLS(),
-		httpTls:     box.serverMutualTLS(),
 		gRPC:        cfg.Grpc,
 		web:         cfg.Web,
 		gRPCAddress: box.GRPCAddress(),
 		httpAddress: box.HTTPAddress(),
 	}
+
 	return box.gateway.start()
 }
 

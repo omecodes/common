@@ -21,12 +21,20 @@ var (
 
 func CMD(use string, service Service) *cobra.Command {
 	params := BoxParams{}
-	var cfgName, cfgDir string
+	var cfgDir, cfgName string
 
 	configureCMD := &cobra.Command{
 		Use:   "configure",
 		Short: "configure node",
 		Run: func(cmd *cobra.Command, args []string) {
+			if cfgDir == "" {
+				d := getDir()
+				if err := d.Create(); err != nil {
+					log.Fatalln("could not initialize configs dir:", err)
+				}
+				cfgDir = d.path
+			}
+
 			if err := validateConfVars(cfgName, cfgDir); err != nil {
 				log.Fatalln(err)
 			}
@@ -44,8 +52,21 @@ func CMD(use string, service Service) *cobra.Command {
 		Short: "start node",
 		Run: func(cmd *cobra.Command, args []string) {
 			box := new(Box)
+			if params.Name == "" {
+				params.Name = Name
+			}
+
+			if params.Dir == "" {
+				d := getDir()
+				err := d.Create()
+				if err != nil {
+					log.Fatalf("could not initialize configs dir: %s\n", err)
+				}
+				params.Dir = d.path
+			}
+
 			box.params = params
-			if err := box.validateBox(); err != nil {
+			if err := box.validateParams(); err != nil {
 				log.Fatalln(err)
 			}
 
@@ -61,7 +82,6 @@ func CMD(use string, service Service) *cobra.Command {
 			if err := box.start(bc); err != nil {
 				log.Fatalf("starting %s service: %s\n", box.Name, err)
 			}
-
 			if box.registry != nil {
 				certEncoded, _ := crypto2.PEMEncodeCertificate(box.serviceCert)
 				box.params.RegistryID, err = box.registry.Register(&servicepb.Info{
@@ -76,16 +96,18 @@ func CMD(use string, service Service) *cobra.Command {
 					log.Printf("could not register service: %s\n", err)
 				}
 			}
+			service.AfterStart()
 
-			defer box.stop()
 			<-prompt.QuitSignal()
 
+			box.stop()
 			if box.params.RegistryID != "" {
 				err = box.registry.Deregister(box.params.RegistryID)
 				if err != nil {
 					log.Printf("could not de-register service: %s\n", err)
 				}
 			}
+			service.AfterStop()
 		},
 	}
 	startCMD.PersistentFlags().StringVar(&params.Name, CmdFlagName, "", "Unique name in registryAddress group")

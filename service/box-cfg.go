@@ -1,7 +1,6 @@
 package service
 
 type BoxConfigs struct {
-	Secret string
-	Web    *Web
-	Grpc   *Grpc
+	Web  *Web
+	Grpc *Grpc
 }
