@@ -1,6 +1,9 @@
 package service
 
-import "crypto/x509"
+import (
+	"crypto/x509"
+	servicepb "github.com/zoenion/common/proto/service"
+)
 
 const (
 	CmdFlagAuthority      = "a-grpc"
@@ -32,10 +35,23 @@ const (
 
 const (
 	ProtocolGRPC = "gRPC"
-	ProtocolHTTP = "HTTP"
+	ProtocolHTTP = "Web"
+)
+
+const (
+	AuthBearer  = "Bearer "
+	AuthGateway = "gateway "
 )
 
 type ConnectionInfo struct {
 	Address     string
 	Certificate *x509.Certificate
+}
+
+type Service interface {
+	Type() servicepb.Type
+	Configure(name, dir string) error
+	Configs(name, dir string) (*BoxConfigs, error)
+	AfterStart()
+	AfterStop()
 }

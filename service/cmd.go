@@ -1,18 +1,17 @@
 package service
 
 import (
-	"errors"
 	"fmt"
+	"github.com/iancoleman/strcase"
+	crypto2 "github.com/zoenion/common/crypto"
+	servicepb "github.com/zoenion/common/proto/service"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/zoenion/common/auth"
-	crypto2 "github.com/zoenion/common/crypto"
 	"github.com/zoenion/common/prompt"
-	"google.golang.org/grpc/credentials"
 )
 
 var (
@@ -20,62 +19,89 @@ var (
 	Name   = strings.Split(os.Args[0], fmt.Sprintf("%c", os.PathSeparator))[0]
 )
 
-func CMD(use string, node Node) *cobra.Command {
-	vars := new(Vars)
-	cVars := new(ConfigVars)
+func CMD(use string, service Service) *cobra.Command {
+	params := BoxParams{}
+	var cfgName, cfgDir string
 
 	configureCMD := &cobra.Command{
 		Use:   "configure",
 		Short: "configure node",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validateConfVars(cVars); err != nil {
+			if err := validateConfVars(cfgName, cfgDir); err != nil {
 				log.Fatalln(err)
 			}
-			err := node.Configure(cVars)
+			err := service.Configure(cfgName, cfgDir)
 			if err != nil {
 				log.Fatalln(err)
 			}
 		},
 	}
-	configureCMD.PersistentFlags().StringVar(&cVars.name, CmdFlagName, "", "Unique name in registryAddress group")
-	configureCMD.PersistentFlags().StringVar(&cVars.dir, CmdFlagDir, "", "Configs directory path")
+	configureCMD.PersistentFlags().StringVar(&cfgName, CmdFlagName, "", "Unique name in registryAddress group")
+	configureCMD.PersistentFlags().StringVar(&cfgDir, CmdFlagDir, "", "Configs directory path")
 
 	startCMD := &cobra.Command{
 		Use:   "start",
 		Short: "start node",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := validateRunVars(vars); err != nil {
+			box := new(Box)
+			box.params = params
+			if err := box.validateBox(); err != nil {
 				log.Fatalln(err)
 			}
 
-			if err := loadTools(vars); err != nil {
+			if err := box.loadTools(); err != nil {
 				log.Fatalln(err)
 			}
 
-			defer StopNode(node, vars)
-
-			if err := StartNode(node, vars); err != nil {
-				log.Fatalf("starting %s service: %s\n", vars.Name, err)
+			bc, err := service.Configs(params.Name, params.Dir)
+			if err != nil {
+				log.Fatalf("could not load box configs: %s\n", err)
 			}
 
+			if err := box.start(bc); err != nil {
+				log.Fatalf("starting %s service: %s\n", box.Name, err)
+			}
+
+			if box.registry != nil {
+				certEncoded, _ := crypto2.PEMEncodeCertificate(box.serviceCert)
+				box.params.RegistryID, err = box.registry.Register(&servicepb.Info{
+					Name:      strcase.ToDelimited(box.Name(), '-'),
+					Namespace: box.params.Namespace,
+					Type:      service.Type(),
+					Label:     strcase.ToCamel(box.params.Name),
+					Nodes:     box.gateway.nodes(),
+					Meta:      map[string]string{MetaCertificate: string(certEncoded)},
+				})
+				if err != nil {
+					log.Printf("could not register service: %s\n", err)
+				}
+			}
+
+			defer box.stop()
 			<-prompt.QuitSignal()
+
+			if box.params.RegistryID != "" {
+				err = box.registry.Deregister(box.params.RegistryID)
+				if err != nil {
+					log.Printf("could not de-register service: %s\n", err)
+				}
+			}
 		},
 	}
-	startCMD.PersistentFlags().StringVar(&vars.name, CmdFlagName, "", "Unique name in registryAddress group")
-	startCMD.PersistentFlags().StringVar(&vars.name, CmdFlagDir, "", "Configs directory path")
-	startCMD.PersistentFlags().StringVar(&vars.certificatePath, CmdFlagCert, "", "Public certificate path")
-	startCMD.PersistentFlags().StringVar(&vars.keyPath, CmdFlagKey, "", "Private key path")
-
-	startCMD.PersistentFlags().StringVar(&vars.gatewayGRPCPort, CmdFlagGRPC, "", "GRPC Port: gRPC port")
-	startCMD.PersistentFlags().StringVar(&vars.gatewayHTTPPort, CmdFlagHTTP, "", "HTTP Port: HTTP port")
-	startCMD.PersistentFlags().StringVar(&vars.registryAddress, CmdFlagRegistry, "", "Registry Server - address location")
-	startCMD.PersistentFlags().BoolVar(&vars.registrySecure, CmdFlagRegistrySecure, false, "Registry Secure Mode - enable secure connection to registry")
-	startCMD.PersistentFlags().StringVar(&vars.namespace, CmdFlagNamespace, "", "Namespace - Group identifier for registryAddress")
-	startCMD.PersistentFlags().StringVar(&vars.ip, CmdFlagIP, "", "Network - ip address to listen to. Must matching domain if provided")
-	startCMD.PersistentFlags().StringVar(&vars.domain, CmdFlagDomain, "", "Domain - Domain name to bind to")
-	startCMD.PersistentFlags().StringVar(&vars.authorityCertPath, CmdFlagAuthorityCert, "", "Authority Certificate - file path")
-	startCMD.PersistentFlags().StringVar(&vars.authorityGRPC, CmdFlagAuthority, "", "Authority GRPC - address location")
-	startCMD.PersistentFlags().StringVar(&vars.authorityCredentials, CmdFlagAuthorityCred, "", "Authority Credentials - authority authentication credentials")
+	startCMD.PersistentFlags().StringVar(&params.Name, CmdFlagName, "", "Unique name in registryAddress group")
+	startCMD.PersistentFlags().StringVar(&params.Name, CmdFlagDir, "", "Configs directory path")
+	startCMD.PersistentFlags().StringVar(&params.CertificatePath, CmdFlagCert, "", "Public certificate path")
+	startCMD.PersistentFlags().StringVar(&params.KeyPath, CmdFlagKey, "", "Private key path")
+	startCMD.PersistentFlags().StringVar(&params.GatewayGRPCPort, CmdFlagGRPC, "", "Grpc Port: gRPC port")
+	startCMD.PersistentFlags().StringVar(&params.GatewayHTTPPort, CmdFlagHTTP, "", "Web Port: Web port")
+	startCMD.PersistentFlags().StringVar(&params.RegistryAddress, CmdFlagRegistry, "", "Registry Server - address location")
+	startCMD.PersistentFlags().BoolVar(&params.RegistrySecure, CmdFlagRegistrySecure, false, "Registry Secure Mode - enable secure connection to registry")
+	startCMD.PersistentFlags().StringVar(&params.Namespace, CmdFlagNamespace, "", "Namespace - Group identifier for registryAddress")
+	startCMD.PersistentFlags().StringVar(&params.Ip, CmdFlagIP, "", "Network - ip address to listen to. Must matching domain if provided")
+	startCMD.PersistentFlags().StringVar(&params.Domain, CmdFlagDomain, "", "Domain - Domain name to bind to")
+	startCMD.PersistentFlags().StringVar(&params.CaCertPath, CmdFlagAuthorityCert, "", "Authority Certificate - file path")
+	startCMD.PersistentFlags().StringVar(&params.CaGRPC, CmdFlagAuthority, "", "Authority Grpc - address location")
+	startCMD.PersistentFlags().StringVar(&params.CaCredentials, CmdFlagAuthorityCred, "", "Authority Credentials - authority authentication credentials")
 
 	command := &cobra.Command{
 		Use:   use,
@@ -89,113 +115,20 @@ func CMD(use string, node Node) *cobra.Command {
 	return command
 }
 
-func validateRunVars(vars *Vars) error {
-	if vars.name == "" {
-		return errors.New("command line: --name flags is required")
-	}
-
-	if vars.domain == "" && vars.ip == "" {
-		return errors.New("command line: one or both --domain and --ip flags must be passed")
-	}
-
-	if vars.dir == "" {
+func validateConfVars(name, dir string) error {
+	if dir == "" {
 		d := getDir()
-		vars.dir = d.Path()
+		dir = d.Path()
 		if err := d.Create(); err != nil {
-			log.Printf("command line: could not create %s. Might not be writeable\n", vars.Dir)
-			return err
-		}
-	} else {
-		var err error
-		vars.dir, err = filepath.Abs(vars.dir)
-		if err != nil {
-			log.Printf("command line: could not find %s\n", vars.Dir)
-			return err
-		}
-	}
-
-	if vars.authorityGRPC != "" || vars.authorityCertPath != "" || vars.authorityCredentials != "" {
-		if vars.authorityGRPC == "" || vars.authorityCertPath == "" || vars.authorityCredentials == "" {
-			return fmt.Errorf("command line: --a-grpc must always be provided with --a-cert and --a-cred")
-		}
-	}
-
-	if vars.registryAddress != "" || vars.namespace != "" {
-		if vars.registryAddress == "" || vars.namespace == "" {
-			return errors.New("command line: --namespace must always be provided with --registryAddress")
-		}
-	}
-
-	if vars.certificatePath != "" || vars.keyPath != "" {
-		if vars.certificatePath == "" || vars.keyPath == "" {
-			return errors.New("command line: --cert must always be provided with --key")
-		}
-	}
-
-	return nil
-}
-
-func loadTools(v *Vars) error {
-	var err error
-
-	if v.certificatePath != "" {
-		v.loaded.serviceCert, err = crypto2.LoadCertificate(v.certificatePath)
-		if err != nil {
-			return fmt.Errorf("could not load service certificate: %s", err)
-		}
-
-		v.loaded.serviceKey, err = crypto2.LoadPrivateKey(nil, v.keyPath)
-		if err != nil {
-			return fmt.Errorf("could not load service private key: %s", err)
-		}
-	}
-
-	if v.authorityGRPC != "" {
-		v.authorityCert, err = crypto2.LoadCertificate(v.authorityCertPath)
-		if err != nil {
-			return fmt.Errorf("could not load authority certificate: %s", err)
-		}
-
-		v.authorityGRPCTransportCredentials, err = credentials.NewClientTLSFromFile(v.authorityCertPath, "")
-		if err != nil {
-			return fmt.Errorf("could not create authority client credentials: %s", v.authorityCertPath)
-		}
-
-		parts := strings.Split(v.authorityCredentials, ":")
-		v.authorityClientAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
-	}
-
-	if v.authorityCertPath != "" {
-		err = loadSignedKeyPair(v)
-		if err != nil {
-			return err
-		}
-	}
-
-	if v.registryAddress != "" {
-		if v.registrySecure {
-			v.registry = NewSyncRegistry(v.registryAddress, ClientMutualTLS(v))
-		} else {
-			v.registry = NewSyncRegistry(v.registryAddress, nil)
-		}
-	}
-	return nil
-}
-
-func validateConfVars(args *ConfigVars) error {
-	if args.dir == "" {
-		d := getDir()
-		args.dir = d.Path()
-		if err := d.Create(); err != nil {
-			log.Printf("could not create %s. Might not be writeable\n", args.Dir)
+			log.Printf("could not create %s. Might not be writeable\n", dir)
 			return err
 		}
 
 	} else {
 		var err error
-		args.dir, err = filepath.Abs(args.dir)
+		dir, err = filepath.Abs(dir)
 		if err != nil {
-			log.Printf("could not find %s\n", args.Dir)
+			log.Printf("could not find %s\n", dir)
 			return err
 		}
 	}

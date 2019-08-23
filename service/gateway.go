@@ -10,49 +10,40 @@ import (
 	http_helper "github.com/zoenion/common/http-helper"
 	servicepb "github.com/zoenion/common/proto/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 	"net/http"
 )
 
-type HTTP struct {
-	Address        string
-	WireGRPCFunc   WireEndpointFunc
+type Web struct {
+	Tls            *tls.Config
+	ClientGRPCTls  *tls.Config
+	BindGRPC       WireEndpointFunc
 	MiddlewareList []http_helper.HttpMiddleware
 }
 
-type GRPC struct {
-	Address             string
-	Interceptor         grpc.UnaryServerInterceptor
-	StreamInterceptor   grpc.StreamServerInterceptor
+type Grpc struct {
+	Tls                 *tls.Config
+	Interceptor         GRPCInterceptor
 	RegisterHandlerFunc func(*grpc.Server)
-}
-
-type GatewayConfig struct {
-	Name string
-	Tls  *tls.Config
-	HTTP *HTTP
-	GRPC *GRPC
 }
 
 type WireEndpointFunc func(ctx context.Context, serveMux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error
 
-type Gateway struct {
+type gateway struct {
+	name                       string
 	running                    bool
 	gs                         *grpc.Server
 	hs                         *http.Server
-	config                     *GatewayConfig
+	gRPC                       *Grpc
+	web                        *Web
 	router                     *mux.Router
+	gRPCAddress, httpAddress   string
 	listenerGRPC, listenerHTTP net.Listener
 }
 
-func New(config *GatewayConfig) *Gateway {
-	return &Gateway{
-		config: config,
-	}
-}
-
-func (g *Gateway) Start() error {
+func (g *gateway) start() error {
 	if g.running {
 		return nil
 	}
@@ -63,11 +54,11 @@ func (g *Gateway) Start() error {
 		return err
 	}
 
-	if g.config.GRPC != nil {
+	if g.gRPC != nil {
 		go g.startGRPC()
 	}
 
-	if g.config.HTTP != nil {
+	if g.web != nil {
 		go g.startHTTP()
 	}
 
@@ -75,7 +66,7 @@ func (g *Gateway) Start() error {
 	return nil
 }
 
-func (g *Gateway) Stop() {
+func (g *gateway) stop() {
 
 	g.running = false
 
@@ -91,118 +82,119 @@ func (g *Gateway) Stop() {
 	}
 }
 
-func (g *Gateway) RunningNodes() []*servicepb.Node {
+func (g *gateway) nodes() []*servicepb.Node {
 	if !g.running {
 		log.Println("could not get running node, gateway is not running")
 		return nil
 	}
-
-	if g.config.GRPC == nil && g.config.HTTP == nil {
+	if g.gRPC == nil && g.web == nil {
 		return nil
 	}
 
 	var nodes []*servicepb.Node
-	if g.config.HTTP != nil {
+	if g.web != nil {
 		nodes = append(nodes, &servicepb.Node{
-			Address:  g.config.HTTP.Address,
 			Ttl:      -1,
+			Address:  g.httpAddress,
 			Protocol: common.ProtocolHTTP,
 		})
 	}
 
-	if g.config.GRPC != nil {
+	if g.gRPC != nil {
 		nodes = append(nodes, &servicepb.Node{
-			Address:  g.config.GRPC.Address,
 			Ttl:      -1,
+			Address:  g.gRPCAddress,
 			Protocol: common.ProtocolGRPC,
 		})
 	}
 	return nodes
 }
 
-func (g *Gateway) listen() (err error) {
-	if g.config.GRPC != nil {
-		if g.config.GRPC.Address == "" {
-			g.config.GRPC.Address = ":"
+func (g *gateway) listen() (err error) {
+	if g.gRPC != nil {
+		if g.gRPCAddress == "" {
+			g.gRPCAddress = ":"
 		}
-		if g.config.Tls != nil {
-			g.listenerGRPC, err = tls.Listen("tcp", g.config.GRPC.Address, g.config.Tls)
+
+		if g.gRPC.Tls != nil {
+			g.listenerGRPC, err = tls.Listen("tcp", g.gRPCAddress, g.gRPC.Tls)
 		} else {
-			g.listenerGRPC, err = net.Listen("tcp", g.config.GRPC.Address)
+			g.listenerGRPC, err = net.Listen("tcp", g.gRPCAddress)
 		}
 		if err != nil {
 			return err
 		}
-		g.config.GRPC.Address = g.listenerGRPC.Addr().String()
+		g.gRPCAddress = g.listenerGRPC.Addr().String()
 	}
 
-	if g.config.HTTP != nil {
-		if g.config.HTTP.Address == "" {
-			g.config.HTTP.Address = ":"
+	if g.web != nil {
+		if g.httpAddress == "" {
+			g.httpAddress = ":"
 		}
-		if g.config.Tls != nil {
-			g.listenerHTTP, err = tls.Listen("tcp", g.config.HTTP.Address, g.config.Tls)
+
+		if g.web.Tls != nil {
+			g.listenerHTTP, err = tls.Listen("tcp", g.httpAddress, g.web.Tls)
 		} else {
-			g.listenerHTTP, err = net.Listen("tcp", g.config.HTTP.Address)
+			g.listenerHTTP, err = net.Listen("tcp", g.httpAddress)
 		}
 		if err != nil {
 			return err
 		}
-		g.config.HTTP.Address = g.listenerHTTP.Addr().String()
+		g.httpAddress = g.listenerHTTP.Addr().String()
 	}
 	return nil
 }
 
-func (g *Gateway) startGRPC() {
-	log.Printf("starting %s.gRPC at %s", g.config.Name, g.config.GRPC.Address)
+func (g *gateway) startGRPC() {
+	log.Printf("starting %s.gRPC at %s", g.name, g.gRPCAddress)
 
 	var opts []grpc.ServerOption
-	if g.config.GRPC.Interceptor != nil {
-		opts = append(opts, grpc.UnaryInterceptor(g.config.GRPC.Interceptor))
-	}
-	if g.config.GRPC.StreamInterceptor != nil {
-		opts = append(opts, grpc.StreamInterceptor(g.config.GRPC.StreamInterceptor))
-	}
+	opts = append(opts, grpc.StreamInterceptor(g.gRPC.Interceptor.InterceptStream), grpc.UnaryInterceptor(g.gRPC.Interceptor.InterceptUnary))
 
 	g.gs = grpc.NewServer(opts...)
-	g.config.GRPC.RegisterHandlerFunc(g.gs)
+	g.gRPC.RegisterHandlerFunc(g.gs)
 	if err := g.gs.Serve(g.listenerGRPC); err != nil {
 		log.Println("gRPC server stopped, cause:", err)
 	}
 }
 
-func (g *Gateway) startHTTP() {
-	log.Printf("starting %s.HTTP at %s", g.config.Name, g.config.HTTP.Address)
-
+func (g *gateway) startHTTP() {
+	log.Printf("starting %s.Web at %s", g.name, g.httpAddress)
 	ctx := context.Background()
-	endpoint := flag.String("grpc-server-endpoint", g.config.GRPC.Address, "gRPC server endpoint")
+	endpoint := flag.String("grpc-server-endpoint", g.gRPCAddress, "gRPC server endpoint")
 
 	serverMux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	if err := g.config.HTTP.WireGRPCFunc(ctx, serverMux, *endpoint, opts); err != nil {
-		log.Println("failed to start HTTP gateway, cause: ", err)
+	var opts []grpc.DialOption
+
+	if g.web.ClientGRPCTls != nil {
+		opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(g.web.ClientGRPCTls)))
+	} else {
+		opts = append(opts, grpc.WithInsecure())
+	}
+
+	if err := g.web.BindGRPC(ctx, serverMux, *endpoint, opts); err != nil {
+		log.Println("failed to start Web gateway, cause: ", err)
 		return
 	}
 
 	var handler http.HandlerFunc
 
-	if len(g.config.HTTP.MiddlewareList) > 0 {
-		m := g.config.HTTP.MiddlewareList[0]
+	if len(g.web.MiddlewareList) > 0 {
+		m := g.web.MiddlewareList[0]
 		hf := m(serverMux.ServeHTTP)
-		for _, mid := range g.config.HTTP.MiddlewareList[1:] {
+		for _, mid := range g.web.MiddlewareList[1:] {
 			hf = mid(hf)
 		}
 		handler = http_helper.HttpBasicMiddlewareStack(context.Background(), hf, nil)
-
 	} else {
 		handler = http_helper.HttpBasicMiddlewareStack(context.Background(), serverMux.ServeHTTP, nil)
 	}
 
 	g.hs = &http.Server{
-		Addr:    g.config.HTTP.Address,
+		Addr:    g.httpAddress,
 		Handler: handler,
 	}
 	if err := g.hs.Serve(g.listenerHTTP); err != nil {
-		log.Println("HTTP server stopped, cause:", err)
+		log.Println("Web server stopped, cause:", err)
 	}
 }

@@ -15,7 +15,7 @@ type JwtRevokedHandlerFunc func()
 
 type jwtVerifier struct {
 	sync.Mutex
-	vars           *Vars
+	box            *Box
 	storesMutex    sync.Mutex
 	tokenVerifiers map[string]authpb.TokenVerifier
 	syncedStores   map[string]*SyncedJwtStore
@@ -27,7 +27,7 @@ func (j *jwtVerifier) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTStat
 
 	verifier := j.getJwtVerifier(issuer)
 	if verifier == nil {
-		issCert, err := j.vars.Registry().Certificate(issuer)
+		issCert, err := j.box.Registry().Certificate(issuer)
 		if err != nil {
 			return 0, errors.Forbidden
 		}
@@ -46,11 +46,11 @@ func (j *jwtVerifier) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTStat
 	if t.Claims.Store != "" {
 		jwtStore := j.getStore(t.Claims.Store)
 		if jwtStore == nil {
-			ci, err := j.vars.Registry().ConnectionInfo(t.Claims.Store, "gRPC")
+			ci, err := j.box.Registry().ConnectionInfo(t.Claims.Store, "gRPC")
 			if err != nil {
 				return 0, errors.Forbidden
 			}
-			dictStore, err := data.NewDictDB(filepath.Join(j.vars.dir, ""))
+			dictStore, err := data.NewDictDB(filepath.Join(j.box.params.Dir, ""))
 			if err != nil {
 				return 0, errors.Internal
 			}
@@ -92,11 +92,11 @@ func (j *jwtVerifier) saveStore(name string, s *SyncedJwtStore) {
 	j.syncedStores[name] = s
 }
 
-func NewVerifier(v *Vars) (authpb.TokenVerifier, error) {
+func newVerifier(v *Box) authpb.TokenVerifier {
 	verifier := &jwtVerifier{
-		vars:           v,
+		box:            v,
 		tokenVerifiers: map[string]authpb.TokenVerifier{},
 		syncedStores:   map[string]*SyncedJwtStore{},
 	}
-	return verifier, nil
+	return verifier
 }
