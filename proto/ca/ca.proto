@@ -68,23 +68,23 @@ message ValidateAuthResponse {
 service AuthorityService {
     rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
         option(google.api.http) = {
-            post: "/api/v1/service/register";
+            post: "/api/app/register";
             body: "*";
         };
     };
     rpc SignKey(SignKeyRequest)returns(SignKeyResponse){
         option(google.api.http) = {
-            post: "/api/v1/sign/key";
+            post: "/api/sign/key";
             body:"*";
         };
     };
     rpc SignCertificate(SignCertificateRequest)returns(SignCertificateResponse){
         option(google.api.http) = {
-            post: "/api/v1/service/sign/cert";
+            post: "/api/app/sign/cert";
             body:"*";
         };
     };
     rpc ValidateAuth(ValidateAuthRequest)returns(ValidateAuthResponse){
-        option(google.api.http).get = "/api/v1/auth/validate";
+        option(google.api.http).get = "/api/auth/validate";
     };
 }

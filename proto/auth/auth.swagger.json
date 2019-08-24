@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/account/create": {
+    "/api/account/create": {
       "post": {
         "operationId": "CreateCredentials",
         "responses": {
@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/api/v1/email/validate": {
+    "/api/email/validate": {
       "get": {
         "operationId": "ValidateEmail",
         "responses": {
@@ -65,7 +65,7 @@
         ]
       }
     },
-    "/api/v1/email/validation/trigger": {
+    "/api/email/validation/trigger": {
       "post": {
         "operationId": "TriggerEmailValidation",
         "responses": {
@@ -91,7 +91,7 @@
         ]
       }
     },
-    "/api/v1/jwt-store/find/{jti}": {
+    "/api/jwt-store/find/{jti}": {
       "get": {
         "operationId": "FindToken",
         "responses": {
@@ -121,7 +121,7 @@
         ]
       }
     },
-    "/api/v1/jwt/get": {
+    "/api/jwt/get": {
       "post": {
         "operationId": "Authenticate",
         "responses": {
@@ -147,7 +147,7 @@
         ]
       }
     },
-    "/api/v1/jwt/revoke": {
+    "/api/jwt/revoke": {
       "get": {
         "operationId": "RevokeToken",
         "responses": {
@@ -262,7 +262,7 @@
         ]
       }
     },
-    "/api/v1/password/update": {
+    "/api/password/update": {
       "post": {
         "operationId": "SetPassword",
         "responses": {

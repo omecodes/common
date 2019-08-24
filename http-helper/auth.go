@@ -126,7 +126,6 @@ func NewBearerAuthenticationMiddleware(jwtVerifier JwtVerifier, wrappers ...Requ
 
 // ProxyAuthentication
 type APIAccessAuthorization struct {
-	realm       string
 	key, secret string
 	wrappers    []RequestWrapper
 }
@@ -156,21 +155,7 @@ func (pam *APIAccessAuthorization) Handle(next http.HandlerFunc) http.HandlerFun
 
 func NewAPIAuthenticationMiddleware(realm string, key string, secret string, wrappers ...RequestWrapper) *APIAccessAuthorization {
 	return &APIAccessAuthorization{
-		realm:    realm,
-		key:      key,
 		secret:   secret,
 		wrappers: wrappers,
-	}
-}
-
-// Gateway wraps autho
-type GRPCTranslatorAuthorization struct {
-	secret string
-}
-
-func (gt *GRPCTranslatorAuthorization) Handle(new http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("authorization")
-		r.Header.Set("authorization", fmt.Sprintf("Gateway %s:%s", gt.secret, authorization))
 	}
 }

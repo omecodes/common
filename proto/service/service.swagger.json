@@ -243,8 +243,8 @@
           "type": "string"
         },
         "nodes": {
-          "type": "array",
-          "items": {
+          "type": "object",
+          "additionalProperties": {
             "$ref": "#/definitions/servicepbNode"
           }
         },

@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/tree/copy": {
+    "/api/tree/copy": {
       "post": {
         "operationId": "Copy",
         "responses": {
@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/api/v1/tree/create/{path}": {
+    "/api/tree/create/{path}": {
       "get": {
         "operationId": "Create",
         "responses": {
@@ -77,7 +77,7 @@
         ]
       }
     },
-    "/api/v1/tree/delete/{path}": {
+    "/api/tree/delete/{path}": {
       "get": {
         "operationId": "Delete",
         "responses": {
@@ -101,7 +101,7 @@
         ]
       }
     },
-    "/api/v1/tree/download_url/{file}": {
+    "/api/tree/download_url/{file}": {
       "get": {
         "operationId": "DownloadURL",
         "responses": {
@@ -125,7 +125,7 @@
         ]
       }
     },
-    "/api/v1/tree/info/{path}": {
+    "/api/tree/info/{path}": {
       "get": {
         "operationId": "GetInfo",
         "responses": {
@@ -156,7 +156,7 @@
         ]
       }
     },
-    "/api/v1/tree/list/{dir}": {
+    "/api/tree/list/{dir}": {
       "get": {
         "operationId": "List",
         "responses": {
@@ -187,7 +187,7 @@
         ]
       }
     },
-    "/api/v1/tree/meta/{path}": {
+    "/api/tree/meta/{path}": {
       "get": {
         "operationId": "GetMeta",
         "responses": {
@@ -241,7 +241,7 @@
         ]
       }
     },
-    "/api/v1/tree/move": {
+    "/api/tree/move": {
       "post": {
         "operationId": "Move",
         "responses": {
@@ -267,7 +267,7 @@
         ]
       }
     },
-    "/api/v1/tree/upload_url/{file}": {
+    "/api/tree/upload_url/{file}": {
       "get": {
         "operationId": "UploadURL",
         "responses": {

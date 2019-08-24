@@ -60,7 +60,7 @@ service JWTStore {
     rpc Feed (stream JwtEvent) returns (stream FeedResponse);
     rpc Listen (ListenRequest) returns (stream JwtEvent);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
-        option(google.api.http).get = "/api/v1/jwt-store/find/{jti}";
+        option(google.api.http).get = "/api/jwt-store/find/{jti}";
     };
 }
 
@@ -101,31 +101,31 @@ message ListenRequest {}
 service IDMService {
     rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse) {
         option(google.api.http) = {
-            post: "/api/v1/account/create";
+            post: "/api/account/create";
             body: "*";
         };
     };
     rpc Authenticate(AuthenticateRequest)returns(GetTokenResponse){
         option(google.api.http) = {
-            post: "/api/v1/jwt/get";
+            post: "/api/jwt/get";
             body:"*";
         };
     };
     rpc RevokeToken(RevokeTokenRequest)returns(RevokeTokenResponse){
-        option(google.api.http).get = "/api/v1/jwt/revoke";
+        option(google.api.http).get = "/api/jwt/revoke";
     };
     rpc SetPassword(SetPasswordRequest)returns(SetPasswordResponse){
         option(google.api.http) = {
-            post: "/api/v1/password/update";
+            post: "/api/password/update";
             body:"*";
         };
     };
     rpc ValidateEmail(ValidateEmailRequest)returns(ValidateEmailResponse){
-        option(google.api.http).get = "/api/v1/email/validate";
+        option(google.api.http).get = "/api/email/validate";
     };
     rpc TriggerEmailValidation(TriggerEmailValidationRequest)returns(TriggerEmailValidationResponse){
         option(google.api.http) = {
-            post: "/api/v1/email/validation/trigger";
+            post: "/api/email/validation/trigger";
             body:"*";
         };
     };

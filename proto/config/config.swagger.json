@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/config/{key}": {
+    "/api/config/{key}": {
       "get": {
         "operationId": "Get",
         "responses": {

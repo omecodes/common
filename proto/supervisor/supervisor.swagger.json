@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/program/restart/{program_id}": {
+    "/api/program/restart/{program_id}": {
       "get": {
         "operationId": "Restart",
         "responses": {
@@ -39,7 +39,7 @@
         ]
       }
     },
-    "/api/v1/program/start": {
+    "/api/program/start": {
       "post": {
         "operationId": "Start",
         "responses": {
@@ -65,7 +65,7 @@
         ]
       }
     },
-    "/api/v1/program/stop/{program_id}": {
+    "/api/program/stop/{program_id}": {
       "get": {
         "operationId": "Stop",
         "responses": {
@@ -89,7 +89,7 @@
         ]
       }
     },
-    "/api/v1/stats/node": {
+    "/api/stats/node": {
       "get": {
         "operationId": "GetStats",
         "responses": {
@@ -105,7 +105,7 @@
         ]
       }
     },
-    "/api/v1/stats/program/{program_id}": {
+    "/api/stats/program/{program_id}": {
       "get": {
         "operationId": "GetProgramStats",
         "responses": {

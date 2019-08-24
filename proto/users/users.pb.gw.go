@@ -467,21 +467,21 @@ func RegisterUsersServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_UsersService_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "groups", "create"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "groups", "create"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "group", "group_uuid"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "group", "group_uuid"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_ListSubGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "group", "group_uuid", "subgroups"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_ListSubGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "group_uuid", "subgroups"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_DeleteGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "group", "group_uuid", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_DeleteGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "group_uuid", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_AddUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "group", "user.group_uuid", "user"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_AddUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "user.group_uuid", "user"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_MoveUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "group", "user", "move"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_MoveUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "group", "user", "move"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "group", "group_uuid", "users", "list"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "group", "group_uuid", "users", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_DeleteUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "group", "user.group_uuid", "users", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_DeleteUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "group", "user.group_uuid", "users", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

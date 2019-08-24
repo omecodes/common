@@ -219,11 +219,11 @@ func RegisterConfigHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 }
 
 var (
-	pattern_Config_Set_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 3, 0, 4, 1, 5, 3}, []string{"api", "v1", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Config_Set_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 3, 0, 4, 1, 5, 2}, []string{"api", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Config_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 3, 0, 4, 1, 5, 3}, []string{"api", "v1", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Config_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 3, 0, 4, 1, 5, 2}, []string{"api", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Config_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 3, 0, 4, 1, 5, 3}, []string{"api", "v1", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Config_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 3, 0, 4, 1, 5, 2}, []string{"api", "config", "key"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

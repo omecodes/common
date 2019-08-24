@@ -39,38 +39,38 @@ message GroupInfo {
 service UsersService {
     rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse){
         option(google.api.http) =  {
-            post: "/api/v1/groups/create";
+            post: "/api/groups/create";
             body: "*";
         };
     };
     rpc GetGroup (GetGroupRequest) returns (GetGroupResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_uuid}";
+        option(google.api.http).get = "/api/group/{group_uuid}";
     };
     rpc StreamSubGroups (StreamSubGroupsRequest) returns (stream Group);
     rpc ListSubGroup (ListSubGroupRequest) returns (ListSubGroupResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_uuid}/subgroups";
+        option(google.api.http).get = "/api/group/{group_uuid}/subgroups";
     };
     rpc DeleteGroup (DeleteGroupRequest) returns (DeleteGroupResponse) {
-        option(google.api.http).delete = "/api/v1/group/{group_uuid}/delete";
+        option(google.api.http).delete = "/api/group/{group_uuid}/delete";
     };
     rpc AddUser (AddUserRequest) returns (AddUserResponse) {
         option(google.api.http) = {
-            post: "/api/v1/group/{user.group_uuid}/user";
+            post: "/api/group/{user.group_uuid}/user";
             body: "*";
         };
     };
     rpc MoveUser (MoveUserRequest) returns (MoveUserResponse) {
         option(google.api.http) =  {
-            post: "/api/v1/group/user/move";
+            post: "/api/group/user/move";
             body: "*";
         };
     };
     rpc GetUserStream (GetUserStreamRequest) returns (stream User);
     rpc ListUsers (ListUsersRequest) returns (ListUsersResponse) {
-        option(google.api.http).get = "/api/v1/group/{group_uuid}/users/list";
+        option(google.api.http).get = "/api/group/{group_uuid}/users/list";
     };
     rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
-        option(google.api.http).delete = "/api/v1/group/{user.group_uuid}/users/delete";
+        option(google.api.http).delete = "/api/group/{user.group_uuid}/users/delete";
     };
     rpc DeleteUserSession (stream User) returns (stream User);
 }

@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/group/user/move": {
+    "/api/group/user/move": {
       "post": {
         "operationId": "MoveUser",
         "responses": {
@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_uuid}": {
+    "/api/group/{group_uuid}": {
       "get": {
         "operationId": "GetGroup",
         "responses": {
@@ -65,7 +65,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_uuid}/delete": {
+    "/api/group/{group_uuid}/delete": {
       "delete": {
         "operationId": "DeleteGroup",
         "responses": {
@@ -89,7 +89,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_uuid}/subgroups": {
+    "/api/group/{group_uuid}/subgroups": {
       "get": {
         "operationId": "ListSubGroup",
         "responses": {
@@ -120,7 +120,7 @@
         ]
       }
     },
-    "/api/v1/group/{group_uuid}/users/list": {
+    "/api/group/{group_uuid}/users/list": {
       "get": {
         "operationId": "ListUsers",
         "responses": {
@@ -151,7 +151,7 @@
         ]
       }
     },
-    "/api/v1/group/{user.group_uuid}/user": {
+    "/api/group/{user.group_uuid}/user": {
       "post": {
         "operationId": "AddUser",
         "responses": {
@@ -183,7 +183,7 @@
         ]
       }
     },
-    "/api/v1/group/{user.group_uuid}/users/delete": {
+    "/api/group/{user.group_uuid}/users/delete": {
       "delete": {
         "operationId": "DeleteUser",
         "responses": {
@@ -213,7 +213,7 @@
         ]
       }
     },
-    "/api/v1/groups/create": {
+    "/api/groups/create": {
       "post": {
         "operationId": "CreateGroup",
         "responses": {

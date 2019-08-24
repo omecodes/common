@@ -236,7 +236,7 @@ func RegisterJWTStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 }
 
 var (
-	pattern_JWTStore_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "jwt-store", "find", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_JWTStore_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "jwt-store", "find", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
@@ -405,17 +405,17 @@ func RegisterIDMServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 }
 
 var (
-	pattern_IDMService_CreateCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "account", "create"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_CreateCredentials_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "account", "create"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_IDMService_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "get"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "jwt", "get"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_IDMService_RevokeToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "jwt", "revoke"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_RevokeToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "jwt", "revoke"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_IDMService_SetPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "password", "update"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_SetPassword_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "password", "update"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_IDMService_ValidateEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "email", "validate"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_ValidateEmail_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "email", "validate"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_IDMService_TriggerEmailValidation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "email", "validation", "trigger"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_IDMService_TriggerEmailValidation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "email", "validation", "trigger"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

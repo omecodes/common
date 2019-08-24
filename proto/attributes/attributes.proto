@@ -28,13 +28,13 @@ message GetAttributesResponse {
 service InfoService {
     rpc SetAttribute(SetAttributeRequest) returns (SetAttributeResponse) {
         option(google.api.http) = {
-            post: "/api/v1/info/set";
+            post: "/api/info/set";
             body: "*";
         };
     };
     rpc GetAttributes(GetAttributesRequest)returns(GetAttributesResponse){
         option(google.api.http) = {
-            post: "/api/v1/info/get";
+            post: "/api/info/get";
             body:"*";
         };
     };

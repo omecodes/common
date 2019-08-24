@@ -7,17 +7,17 @@ import "google/api/annotations.proto";
 service Config {
     rpc Set(SetRequest) returns (SetResponse) {
         option(google.api.http) = {
-            post: "/api/v1/config/{key=**}";
+            post: "/api/config/{key=**}";
             body: "value";
         };
     };
 
     rpc Get(GetRequest) returns (GetResponse) {
-        option(google.api.http).get = "/api/v1/config/{key=**}";
+        option(google.api.http).get = "/api/config/{key=**}";
     };
 
     rpc Delete(DeleteRequest) returns (DeleteResponse) {
-        option(google.api.http).delete = "/api/v1/config/{key=**}";
+        option(google.api.http).delete = "/api/config/{key=**}";
     };
 }
 

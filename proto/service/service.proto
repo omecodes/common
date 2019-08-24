@@ -50,7 +50,7 @@ message Info {
     string namespace = 2;
     Type type = 3;
     string label = 4;
-    repeated Node nodes = 5;
+    map<string, Node> nodes = 5;
     map<string, string> meta = 6;
 }
 

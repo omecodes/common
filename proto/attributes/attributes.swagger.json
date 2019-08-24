@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/info/get": {
+    "/api/info/get": {
       "post": {
         "operationId": "GetAttributes",
         "responses": {
@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/api/v1/info/set": {
+    "/api/info/set": {
       "post": {
         "operationId": "SetAttribute",
         "responses": {
