@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/iancoleman/strcase"
 	crypto2 "github.com/zoenion/common/crypto"
-	servicepb "github.com/zoenion/common/proto/service"
+	"github.com/zoenion/common/service/pb"
 	"log"
 	"os"
 	"path/filepath"
@@ -84,13 +84,13 @@ func CMD(use string, service Service) *cobra.Command {
 			}
 			if box.registry != nil {
 				certEncoded, _ := crypto2.PEMEncodeCertificate(box.serviceCert)
-				box.params.RegistryID, err = box.registry.Register(&servicepb.Info{
+				box.params.RegistryID, err = box.registry.Register(&pb.Info{
 					Name:      strcase.ToDelimited(box.Name(), '-'),
 					Namespace: box.params.Namespace,
 					Type:      service.Type(),
 					Label:     strcase.ToCamel(box.params.Name),
 					Nodes:     box.gateway.nodes(),
-					Meta:      map[string]string{MetaCertificate: string(certEncoded)},
+					Meta:      map[string]string{"metadata": string(certEncoded)},
 				})
 				if err != nil {
 					log.Printf("could not register service: %s\n", err)

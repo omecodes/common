@@ -6,9 +6,9 @@ import (
 	"flag"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/zoenion/common"
 	http_helper "github.com/zoenion/common/http-helper"
-	servicepb "github.com/zoenion/common/proto/service"
+	"github.com/zoenion/common/service/interceptors"
+	"github.com/zoenion/common/service/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -25,7 +25,7 @@ type Web struct {
 
 type Grpc struct {
 	Tls                 *tls.Config
-	Interceptor         GRPCInterceptor
+	Interceptor         interceptors.GRPC
 	RegisterHandlerFunc func(*grpc.Server)
 }
 
@@ -82,7 +82,7 @@ func (g *gateway) stop() {
 	}
 }
 
-func (g *gateway) nodes() []*servicepb.Node {
+func (g *gateway) nodes() map[string]*pb.Node {
 	if !g.running {
 		log.Println("could not get running node, gateway is not running")
 		return nil
@@ -91,21 +91,22 @@ func (g *gateway) nodes() []*servicepb.Node {
 		return nil
 	}
 
-	var nodes []*servicepb.Node
+	nodes := map[string]*pb.Node{}
+
 	if g.web != nil {
-		nodes = append(nodes, &servicepb.Node{
+		nodes[pb.Protocol_Http.String()] = &pb.Node{
 			Ttl:      -1,
 			Address:  g.httpAddress,
-			Protocol: common.ProtocolHTTP,
-		})
+			Protocol: pb.Protocol_Http,
+		}
 	}
 
 	if g.gRPC != nil {
-		nodes = append(nodes, &servicepb.Node{
+		nodes[pb.Protocol_Grpc.String()] = &pb.Node{
 			Ttl:      -1,
 			Address:  g.gRPCAddress,
-			Protocol: common.ProtocolGRPC,
-		})
+			Protocol: pb.Protocol_Grpc,
+		}
 	}
 	return nodes
 }

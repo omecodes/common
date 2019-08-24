@@ -10,11 +10,12 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/iancoleman/strcase"
-	"github.com/zoenion/common/auth"
 	crypto2 "github.com/zoenion/common/crypto"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/futils"
 	capb "github.com/zoenion/common/proto/ca"
+	"github.com/zoenion/common/service/authentication"
+	"github.com/zoenion/common/service/discovery"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -28,7 +29,7 @@ type Box struct {
 	params BoxParams
 
 	gateway                           *gateway
-	registry                          *SyncedRegistry
+	registry                          *discovery.SyncedRegistry
 	authorityCert                     *x509.Certificate
 	authorityClientAuthentication     credentials.PerRPCCredentials
 	authorityGRPCTransportCredentials credentials.TransportCredentials
@@ -53,7 +54,7 @@ func (box *Box) RegistryCert() *x509.Certificate {
 	return box.registryCert
 }
 
-func (box *Box) Registry() *SyncedRegistry {
+func (box *Box) Registry() *discovery.SyncedRegistry {
 	return box.registry
 }
 
@@ -166,7 +167,7 @@ func (box *Box) loadTools() error {
 		}
 
 		parts := strings.Split(box.params.CaCredentials, ":")
-		box.authorityClientAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
+		box.authorityClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
 
 		err = box.loadSignedKeyPair()
 		if err != nil {
@@ -176,9 +177,9 @@ func (box *Box) loadTools() error {
 
 	if box.params.RegistryAddress != "" {
 		if box.params.RegistrySecure {
-			box.registry = NewSyncRegistry(box.params.RegistryAddress, box.clientMutualTLS())
+			box.registry = discovery.NewSyncRegistry(box.params.RegistryAddress, box.clientMutualTLS())
 		} else {
-			box.registry = NewSyncRegistry(box.params.RegistryAddress, nil)
+			box.registry = discovery.NewSyncRegistry(box.params.RegistryAddress, nil)
 		}
 	}
 	return nil
@@ -239,7 +240,7 @@ func (box *Box) loadSignedKeyPair() error {
 
 		if box.authorityClientAuthentication == nil {
 			parts := strings.Split(box.params.CaCredentials, ":")
-			box.authorityClientAuthentication = auth.NewGRPCBasicAuthentication(parts[0], parts[1])
+			box.authorityClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
 		}
 
 		conn, err := grpc.Dial(box.params.CaGRPC, grpc.WithTransportCredentials(box.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(box.authorityClientAuthentication))
@@ -307,14 +308,29 @@ func (box *Box) clientMutualTLS() *tls.Config {
 	}
 }
 
+func (box *Box) gatewayToGrpcClientTls() *tls.Config {
+	CAPool := x509.NewCertPool()
+	CAPool.AddCert(box.authorityCert)
+	return &tls.Config{
+		RootCAs: CAPool,
+	}
+}
+
 func (box *Box) start(cfg *BoxData) error {
 
-	if cfg.Web.Tls == nil {
-		box.gateway.web.Tls = box.serverMutualTLS()
+	if cfg.Web != nil {
+		if cfg.Web.Tls == nil {
+			box.gateway.web.Tls = box.serverMutualTLS()
+			if box.gateway.web.ClientGRPCTls == nil {
+				box.gateway.web.ClientGRPCTls = box.gatewayToGrpcClientTls()
+			}
+		}
 	}
 
-	if cfg.Grpc.Tls == nil {
-		box.serverMutualTLS()
+	if cfg.Grpc != nil {
+		if cfg.Grpc.Tls == nil {
+			box.serverMutualTLS()
+		}
 	}
 
 	box.gateway = &gateway{

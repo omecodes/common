@@ -1,9 +1,6 @@
 package service
 
-import (
-	"crypto/x509"
-	servicepb "github.com/zoenion/common/proto/service"
-)
+import "github.com/zoenion/common/service/pb"
 
 const (
 	CmdFlagAuthority      = "a-grpc"
@@ -20,7 +17,6 @@ const (
 	CmdFlagRegistrySecure = "reg-secure"
 	CmdFlagGRPC           = "grpc"
 	CmdFlagHTTP           = "http"
-	MetaCertificate       = "certificate"
 )
 
 type ContextKey string
@@ -33,23 +29,8 @@ const (
 	PeerCertificate = ContextKey("peer-certificate")
 )
 
-const (
-	ProtocolGRPC = "gRPC"
-	ProtocolHTTP = "Web"
-)
-
-const (
-	AuthBearer  = "Bearer "
-	AuthGateway = "gateway "
-)
-
-type ConnectionInfo struct {
-	Address     string
-	Certificate *x509.Certificate
-}
-
 type Service interface {
-	Type() servicepb.Type
+	Type() pb.Type
 	Configure(name, dir string) error
 	Init(name, dir string) (*BoxData, error)
 }

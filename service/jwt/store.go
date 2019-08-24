@@ -1,4 +1,4 @@
-package service
+package jwt
 
 import (
 	"context"
@@ -17,16 +17,16 @@ import (
 	"time"
 )
 
-type SyncedJwtStore struct {
+type SyncStore struct {
 	sync.Mutex
 	store                     data.Dict
 	serverAddress             string
 	serverCert                *x509.Certificate
 	conn                      *grpc.ClientConn
-	jwtRevokedHandlerFuncList map[string]JwtRevokedHandlerFunc
+	jwtRevokedHandlerFuncList map[string]RevokedHandlerFunc
 }
 
-func (s *SyncedJwtStore) connect() (err error) {
+func (s *SyncStore) connect() (err error) {
 	if s.conn != nil && s.conn.GetState() == connectivity.Ready {
 		return nil
 	}
@@ -43,7 +43,7 @@ func (s *SyncedJwtStore) connect() (err error) {
 	return err
 }
 
-func (s *SyncedJwtStore) connected() {
+func (s *SyncStore) connected() {
 	client := authpb.NewJWTStoreClient(s.conn)
 	stream, err := client.Listen(context.Background(), &authpb.ListenRequest{})
 	if err != nil {
@@ -66,7 +66,7 @@ func (s *SyncedJwtStore) connected() {
 	}
 }
 
-func (s *SyncedJwtStore) saveJwtInfo(i *authpb.JwtInfo) error {
+func (s *SyncStore) saveJwtInfo(i *authpb.JwtInfo) error {
 	marshaled, err := json.Marshal(i)
 	if err != nil {
 		return err
@@ -74,11 +74,11 @@ func (s *SyncedJwtStore) saveJwtInfo(i *authpb.JwtInfo) error {
 	return s.store.Set(i.Jti, marshaled)
 }
 
-func (s *SyncedJwtStore) deleteJwtInfo(jti string) error {
+func (s *SyncStore) deleteJwtInfo(jti string) error {
 	return s.store.Del(jti)
 }
 
-func (s *SyncedJwtStore) getJwtState(jti string) (authpb.JWTState, error) {
+func (s *SyncStore) getJwtState(jti string) (authpb.JWTState, error) {
 	infoBytes, err := s.store.Get(jti)
 	if err != nil {
 		return 0, err
@@ -102,11 +102,11 @@ func (s *SyncedJwtStore) getJwtState(jti string) (authpb.JWTState, error) {
 	return authpb.JWTState_VALID, nil
 }
 
-func (s *SyncedJwtStore) State(jti string) (authpb.JWTState, error) {
+func (s *SyncStore) State(jti string) (authpb.JWTState, error) {
 	return s.getJwtState(jti)
 }
 
-func (s *SyncedJwtStore) AddJwtRevokedEventHandler(f JwtRevokedHandlerFunc) string {
+func (s *SyncStore) AddJwtRevokedEventHandler(f RevokedHandlerFunc) string {
 	s.Lock()
 	defer s.Unlock()
 	id := uuid.New().String()
@@ -114,29 +114,29 @@ func (s *SyncedJwtStore) AddJwtRevokedEventHandler(f JwtRevokedHandlerFunc) stri
 	return id
 }
 
-func (s *SyncedJwtStore) DeleteJwtRevokedEventHandler(id string) {
+func (s *SyncStore) DeleteJwtRevokedEventHandler(id string) {
 	s.Lock()
 	defer s.Unlock()
 	delete(s.jwtRevokedHandlerFuncList, id)
 }
 
-func NewSyncJwtStore(server string, cert *x509.Certificate, store data.Dict) *SyncedJwtStore {
-	return &SyncedJwtStore{
+func NewSyncJwtStore(server string, cert *x509.Certificate, store data.Dict) *SyncStore {
+	return &SyncStore{
 		serverAddress:             server,
 		serverCert:                cert,
 		store:                     store,
-		jwtRevokedHandlerFuncList: map[string]JwtRevokedHandlerFunc{},
+		jwtRevokedHandlerFuncList: map[string]RevokedHandlerFunc{},
 	}
 }
 
-type JwtFeeder struct {
+type Feeder struct {
 	serverAddress string
 	serverCert    *x509.Certificate
 	conn          *grpc.ClientConn
 	stream        authpb.JWTStore_FeedClient
 }
 
-func (f *JwtFeeder) connect() (err error) {
+func (f *Feeder) connect() (err error) {
 	if f.conn != nil && f.conn.GetState() == connectivity.Ready {
 		return nil
 	}
@@ -149,7 +149,7 @@ func (f *JwtFeeder) connect() (err error) {
 	return err
 }
 
-func (f *JwtFeeder) AddJwt(info *authpb.JwtInfo) (err error) {
+func (f *Feeder) Register(info *authpb.JwtInfo) (err error) {
 	if err = f.connect(); err != nil {
 		return
 	}
@@ -168,7 +168,7 @@ func (f *JwtFeeder) AddJwt(info *authpb.JwtInfo) (err error) {
 	})
 }
 
-func (f *JwtFeeder) Revoke(jti string) (err error) {
+func (f *Feeder) Revoke(jti string) (err error) {
 	if err = f.connect(); err != nil {
 		return
 	}
@@ -187,8 +187,8 @@ func (f *JwtFeeder) Revoke(jti string) (err error) {
 	})
 }
 
-func NewJwtFeeder(serverAddress string, serverCert *x509.Certificate) *JwtFeeder {
-	return &JwtFeeder{
+func NewJwtFeeder(serverAddress string, serverCert *x509.Certificate) *Feeder {
+	return &Feeder{
 		serverAddress: serverAddress,
 		serverCert:    serverCert,
 	}
