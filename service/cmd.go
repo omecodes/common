@@ -74,12 +74,12 @@ func CMD(use string, service Service) *cobra.Command {
 				log.Fatalln(err)
 			}
 
-			bc, err := service.Configs(params.Name, params.Dir)
+			data, err := service.Init(params.Name, params.Dir)
 			if err != nil {
 				log.Fatalf("could not load box configs: %s\n", err)
 			}
 
-			if err := box.start(bc); err != nil {
+			if err := box.start(data); err != nil {
 				log.Fatalf("starting %s service: %s\n", box.Name, err)
 			}
 			if box.registry != nil {
@@ -96,7 +96,16 @@ func CMD(use string, service Service) *cobra.Command {
 					log.Printf("could not register service: %s\n", err)
 				}
 			}
-			service.AfterStart()
+			opts := Options{}
+			for _, opt := range data.Options {
+				opt(&opts)
+			}
+
+			for _, sc := range opts.afterStart {
+				if err = sc(); err != nil {
+					log.Fatalln("got error while executing start callback:", err)
+				}
+			}
 
 			<-prompt.QuitSignal()
 
@@ -107,7 +116,10 @@ func CMD(use string, service Service) *cobra.Command {
 					log.Printf("could not de-register service: %s\n", err)
 				}
 			}
-			service.AfterStop()
+
+			for _, sc := range opts.afterStop {
+				sc()
+			}
 		},
 	}
 	startCMD.PersistentFlags().StringVar(&params.Name, CmdFlagName, "", "Unique name in registryAddress group")

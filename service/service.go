@@ -51,7 +51,5 @@ type ConnectionInfo struct {
 type Service interface {
 	Type() servicepb.Type
 	Configure(name, dir string) error
-	Configs(name, dir string) (*BoxConfigs, error)
-	AfterStart()
-	AfterStop()
+	Init(name, dir string) (*BoxData, error)
 }

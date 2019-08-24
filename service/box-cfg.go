@@ -1,6 +1,7 @@
 package service
 
-type BoxConfigs struct {
-	Web  *Web
-	Grpc *Grpc
+type BoxData struct {
+	Web     *Web
+	Grpc    *Grpc
+	Options []Option
 }

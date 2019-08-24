@@ -307,7 +307,7 @@ func (box *Box) clientMutualTLS() *tls.Config {
 	}
 }
 
-func (box *Box) start(cfg *BoxConfigs) error {
+func (box *Box) start(cfg *BoxData) error {
 
 	if cfg.Web.Tls == nil {
 		box.gateway.web.Tls = box.serverMutualTLS()
