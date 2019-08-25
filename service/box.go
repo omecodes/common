@@ -274,15 +274,12 @@ func (box *Box) serverMutualTLS() *tls.Config {
 	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
 		return nil
 	}
-
 	CAPool := x509.NewCertPool()
 	CAPool.AddCert(box.caCert)
-
 	tlsCert := tls.Certificate{
 		Certificate: [][]byte{box.cert.Raw},
 		PrivateKey:  box.privateKey,
 	}
-
 	return &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
 		ClientCAs:    CAPool,
@@ -295,15 +292,12 @@ func (box *Box) clientMutualTLS() *tls.Config {
 	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
 		return nil
 	}
-
 	CAPool := x509.NewCertPool()
 	CAPool.AddCert(box.caCert)
-
 	tlsCert := tls.Certificate{
 		Certificate: [][]byte{box.cert.Raw},
 		PrivateKey:  box.privateKey.(*ecdsa.PrivateKey),
 	}
-
 	return &tls.Config{
 		RootCAs:      CAPool,
 		Certificates: []tls.Certificate{tlsCert},
