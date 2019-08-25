@@ -1,4 +1,4 @@
-package http_helper
+package xhttp
 
 import (
 	"crypto/md5"
