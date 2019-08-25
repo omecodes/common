@@ -1,0 +1,261 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ca.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/app/register": {
+      "post": {
+        "operationId": "RegisterApplication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/capbRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/capbRegisterApplicationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/app/sign/cert": {
+      "post": {
+        "operationId": "SignCertificate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/capbSignCertificateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/capbSignCertificateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/auth/validate": {
+      "get": {
+        "operationId": "ValidateAuth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/capbValidateAuthResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "authentication.app_name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "authentication.nonce",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "authentication.challenge",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    },
+    "/api/sign/key": {
+      "post": {
+        "operationId": "SignKey",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/capbSignKeyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/capbSignKeyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthorityService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "capbApplication": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type_flags": {
+          "$ref": "#/definitions/capbServiceTypeFlag"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "create_at": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "capbAuthentication": {
+      "type": "object",
+      "properties": {
+        "app_name": {
+          "type": "string"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "challenge": {
+          "type": "string"
+        }
+      }
+    },
+    "capbCertificateTemplate": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "public_key": {
+          "type": "string",
+          "format": "byte"
+        },
+        "service_name": {
+          "type": "string"
+        }
+      }
+    },
+    "capbRegisterApplicationRequest": {
+      "type": "object",
+      "properties": {
+        "application": {
+          "$ref": "#/definitions/capbApplication"
+        }
+      }
+    },
+    "capbRegisterApplicationResponse": {
+      "type": "object"
+    },
+    "capbServiceTypeFlag": {
+      "type": "string",
+      "enum": [
+        "Unknown",
+        "ServiceProvider",
+        "IdentityProvider"
+      ],
+      "default": "Unknown"
+    },
+    "capbSignCertificateRequest": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "$ref": "#/definitions/capbCertificateTemplate"
+        }
+      }
+    },
+    "capbSignCertificateResponse": {
+      "type": "object",
+      "properties": {
+        "raw_certificate": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "capbSignKeyRequest": {
+      "type": "object",
+      "properties": {
+        "key_bytes": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "capbSignKeyResponse": {
+      "type": "object",
+      "properties": {
+        "signature": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "capbValidateAuthResponse": {
+      "type": "object",
+      "properties": {
+        "nonce": {
+          "type": "string"
+        },
+        "valid": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    }
+  }
+}
