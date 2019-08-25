@@ -1,6 +1,8 @@
 package service
 
-import "github.com/zoenion/common/service/pb"
+import (
+	"context"
+)
 
 const (
 	CmdFlagAuthority      = "a-grpc"
@@ -19,18 +21,13 @@ const (
 	CmdFlagHTTP           = "http"
 )
 
-type ContextKey string
-
-const (
-	User            = ContextKey("user")
-	Caller          = ContextKey("caller")
-	Token           = ContextKey("token")
-	PeerIp          = ContextKey("peer-ip")
-	PeerCertificate = ContextKey("peer-certificate")
-)
+type BoxData struct {
+	Web     *Web
+	Grpc    *Grpc
+	Options []Option
+}
 
 type Service interface {
-	Type() pb.Type
 	Configure(name, dir string) error
-	Init(name, dir string) (*BoxData, error)
+	Init(ctx context.Context) (*BoxData, error)
 }

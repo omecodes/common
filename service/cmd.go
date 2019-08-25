@@ -1,22 +1,17 @@
 package service
 
 import (
-	"fmt"
-	"github.com/iancoleman/strcase"
-	crypto2 "github.com/zoenion/common/crypto"
-	"github.com/zoenion/common/service/pb"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/zoenion/common/prompt"
 )
 
 var (
-	Vendor = "Zoenion"
-	Name   = strings.Split(os.Args[0], fmt.Sprintf("%c", os.PathSeparator))[0]
+	Vendor  = "Zoenion"
+	AppName = strings.TrimSuffix(filepath.Base(os.Args[0]), ".exe")
 )
 
 func CMD(use string, service Service) *cobra.Command {
@@ -51,75 +46,7 @@ func CMD(use string, service Service) *cobra.Command {
 		Use:   "start",
 		Short: "start node",
 		Run: func(cmd *cobra.Command, args []string) {
-			box := new(Box)
-			if params.Name == "" {
-				params.Name = Name
-			}
-
-			if params.Dir == "" {
-				d := getDir()
-				err := d.Create()
-				if err != nil {
-					log.Fatalf("could not initialize configs dir: %s\n", err)
-				}
-				params.Dir = d.path
-			}
-
-			box.params = params
-			if err := box.validateParams(); err != nil {
-				log.Fatalln(err)
-			}
-
-			if err := box.loadTools(); err != nil {
-				log.Fatalln(err)
-			}
-
-			data, err := service.Init(params.Name, params.Dir)
-			if err != nil {
-				log.Fatalf("could not load box configs: %s\n", err)
-			}
-
-			if err := box.start(data); err != nil {
-				log.Fatalf("starting %s service: %s\n", box.Name, err)
-			}
-			if box.registry != nil {
-				certEncoded, _ := crypto2.PEMEncodeCertificate(box.serviceCert)
-				box.params.RegistryID, err = box.registry.Register(&pb.Info{
-					Name:      strcase.ToDelimited(box.Name(), '-'),
-					Namespace: box.params.Namespace,
-					Type:      service.Type(),
-					Label:     strcase.ToCamel(box.params.Name),
-					Nodes:     box.gateway.nodes(),
-					Meta:      map[string]string{"metadata": string(certEncoded)},
-				})
-				if err != nil {
-					log.Printf("could not register service: %s\n", err)
-				}
-			}
-			opts := Options{}
-			for _, opt := range data.Options {
-				opt(&opts)
-			}
-
-			for _, sc := range opts.afterStart {
-				if err = sc(); err != nil {
-					log.Fatalln("got error while executing start callback:", err)
-				}
-			}
-
-			<-prompt.QuitSignal()
-
-			box.stop()
-			if box.params.RegistryID != "" {
-				err = box.registry.Deregister(box.params.RegistryID)
-				if err != nil {
-					log.Printf("could not de-register service: %s\n", err)
-				}
-			}
-
-			for _, sc := range opts.afterStop {
-				sc()
-			}
+			Run(service, params)
 		},
 	}
 	startCMD.PersistentFlags().StringVar(&params.Name, CmdFlagName, "", "Unique name in registryAddress group")

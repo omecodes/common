@@ -13,9 +13,11 @@ import (
 	crypto2 "github.com/zoenion/common/crypto"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/futils"
+	"github.com/zoenion/common/prompt"
 	capb "github.com/zoenion/common/proto/ca"
 	"github.com/zoenion/common/service/authentication"
 	"github.com/zoenion/common/service/discovery"
+	"github.com/zoenion/common/service/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -28,14 +30,14 @@ import (
 type Box struct {
 	params BoxParams
 
-	gateway                           *gateway
-	registry                          *discovery.SyncedRegistry
-	authorityCert                     *x509.Certificate
-	authorityClientAuthentication     credentials.PerRPCCredentials
-	authorityGRPCTransportCredentials credentials.TransportCredentials
-	registryCert                      *x509.Certificate
-	serviceCert                       *x509.Certificate
-	serviceKey                        crypto.PrivateKey
+	gateway                    *gateway
+	registry                   pb.Registry
+	caCert                     *x509.Certificate
+	caClientAuthentication     credentials.PerRPCCredentials
+	caGRPCTransportCredentials credentials.TransportCredentials
+	registryCert               *x509.Certificate
+	cert                       *x509.Certificate
+	privateKey                 crypto.PrivateKey
 }
 
 func (box *Box) Name() string {
@@ -54,28 +56,28 @@ func (box *Box) RegistryCert() *x509.Certificate {
 	return box.registryCert
 }
 
-func (box *Box) Registry() *discovery.SyncedRegistry {
+func (box *Box) Registry() pb.Registry {
 	return box.registry
 }
 
 func (box *Box) AuthorityCert() *x509.Certificate {
-	return box.authorityCert
+	return box.caCert
 }
 
 func (box *Box) AuthorityClientAuthentication() credentials.PerRPCCredentials {
-	return box.authorityClientAuthentication
+	return box.caClientAuthentication
 }
 
 func (box *Box) AuthorityGRPCTransportCredentials() credentials.TransportCredentials {
-	return box.authorityGRPCTransportCredentials
+	return box.caGRPCTransportCredentials
 }
 
 func (box *Box) ServiceCert() *x509.Certificate {
-	return box.serviceCert
+	return box.cert
 }
 
 func (box *Box) ServiceKey() crypto.PrivateKey {
-	return box.serviceKey
+	return box.privateKey
 }
 
 func (box *Box) GRPCAddress() string {
@@ -131,8 +133,8 @@ func (box *Box) validateParams() error {
 		}
 	}
 
-	if box.params.CaCertPath != "" || box.params.KeyPath != "" {
-		if box.params.CaCertPath == "" || box.params.KeyPath == "" {
+	if box.params.CertificatePath != "" || box.params.KeyPath != "" {
+		if box.params.CertificatePath == "" || box.params.KeyPath == "" {
 			return errors.New("command line: --cert must always be provided with --key")
 		}
 	}
@@ -144,30 +146,30 @@ func (box *Box) loadTools() error {
 	var err error
 
 	if box.params.CertificatePath != "" {
-		box.serviceCert, err = crypto2.LoadCertificate(box.params.CaCertPath)
+		box.cert, err = crypto2.LoadCertificate(box.params.CaCertPath)
 		if err != nil {
 			return fmt.Errorf("could not load service certificate: %s", err)
 		}
 
-		box.serviceKey, err = crypto2.LoadPrivateKey(nil, box.params.KeyPath)
+		box.privateKey, err = crypto2.LoadPrivateKey(nil, box.params.KeyPath)
 		if err != nil {
 			return fmt.Errorf("could not load service private key: %s", err)
 		}
 	}
 
 	if box.params.CaGRPC != "" {
-		box.authorityCert, err = crypto2.LoadCertificate(box.params.CaCertPath)
+		box.caCert, err = crypto2.LoadCertificate(box.params.CaCertPath)
 		if err != nil {
 			return fmt.Errorf("could not load authority certificate: %s", err)
 		}
 
-		box.authorityGRPCTransportCredentials, err = credentials.NewClientTLSFromFile(box.params.CaCertPath, "")
+		box.caGRPCTransportCredentials, err = credentials.NewClientTLSFromFile(box.params.CaCertPath, "")
 		if err != nil {
 			return fmt.Errorf("could not create authority client credentials: %s", box.params.CaCertPath)
 		}
 
 		parts := strings.Split(box.params.CaCredentials, ":")
-		box.authorityClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
+		box.caClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
 
 		err = box.loadSignedKeyPair()
 		if err != nil {
@@ -186,7 +188,7 @@ func (box *Box) loadTools() error {
 }
 
 func (box *Box) loadSignedKeyPair() error {
-	if box.serviceCert != nil && box.serviceKey != nil {
+	if box.cert != nil && box.privateKey != nil {
 		return nil
 	}
 
@@ -203,7 +205,7 @@ func (box *Box) loadSignedKeyPair() error {
 		return fmt.Errorf("could not load authority certificate: %s", err)
 	}
 
-	box.authorityCert = authorityCert
+	box.caCert = authorityCert
 
 	name := strcase.ToSnake(box.params.Name)
 	certFilename := filepath.Join(box.params.Dir, fmt.Sprintf("%s.crt", name))
@@ -211,11 +213,11 @@ func (box *Box) loadSignedKeyPair() error {
 
 	shouldGenerateNewPair := !futils.FileExists(certFilename) || !futils.FileExists(keyFilename)
 	if !shouldGenerateNewPair {
-		box.serviceKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
+		box.privateKey, err = crypto2.LoadPrivateKey([]byte{}, keyFilename)
 		if err != nil {
 			return fmt.Errorf("could not load private key: %s", err)
 		}
-		box.serviceCert, err = crypto2.LoadCertificate(certFilename)
+		box.cert, err = crypto2.LoadCertificate(certFilename)
 		if err != nil {
 			return fmt.Errorf("could not load certificate: %s", err)
 		}
@@ -224,26 +226,26 @@ func (box *Box) loadSignedKeyPair() error {
 	CAPool := x509.NewCertPool()
 	CAPool.AddCert(authorityCert)
 
-	if box.serviceCert != nil {
-		_, err = box.serviceCert.Verify(x509.VerifyOptions{Roots: CAPool})
-		if err != nil || time.Now().After(box.serviceCert.NotAfter) || time.Now().Before(box.serviceCert.NotBefore) {
+	if box.cert != nil {
+		_, err = box.cert.Verify(x509.VerifyOptions{Roots: CAPool})
+		if err != nil || time.Now().After(box.cert.NotAfter) || time.Now().Before(box.cert.NotBefore) {
 			shouldGenerateNewPair = true
 		}
 	}
 
 	if shouldGenerateNewPair {
-		box.serviceKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+		box.privateKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 		if err != nil {
 			return fmt.Errorf("could not generate key pair: %s", err)
 		}
-		pub := box.serviceKey.(*ecdsa.PrivateKey).PublicKey
+		pub := box.privateKey.(*ecdsa.PrivateKey).PublicKey
 
-		if box.authorityClientAuthentication == nil {
+		if box.caClientAuthentication == nil {
 			parts := strings.Split(box.params.CaCredentials, ":")
-			box.authorityClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
+			box.caClientAuthentication = authentication.NewGRPCBasic(parts[0], parts[1])
 		}
 
-		conn, err := grpc.Dial(box.params.CaGRPC, grpc.WithTransportCredentials(box.authorityGRPCTransportCredentials), grpc.WithPerRPCCredentials(box.authorityClientAuthentication))
+		conn, err := grpc.Dial(box.params.CaGRPC, grpc.WithTransportCredentials(box.caGRPCTransportCredentials), grpc.WithPerRPCCredentials(box.caClientAuthentication))
 		client := capb.NewAuthorityServiceClient(conn)
 		rsp, err := client.SignCertificate(context.Background(), &capb.SignCertificateRequest{
 			Template: &capb.CertificateTemplate{
@@ -257,28 +259,28 @@ func (box *Box) loadSignedKeyPair() error {
 			return fmt.Errorf("could not sign certificate: %s", err)
 		}
 
-		box.serviceCert, err = x509.ParseCertificate(rsp.RawCertificate)
+		box.cert, err = x509.ParseCertificate(rsp.RawCertificate)
 		if err != nil {
 			return err
 		}
 
-		_ = crypto2.StoreCertificate(box.serviceCert, certFilename, os.ModePerm)
-		_ = crypto2.StorePrivateKey(box.serviceKey, nil, keyFilename)
+		_ = crypto2.StoreCertificate(box.cert, certFilename, os.ModePerm)
+		_ = crypto2.StorePrivateKey(box.privateKey, nil, keyFilename)
 	}
 	return nil
 }
 
 func (box *Box) serverMutualTLS() *tls.Config {
-	if box.serviceKey == nil || box.serviceCert == nil || box.authorityCert == nil {
+	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
 		return nil
 	}
 
 	CAPool := x509.NewCertPool()
-	CAPool.AddCert(box.authorityCert)
+	CAPool.AddCert(box.caCert)
 
 	tlsCert := tls.Certificate{
-		Certificate: [][]byte{box.serviceCert.Raw},
-		PrivateKey:  box.serviceKey,
+		Certificate: [][]byte{box.cert.Raw},
+		PrivateKey:  box.privateKey,
 	}
 
 	return &tls.Config{
@@ -290,16 +292,16 @@ func (box *Box) serverMutualTLS() *tls.Config {
 }
 
 func (box *Box) clientMutualTLS() *tls.Config {
-	if box.serviceKey == nil || box.serviceCert == nil || box.authorityCert == nil {
+	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
 		return nil
 	}
 
 	CAPool := x509.NewCertPool()
-	CAPool.AddCert(box.authorityCert)
+	CAPool.AddCert(box.caCert)
 
 	tlsCert := tls.Certificate{
-		Certificate: [][]byte{box.serviceCert.Raw},
-		PrivateKey:  box.serviceKey.(*ecdsa.PrivateKey),
+		Certificate: [][]byte{box.cert.Raw},
+		PrivateKey:  box.privateKey.(*ecdsa.PrivateKey),
 	}
 
 	return &tls.Config{
@@ -310,7 +312,7 @@ func (box *Box) clientMutualTLS() *tls.Config {
 
 func (box *Box) gatewayToGrpcClientTls() *tls.Config {
 	CAPool := x509.NewCertPool()
-	CAPool.AddCert(box.authorityCert)
+	CAPool.AddCert(box.caCert)
 	return &tls.Config{
 		RootCAs: CAPool,
 	}
@@ -320,16 +322,16 @@ func (box *Box) start(cfg *BoxData) error {
 
 	if cfg.Web != nil {
 		if cfg.Web.Tls == nil {
-			box.gateway.web.Tls = box.serverMutualTLS()
-			if box.gateway.web.ClientGRPCTls == nil {
-				box.gateway.web.ClientGRPCTls = box.gatewayToGrpcClientTls()
+			cfg.Web.Tls = box.serverMutualTLS()
+			if cfg.Web.ClientGRPCTls == nil {
+				cfg.Web.ClientGRPCTls = box.gatewayToGrpcClientTls()
 			}
 		}
 	}
 
 	if cfg.Grpc != nil {
 		if cfg.Grpc.Tls == nil {
-			box.serverMutualTLS()
+			cfg.Grpc.Tls = box.serverMutualTLS()
 		}
 	}
 
@@ -347,5 +349,77 @@ func (box *Box) start(cfg *BoxData) error {
 func (box *Box) stop() {
 	if box.gateway != nil {
 		box.gateway.stop()
+	}
+}
+
+func Run(service Service, params BoxParams) {
+	box := new(Box)
+	if params.Name == "" {
+		params.Name = AppName
+	}
+
+	if params.Dir == "" {
+		d := getDir()
+		err := d.Create()
+		if err != nil {
+			log.Fatalf("could not initialize configs dir: %s\n", err)
+		}
+		params.Dir = d.path
+	}
+
+	box.params = params
+	if err := box.validateParams(); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := box.loadTools(); err != nil {
+		log.Fatalln(err)
+	}
+
+	ctx := context.WithValue(context.Background(), ctxBox, box)
+	data, err := service.Init(ctx)
+	if err != nil {
+		log.Fatalf("could not load box configs: %s\n", err)
+	}
+
+	if err := box.start(data); err != nil {
+		log.Fatalf("starting %s service: %s\n", box.Name, err)
+	}
+	if box.registry != nil {
+		certEncoded, _ := crypto2.PEMEncodeCertificate(box.cert)
+		box.params.RegistryID, err = box.registry.Register(&pb.Info{
+			Name:      strcase.ToDelimited(box.Name(), '-'),
+			Namespace: box.params.Namespace,
+			Label:     strcase.ToCamel(box.params.Name),
+			Nodes:     box.gateway.nodes(),
+			Meta:      map[string]string{"metadata": string(certEncoded)},
+		})
+		if err != nil {
+			log.Printf("could not register service: %s\n", err)
+		}
+	}
+	opts := Options{}
+	for _, opt := range data.Options {
+		opt(&opts)
+	}
+
+	for _, sc := range opts.afterStart {
+		if err = sc(); err != nil {
+			log.Fatalln("got error while executing start callback:", err)
+		}
+	}
+
+	<-prompt.QuitSignal()
+
+	box.stop()
+	if box.params.RegistryID != "" {
+		err = box.registry.Deregister(box.params.RegistryID)
+		if err != nil {
+			log.Printf("could not de-register service: %s\n", err)
+		}
+	}
+
+	for _, sc := range opts.afterStop {
+		sc()
 	}
 }

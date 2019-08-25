@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 )
 
@@ -31,8 +32,10 @@ type gRPCClientBasic struct {
 }
 
 func (g *gRPCClientBasic) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	authentication := fmt.Sprintf("%s:%s", g.user, g.password)
+	authentication = base64.StdEncoding.EncodeToString([]byte(authentication))
 	return map[string]string{
-		"authorization": fmt.Sprintf("Basic %s:%s", g.user, g.password),
+		"authorization": fmt.Sprintf("Basic %s", authentication),
 	}, nil
 }
 
