@@ -1,0 +1,360 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "service.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/services/deregister/{registry_id}": {
+      "get": {
+        "operationId": "Deregister",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbDeregisterResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "registry_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    },
+    "/api/services/get/{registry_id}": {
+      "get": {
+        "operationId": "Get",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "registry_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    },
+    "/api/services/list": {
+      "get": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    },
+    "/api/services/register": {
+      "post": {
+        "operationId": "Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRegisterResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbRegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    },
+    "/api/services/search": {
+      "get": {
+        "operationId": "Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbSearchResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "namespace",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "UnknownType",
+              "Authority",
+              "IDM",
+              "UsersHierarchy",
+              "UserInfo",
+              "ConfigsStore",
+              "Storage"
+            ],
+            "default": "UnknownType"
+          }
+        ],
+        "tags": [
+          "Registry"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "pbDeregisterResponse": {
+      "type": "object"
+    },
+    "pbEvent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/pbEventType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/definitions/pbInfo"
+        }
+      }
+    },
+    "pbEventType": {
+      "type": "string",
+      "enum": [
+        "UnknownEvent",
+        "Registered",
+        "DeRegistered",
+        "Updated"
+      ],
+      "default": "UnknownEvent"
+    },
+    "pbGetResponse": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/pbInfo"
+        }
+      }
+    },
+    "pbInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/pbType"
+        },
+        "label": {
+          "type": "string"
+        },
+        "nodes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/pbNode"
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pbListResponse": {
+      "type": "object",
+      "properties": {
+        "applications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pbInfo"
+          }
+        }
+      }
+    },
+    "pbNode": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/pbProtocol"
+        },
+        "address": {
+          "type": "string"
+        },
+        "security": {
+          "$ref": "#/definitions/pbSecurity"
+        },
+        "ttl": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "pbProtocol": {
+      "type": "string",
+      "enum": [
+        "Grpc",
+        "Http"
+      ],
+      "default": "Grpc"
+    },
+    "pbRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "$ref": "#/definitions/pbInfo"
+        }
+      }
+    },
+    "pbRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "registry_id": {
+          "type": "string"
+        }
+      }
+    },
+    "pbSearchResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pbInfo"
+          }
+        }
+      }
+    },
+    "pbSecurity": {
+      "type": "string",
+      "enum": [
+        "None",
+        "ServerTLS",
+        "MutualTLS"
+      ],
+      "default": "None"
+    },
+    "pbType": {
+      "type": "string",
+      "enum": [
+        "UnknownType",
+        "Authority",
+        "IDM",
+        "UsersHierarchy",
+        "UserInfo",
+        "ConfigsStore",
+        "Storage"
+      ],
+      "default": "UnknownType"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  },
+  "x-stream-definitions": {
+    "pbEvent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/pbEvent"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of pbEvent"
+    }
+  }
+}
