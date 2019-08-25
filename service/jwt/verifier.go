@@ -2,6 +2,8 @@ package jwt
 
 import (
 	"context"
+	"crypto"
+	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"github.com/zoenion/common/data"
@@ -20,8 +22,10 @@ type jwtVerifier struct {
 	registry       pb.Registry
 	storesMutex    sync.Mutex
 	tokenVerifiers map[string]authpb.TokenVerifier
-	syncedStores   map[string]*SyncStore
+	syncedStores   map[string]*SyncedStore
 	CaCert         *x509.Certificate
+	serviceCert    *x509.Certificate
+	serviceKey     crypto.PrivateKey
 	cacheDir       string
 }
 
@@ -60,17 +64,22 @@ func (j *jwtVerifier) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTStat
 			if err != nil {
 				return 0, errors.Forbidden
 			}
+
 			dictStore, err := data.NewDictDB(filepath.Join(j.cacheDir, "jwt-store.db"))
 			if err != nil {
 				return 0, errors.Internal
 			}
-			cert, err := x509.ParseCertificate(ci.Certificate)
-			if err != nil {
-				log.Println("could not parse jwt store certificate:", err)
-				return 0, errors.Forbidden
-			}
 
-			jwtStore = NewSyncJwtStore(ci.Address, cert, dictStore)
+			CAPool := x509.NewCertPool()
+			CAPool.AddCert(j.CaCert)
+			tlsConfig := &tls.Config{
+				RootCAs: CAPool,
+				Certificates: []tls.Certificate{{
+					Certificate: [][]byte{j.serviceCert.Raw},
+					PrivateKey:  j.serviceKey,
+				}},
+			}
+			jwtStore = NewSyncedStore(ci.Address, tlsConfig, dictStore)
 			j.saveStore(t.Claims.Store, jwtStore)
 		}
 
@@ -96,24 +105,27 @@ func (j *jwtVerifier) getJwtVerifier(name string) authpb.TokenVerifier {
 	return j.tokenVerifiers[name]
 }
 
-func (j *jwtVerifier) getStore(name string) *SyncStore {
+func (j *jwtVerifier) getStore(name string) *SyncedStore {
 	j.Lock()
 	defer j.Unlock()
 	return j.syncedStores[name]
 }
 
-func (j *jwtVerifier) saveStore(name string, s *SyncStore) {
+func (j *jwtVerifier) saveStore(name string, s *SyncedStore) {
 	j.Lock()
 	defer j.Unlock()
 	j.syncedStores[name] = s
 }
 
-func NewVerifier(cacheDir string, registry pb.Registry) authpb.TokenVerifier {
+func NewVerifier(caCert, cert *x509.Certificate, privateKey crypto.PrivateKey, registry pb.Registry, cacheDir string) authpb.TokenVerifier {
 	verifier := &jwtVerifier{
 		tokenVerifiers: map[string]authpb.TokenVerifier{},
-		syncedStores:   map[string]*SyncStore{},
+		syncedStores:   map[string]*SyncedStore{},
 		registry:       registry,
 		cacheDir:       cacheDir,
+		serviceKey:     privateKey,
+		serviceCert:    cert,
+		CaCert:         caCert,
 	}
 	return verifier
 }
