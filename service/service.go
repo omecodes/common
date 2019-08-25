@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/zoenion/common/service/pb"
 )
 
 const (
@@ -22,6 +23,7 @@ const (
 )
 
 type BoxData struct {
+	Type    pb.Type
 	Web     *Web
 	Grpc    *Grpc
 	Options []Option
