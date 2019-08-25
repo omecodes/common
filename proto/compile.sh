@@ -21,10 +21,6 @@ cd config
 ./compile.sh
 cd ..
 
-cd service
-./compile.sh
-cd ..
-
 cd supervisor
 ./compile.sh
 cd ..
