@@ -414,7 +414,7 @@
       "type": "object",
       "properties": {
         "jwt": {
-          "$ref": "#/definitions/authpbJWT"
+          "type": "string"
         },
         "code": {
           "type": "integer",

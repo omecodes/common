@@ -171,3 +171,26 @@ func NewStringTokenVerifier(tv TokenVerifier) *StringTokenVerifier {
 		verifier: tv,
 	}
 }
+
+func String(jwt *JWT) (string, error) {
+	headerBytes, err := json.Marshal(jwt.Header)
+	if err != nil {
+		return "", err
+	}
+
+	claimsBytes, err := json.Marshal(jwt.Claims)
+	if err != nil {
+		return "", err
+	}
+
+	signatureBytes, err := json.Marshal(jwt.Signature)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s.%s.%s",
+		base64.StdEncoding.EncodeToString(headerBytes),
+		base64.StdEncoding.EncodeToString(claimsBytes),
+		base64.StdEncoding.EncodeToString(signatureBytes),
+	), nil
+}

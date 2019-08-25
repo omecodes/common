@@ -147,7 +147,7 @@ message AuthenticateRequest {
     string password = 2;
 }
 message GetTokenResponse {
-    JWT jwt = 1;
+    string jwt = 1;
     uint32 code = 2;
 }
 
