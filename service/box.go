@@ -288,6 +288,20 @@ func (box *Box) serverMutualTLS() *tls.Config {
 	}
 }
 
+func (box *Box) serverWebTLS() *tls.Config {
+	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
+		return nil
+	}
+	tlsCert := tls.Certificate{
+		Certificate: [][]byte{box.cert.Raw},
+		PrivateKey:  box.privateKey,
+	}
+	return &tls.Config{
+		Certificates: []tls.Certificate{tlsCert},
+		ServerName:   box.params.Domain,
+	}
+}
+
 func (box *Box) clientMutualTLS() *tls.Config {
 	if box.privateKey == nil || box.cert == nil || box.caCert == nil {
 		return nil
@@ -325,7 +339,7 @@ func (box *Box) start(cfg *BoxData) error {
 
 	if cfg.Grpc != nil {
 		if cfg.Grpc.Tls == nil {
-			cfg.Grpc.Tls = box.serverMutualTLS()
+			cfg.Grpc.Tls = box.serverWebTLS()
 		}
 	}
 
