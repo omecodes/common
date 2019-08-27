@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto"
 	"crypto/x509"
+	"fmt"
 	"github.com/zoenion/common/service/pb"
 )
 
@@ -67,4 +68,17 @@ func Dir(ctx context.Context) string {
 		return ""
 	}
 	return val.(*Box).params.Dir
+}
+
+func WebAddress(ctx context.Context) string {
+	val := ctx.Value(ctxBox)
+	if val == nil {
+		return ""
+	}
+	box := val.(*Box)
+	if box.gateway.web.Tls != nil {
+		return fmt.Sprintf("https://%s", box.params.Domain)
+	} else {
+		return fmt.Sprintf("http://%s", box.params.Domain)
+	}
 }
