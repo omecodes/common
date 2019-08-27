@@ -41,11 +41,11 @@ func NewMailer(cfg conf.Map) (*defaultMailer, error) {
 	return dm, nil
 }
 
-func (m *defaultMailer) Send(to string, subject string, html string, plain string, files ...string) error {
-	return sendMail(m.server, int(m.port), m.user, m.password, to, subject, html, plain, files...)
+func (m *defaultMailer) Send(to string, subject string, plain string, html string, files ...string) error {
+	return sendMail(m.server, int(m.port), m.user, m.password, to, subject, plain, html, files...)
 }
 
-func sendMail(server string, port int, user string, password string, to string, subject string, html string, plain string, files ...string) error {
+func sendMail(server string, port int, user string, password string, to string, subject string, plain string, html string, files ...string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "zoenion.services@gmail.com")
 	m.SetHeader("To", to)

@@ -77,8 +77,8 @@ func WebAddress(ctx context.Context) string {
 	}
 	box := val.(*Box)
 	if box.gateway.web.Tls != nil {
-		return fmt.Sprintf("https://%s", box.params.Domain)
+		return fmt.Sprintf("https://%s", box.gateway.httpAddress)
 	} else {
-		return fmt.Sprintf("http://%s", box.params.Domain)
+		return fmt.Sprintf("http://%s", box.gateway.httpAddress)
 	}
 }
