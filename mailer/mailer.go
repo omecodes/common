@@ -8,7 +8,7 @@ import (
 )
 
 type Mailer interface {
-	Send(to string, subject string, plain string, html string, files ...string) error
+	Send(to, subject, contentType, content string, files ...string) error
 }
 
 type defaultMailer struct {
@@ -41,20 +41,16 @@ func NewMailer(cfg conf.Map) (*defaultMailer, error) {
 	return dm, nil
 }
 
-func (m *defaultMailer) Send(to string, subject string, plain string, html string, files ...string) error {
-	return sendMail(m.server, int(m.port), m.user, m.password, to, subject, plain, html, files...)
+func (m *defaultMailer) Send(to, subject, contentType, content string, files ...string) error {
+	return sendMail(m.server, int(m.port), m.user, m.password, to, subject, contentType, content, files...)
 }
 
-func sendMail(server string, port int, user string, password string, to string, subject string, plain string, html string, files ...string) error {
+func sendMail(server string, port int, user, password, to, subject, contentType, content string, files ...string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "zoenion.services@gmail.com")
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", subject)
-	if len(html) > 0 {
-		m.SetBody("text/html", html)
-	} else {
-		m.SetBody("text/plain", plain)
-	}
+	m.SetBody(contentType, content)
 
 	for i := range files {
 		m.Attach(files[i])
