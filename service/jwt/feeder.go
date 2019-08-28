@@ -3,7 +3,6 @@ package jwt
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	authpb "github.com/zoenion/common/proto/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -12,7 +11,7 @@ import (
 
 type Feeder struct {
 	serverAddress string
-	serverCert    *x509.Certificate
+	tlsConfig     *tls.Config
 	conn          *grpc.ClientConn
 	stream        authpb.JWTStore_FeedClient
 }
@@ -21,9 +20,9 @@ func (f *Feeder) connect() (err error) {
 	if f.conn != nil && f.conn.GetState() == connectivity.Ready {
 		return nil
 	}
-	if f.serverCert != nil {
-		tlsCert := &tls.Certificate{Certificate: [][]byte{f.serverCert.Raw}}
-		f.conn, err = grpc.Dial(f.serverAddress, grpc.WithTransportCredentials(credentials.NewServerTLSFromCert(tlsCert)))
+
+	if f.tlsConfig != nil {
+		f.conn, err = grpc.Dial(f.serverAddress, grpc.WithTransportCredentials(credentials.NewTLS(f.tlsConfig)))
 	} else {
 		f.conn, err = grpc.Dial(f.serverAddress, grpc.WithInsecure())
 	}
@@ -68,9 +67,9 @@ func (f *Feeder) Revoke(jti string) (err error) {
 	})
 }
 
-func NewJwtFeeder(serverAddress string, serverCert *x509.Certificate) *Feeder {
+func NewJwtFeeder(serverAddress string, tlsConfig *tls.Config) *Feeder {
 	return &Feeder{
 		serverAddress: serverAddress,
-		serverCert:    serverCert,
+		tlsConfig:     tlsConfig,
 	}
 }

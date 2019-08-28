@@ -24,4 +24,5 @@ type Registry interface {
 	ConnectionInfo(id string, protocol Protocol) (*ConnectionInfo, error)
 	RegisterEventHandler(h RegistryEventHandler) string
 	DeregisterEventHandler(string)
+	GetOfType(t Type) ([]*Info, error)
 }

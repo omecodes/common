@@ -140,9 +140,9 @@
               "UnknownType",
               "Authority",
               "IDM",
-              "UsersHierarchy",
-              "UserInfo",
-              "ConfigsStore",
+              "TokenStore",
+              "UserTree",
+              "UserData",
               "Storage"
             ],
             "default": "UnknownType"
@@ -298,9 +298,9 @@
         "UnknownType",
         "Authority",
         "IDM",
-        "UsersHierarchy",
-        "UserInfo",
-        "ConfigsStore",
+        "TokenStore",
+        "UserTree",
+        "UserData",
         "Storage"
       ],
       "default": "UnknownType"

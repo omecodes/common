@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/zoenion/common/clone"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/service/pb"
 	"google.golang.org/grpc"
@@ -168,6 +169,20 @@ func (r *SyncedRegistry) DeregisterEventHandler(hid string) {
 	delete(r.eventHandlers, hid)
 }
 
+func (r *SyncedRegistry) GetOfType(t pb.Type) ([]*pb.Info, error) {
+	r.servicesLock.Lock()
+	defer r.servicesLock.Unlock()
+
+	var result []*pb.Info
+	for _, s := range r.services {
+		if s.Type == t {
+			c := clone.New(s)
+			result = append(result, c.(*pb.Info))
+		}
+	}
+	return result, nil
+}
+
 func (r *SyncedRegistry) publishEvent(e pb.Event) {
 	r.handlersLock.Lock()
 	r.handlersLock.Unlock()
@@ -180,7 +195,8 @@ func (r *SyncedRegistry) publishEvent(e pb.Event) {
 func (r *SyncedRegistry) get(name string) *pb.Info {
 	r.servicesLock.Lock()
 	defer r.servicesLock.Unlock()
-	return r.services[name]
+	info := r.services[name]
+	return clone.New(info).(*pb.Info)
 }
 
 func (r *SyncedRegistry) saveService(info *pb.Info) {

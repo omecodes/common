@@ -396,6 +396,7 @@ func Run(service Service, params BoxParams) {
 	if box.registry != nil {
 		certEncoded, _ := crypto2.PEMEncodeCertificate(box.cert)
 		box.params.RegistryID, err = box.registry.Register(&pb.Info{
+			Type:      data.Type,
 			Name:      strcase.ToDelimited(box.Name(), '-'),
 			Namespace: box.params.Namespace,
 			Label:     strcase.ToCamel(box.params.Name),

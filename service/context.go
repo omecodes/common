@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto"
+	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"github.com/zoenion/common/service/pb"
@@ -81,4 +82,22 @@ func WebAddress(ctx context.Context) string {
 	} else {
 		return fmt.Sprintf("http://%s", box.gateway.httpAddress)
 	}
+}
+
+func FullName(ctx context.Context) string {
+	val := ctx.Value(ctxBox)
+	if val == nil {
+		return ""
+	}
+	box := val.(*Box)
+	return fmt.Sprintf("%s:%s", box.params.Namespace, box.params.Name)
+}
+
+func ClientTLSConfig(ctx context.Context) *tls.Config {
+	val := ctx.Value(ctxBox)
+	if val == nil {
+		return nil
+	}
+	box := val.(*Box)
+	return box.clientMutualTLS()
 }

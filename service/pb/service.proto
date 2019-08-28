@@ -13,9 +13,9 @@ enum Type {
     UnknownType = 0;
     Authority = 1;
     IDM = 2;
-    UsersHierarchy = 3;
-    UserInfo = 4;
-    ConfigsStore = 5;
+    TokenStore = 3;
+    UserTree = 4;
+    UserData = 5;
     Storage = 6;
 }
 
