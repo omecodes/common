@@ -8,4 +8,7 @@ const (
 	StorageEndpoints    = "endpoints"
 	StorageEndpointGRPC = "grpc"
 	StorageEndpointHTTP = "http"
+
+	ProtocolGRPC = "gRPC"
+	ProtocolHTTP = "gRPC"
 )
