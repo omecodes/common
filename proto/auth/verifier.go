@@ -165,7 +165,7 @@ func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) error {
 	}
 	_, err = stv.verifier.Verify(ctx, t)
 	if err == nil {
-		ctx = context.WithValue(ctx, common.Token, t)
+		ctx = context.WithValue(ctx, common.ContextToken, t)
 	}
 	return err
 }
