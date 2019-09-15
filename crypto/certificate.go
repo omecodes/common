@@ -13,14 +13,15 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"fmt"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/log"
 	"io/ioutil"
 	"math/big"
 	"net"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/log"
 )
 
 //Template specs for generating a certificate

@@ -254,3 +254,73 @@ func (n *Network) Prompt() error {
 	n.Domain, err = prompt.TextWithDefault("domain", n.Domain, true)
 	return err
 }
+
+type Security struct {
+	Filename string
+	Type     int
+}
+
+/*func PromptCertificate(ca bool, dir string, name string, password []byte) (*x509.Certificate, crypto.PrivateKey, error) {
+	localAddresses := network.LocalAddresses()
+	publicAddress := network.PublicAddresses()
+	addresses := append(localAddresses, publicAddress...)
+
+	ip, err := prompt.Selection("ip", addresses)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	domain, err := prompt.Text("domain", true)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	certFile := filepath.Join(dir, name+".crt")
+	keyFile := filepath.Join(dir, name+".key")
+
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var ips []net.IP
+	var cert *x509.Certificate
+
+	ips = append(ips, net.ParseIP(ip))
+
+	if ca {
+		cert, err = crypto2.GenerateCACertificate(&crypto2.Template{
+			Name:             name,
+			Domains:          []string{domain},
+			IPs:              ips,
+			Expiry:           time.Hour * 24 * 5 * 365, // about 5 years
+			PublicKey:        privateKey.Public(),
+			SignerPrivateKey: privateKey,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+	} else {
+		cert, err = crypto2.GenerateServiceCertificate(&crypto2.Template{
+			Name:             name,
+			Domains:          []string{domain},
+			IPs:              ips,
+			Expiry:           time.Hour * 24 * 5 * 365, // about 5 years
+			PublicKey:        privateKey.Public(),
+			SignerPrivateKey: privateKey,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	if err := crypto2.StoreCertificate(cert, certFile, os.ModePerm); err != nil {
+		log.Println("could not save certificate")
+	}
+
+	if err := crypto2.StorePrivateKey(privateKey, password, keyFile); err != nil {
+		log.Println("could not save private key")
+	}
+
+	return cert, privateKey, nil
+}*/

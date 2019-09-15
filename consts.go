@@ -1,13 +1,11 @@
 package common
 
 const (
-	StorageName         = "name"
-	StorageCapacity     = "capacity"
-	StorageUsage        = "usage"
-	StorageCertificate  = "certificate"
-	StorageEndpoints    = "endpoints"
-	StorageEndpointGRPC = "grpc"
-	StorageEndpointHTTP = "http"
+	ServiceCertificate = "certificate"
+
+	StorageLocalID      = "storage_id"
+	StorageDiskCapacity = "storage_disk_capacity"
+	StorageDiskUsage    = "storage_disk_usage"
 
 	ProtocolGRPC = "gRPC"
 	ProtocolHTTP = "gRPC"
