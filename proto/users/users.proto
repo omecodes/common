@@ -10,6 +10,14 @@ enum Capabilities {
     CanCreateGroup = 2;
 }
 
+enum ResourceAccess {
+    Denied = 0;
+    Read = 1;
+    Update = 2;
+    Delete = 4;
+    Share = 5;
+}
+
 message User {
     string group_uuid = 1;
     string name = 2;
@@ -17,7 +25,7 @@ message User {
 
 message Group {
     string uuid = 1;
-    string full_name = 2;
+    string node_path = 2;
     string label = 3;
     string description = 4;
     int64 created_at = 5;
@@ -26,7 +34,7 @@ message Group {
 
 message GroupInfo {
     string uuid = 1;
-    string full_name = 2;
+    string node_path = 2;
     string label = 3;
     string description = 4;
     int64 created_at = 5;
@@ -37,8 +45,8 @@ message GroupInfo {
 }
 
 service UsersService {
-    rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse){
-        option(google.api.http) =  {
+    rpc CreateGroup (CreateGroupRequest) returns (CreateGroupResponse) {
+        option(google.api.http) = {
             post: "/api/groups/create";
             body: "*";
         };
@@ -60,7 +68,7 @@ service UsersService {
         };
     };
     rpc MoveUser (MoveUserRequest) returns (MoveUserResponse) {
-        option(google.api.http) =  {
+        option(google.api.http) = {
             post: "/api/group/user/move";
             body: "*";
         };
@@ -72,7 +80,15 @@ service UsersService {
     rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
         option(google.api.http).delete = "/api/group/{user.group_uuid}/users/delete";
     };
+
     rpc DeleteUserSession (stream User) returns (stream User);
+
+    rpc GetUserResourcesAccessPolicyInfo(GetUserResourcesAccessPolicyRequest) returns (GetUserResourcesAccessPolicyResponse) {
+        option(google.api.http) = {
+            post: "/api/resources/access/policy";
+            body: "*";
+        };
+    };
 }
 
 message CreateGroupRequest {
@@ -137,4 +153,11 @@ message DeleteUserRequest {
     User user = 1;
 }
 message DeleteUserResponse {
+}
+
+message GetUserResourcesAccessPolicyRequest {
+    string owner = 1;
+}
+message GetUserResourcesAccessPolicyResponse {
+    int32 access = 1;
 }

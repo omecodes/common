@@ -17,6 +17,7 @@ const (
 
 	VarPrefix        = "$prefix$"
 	VarAutoIncrement = "$auto_increment$"
+	VarLocate        = "$locate$"
 
 	ScannerIndex = "scanner_index"
 )
@@ -34,16 +35,19 @@ type SQLIndex struct {
 }
 
 type SQL struct {
-	DB                   *sql.DB
-	mux                  *sync.RWMutex
-	dialect              string
-	compiledStatements   map[string]*sql.Stmt
-	vars                 map[string]string
-	tableDefs            map[string]string
-	registeredStatements map[string]string
-	migrationScripts     []string
-	scanners             map[string]RowScannerV2
-	initDone             bool
+	DB                         *sql.DB
+	mux                        *sync.RWMutex
+	dialect                    string
+	isSQLite                   bool
+	compiledStatements         map[string]*sql.Stmt
+	vars                       map[string]string
+	tableDefs                  map[string]string
+	registeredStatements       map[string]string
+	registeredSQLiteStatements map[string]string
+	registeredMySQLStatements  map[string]string
+	migrationScripts           []string
+	scanners                   map[string]RowScannerV2
+	initDone                   bool
 }
 
 func (dao *SQL) Init(cfg conf.Map) error {
@@ -57,8 +61,11 @@ func (dao *SQL) Init(cfg conf.Map) error {
 		dao.dialect = d
 		dao.DB = dbi.(*sql.DB)
 		if d == "mysql" {
+			dao.SetVariable(VarLocate, "locate")
 			dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
 		} else {
+			dao.isSQLite = true
+			dao.SetVariable(VarLocate, "instr")
 			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
 			if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
 				log.E("dao.SQL", err, "failed to enable foreign_key feature")
@@ -84,6 +91,22 @@ func (dao *SQL) Init(cfg conf.Map) error {
 		}
 	}
 
+	var specificStatements map[string]string
+	if dao.isSQLite && dao.registeredSQLiteStatements != nil {
+		specificStatements = dao.registeredSQLiteStatements
+	} else {
+		specificStatements = dao.registeredMySQLStatements
+	}
+
+	if specificStatements != nil {
+		if dao.registeredStatements == nil {
+			dao.registeredSQLiteStatements = map[string]string{}
+		}
+		for name, stmt := range specificStatements {
+			dao.registeredStatements[name] = stmt
+		}
+	}
+
 	if dao.registeredStatements != nil && len(dao.registeredStatements) > 0 {
 		dao.compiledStatements = map[string]*sql.Stmt{}
 		for name, stmt := range dao.registeredStatements {
@@ -99,6 +122,7 @@ func (dao *SQL) Init(cfg conf.Map) error {
 			dao.compiledStatements[name] = compiledStmt
 		}
 	}
+
 	dao.initDone = true
 	return nil
 }
@@ -107,7 +131,6 @@ func (dao *SQL) Migrate() error {
 	if !dao.initDone {
 		return errors.New("Init method must be called once before calling TableHasIndex method")
 	}
-
 	for _, ms := range dao.migrationScripts {
 		for name, value := range dao.vars {
 			ms = strings.Replace(ms, name, value, -1)
@@ -119,6 +142,10 @@ func (dao *SQL) Migrate() error {
 		}
 	}
 	return nil
+}
+
+func (dao *SQL) IsSQLite() bool {
+	return dao.isSQLite
 }
 
 func (dao *SQL) SetVariable(name string, value string) *SQL {
@@ -200,6 +227,22 @@ func (dao *SQL) AddStatement(name string, statementStr string) *SQL {
 		dao.registeredStatements = map[string]string{}
 	}
 	dao.registeredStatements[name] = statementStr
+	return dao
+}
+
+func (dao *SQL) AddSQLiteStatement(name string, statementStr string) *SQL {
+	if dao.registeredSQLiteStatements == nil {
+		dao.registeredSQLiteStatements = map[string]string{}
+	}
+	dao.registeredSQLiteStatements[name] = statementStr
+	return dao
+}
+
+func (dao *SQL) AddMySQLStatement(name string, statementStr string) *SQL {
+	if dao.registeredMySQLStatements == nil {
+		dao.registeredMySQLStatements = map[string]string{}
+	}
+	dao.registeredMySQLStatements[name] = statementStr
 	return dao
 }
 
