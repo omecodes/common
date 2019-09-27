@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package treepb;
+package filespb;
 
 import "google/api/annotations.proto";
 
@@ -23,7 +23,7 @@ enum NodeType {
 }
 
 message NodeInfo {
-    int64 id = 1;
+    string id = 1;
     NodeType type = 2;
     string name = 3;
     string parent = 4;

@@ -22,7 +22,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbCopyResponse"
+              "$ref": "#/definitions/filespbCopyResponse"
             }
           }
         },
@@ -32,7 +32,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/treepbCopyRequest"
+              "$ref": "#/definitions/filespbCopyRequest"
             }
           }
         ],
@@ -48,7 +48,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbCreateResponse"
+              "$ref": "#/definitions/filespbCreateResponse"
             }
           }
         },
@@ -84,7 +84,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbDeleteResponse"
+              "$ref": "#/definitions/filespbDeleteResponse"
             }
           }
         },
@@ -108,7 +108,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbDownloadInfoResponse"
+              "$ref": "#/definitions/filespbDownloadInfoResponse"
             }
           }
         },
@@ -132,7 +132,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbGetInfoResponse"
+              "$ref": "#/definitions/filespbGetInfoResponse"
             }
           }
         },
@@ -163,7 +163,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbListResponse"
+              "$ref": "#/definitions/filespbListResponse"
             }
           }
         },
@@ -194,7 +194,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbGetMetaResponse"
+              "$ref": "#/definitions/filespbGetMetaResponse"
             }
           }
         },
@@ -216,7 +216,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbSetMetaResponse"
+              "$ref": "#/definitions/filespbSetMetaResponse"
             }
           }
         },
@@ -232,7 +232,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/treepbSetMetaRequest"
+              "$ref": "#/definitions/filespbSetMetaRequest"
             }
           }
         ],
@@ -248,7 +248,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbMoveResponse"
+              "$ref": "#/definitions/filespbMoveResponse"
             }
           }
         },
@@ -258,7 +258,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/treepbMoveRequest"
+              "$ref": "#/definitions/filespbMoveRequest"
             }
           }
         ],
@@ -274,7 +274,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/treepbUploadInfoResponse"
+              "$ref": "#/definitions/filespbUploadInfoResponse"
             }
           }
         },
@@ -307,6 +307,167 @@
     }
   },
   "definitions": {
+    "filespbCopyRequest": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dir": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbCopyResponse": {
+      "type": "object"
+    },
+    "filespbCreateResponse": {
+      "type": "object"
+    },
+    "filespbDeleteResponse": {
+      "type": "object"
+    },
+    "filespbDownloadInfoResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbGetInfoResponse": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/filespbNodeInfo"
+        }
+      }
+    },
+    "filespbGetMetaResponse": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/filespbMeta"
+          }
+        }
+      }
+    },
+    "filespbListResponse": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/filespbNodeInfo"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "page_count": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "filespbMeta": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbMoveRequest": {
+      "type": "object",
+      "properties": {
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destination_folder": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbMoveResponse": {
+      "type": "object"
+    },
+    "filespbNodeInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/filespbNodeType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "edit_time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "access_time": {
+          "type": "string",
+          "format": "int64"
+        },
+        "hash": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbNodeType": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "FILE",
+        "DIRECTORY"
+      ],
+      "default": "UNKNOWN"
+    },
+    "filespbSetMetaRequest": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "filespbSetMetaResponse": {
+      "type": "object"
+    },
+    "filespbUploadInfoResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -343,182 +504,20 @@
           }
         }
       }
-    },
-    "treepbCopyRequest": {
-      "type": "object",
-      "properties": {
-        "paths": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "dir": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbCopyResponse": {
-      "type": "object"
-    },
-    "treepbCreateResponse": {
-      "type": "object"
-    },
-    "treepbDeleteResponse": {
-      "type": "object"
-    },
-    "treepbDownloadInfoResponse": {
-      "type": "object",
-      "properties": {
-        "url": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbGetInfoResponse": {
-      "type": "object",
-      "properties": {
-        "info": {
-          "$ref": "#/definitions/treepbNodeInfo"
-        }
-      }
-    },
-    "treepbGetMetaResponse": {
-      "type": "object",
-      "properties": {
-        "meta": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/treepbMeta"
-          }
-        }
-      }
-    },
-    "treepbListResponse": {
-      "type": "object",
-      "properties": {
-        "list": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/treepbNodeInfo"
-          }
-        },
-        "page": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "page_count": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "treepbMeta": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbMoveRequest": {
-      "type": "object",
-      "properties": {
-        "paths": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "destination_folder": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbMoveResponse": {
-      "type": "object"
-    },
-    "treepbNodeInfo": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "$ref": "#/definitions/treepbNodeType"
-        },
-        "name": {
-          "type": "string"
-        },
-        "parent": {
-          "type": "string"
-        },
-        "size": {
-          "type": "string",
-          "format": "int64"
-        },
-        "create_time": {
-          "type": "string",
-          "format": "int64"
-        },
-        "edit_time": {
-          "type": "string",
-          "format": "int64"
-        },
-        "access_time": {
-          "type": "string",
-          "format": "int64"
-        },
-        "hash": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbNodeType": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "FILE",
-        "DIRECTORY"
-      ],
-      "default": "UNKNOWN"
-    },
-    "treepbSetMetaRequest": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string"
-        }
-      }
-    },
-    "treepbSetMetaResponse": {
-      "type": "object"
-    },
-    "treepbUploadInfoResponse": {
-      "type": "object",
-      "properties": {
-        "url": {
-          "type": "string"
-        }
-      }
     }
   },
   "x-stream-definitions": {
-    "treepbNodeInfo": {
+    "filespbNodeInfo": {
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/definitions/treepbNodeInfo"
+          "$ref": "#/definitions/filespbNodeInfo"
         },
         "error": {
           "$ref": "#/definitions/runtimeStreamError"
         }
       },
-      "title": "Stream result of treepbNodeInfo"
+      "title": "Stream result of filespbNodeInfo"
     }
   }
 }

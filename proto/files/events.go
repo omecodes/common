@@ -1,4 +1,4 @@
-package treepb
+package filespb
 
 type EventHandler interface {
 	OnEvent(event *Event) error
