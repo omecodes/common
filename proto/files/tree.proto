@@ -45,6 +45,11 @@ message Meta {
     string value = 3;
 }
 
+message SyncMessage {
+    int64 from = 1;
+    string dir = 2;
+}
+
 message ListRequest {
     string dir = 1;
     uint32 page = 2;
@@ -129,6 +134,8 @@ message DeleteResponse {
 }
 
 service TreeService {
+    rpc Sync(SyncMessage) returns (stream Event);
+
     rpc List (ListRequest) returns (ListResponse) {
         option(google.api.http).get = "/api/tree/list/{dir=**}";
     };

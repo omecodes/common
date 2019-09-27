@@ -307,6 +307,20 @@
     }
   },
   "definitions": {
+    "filespbAction": {
+      "type": "string",
+      "enum": [
+        "NO_ACTION",
+        "CREATE",
+        "DELETE",
+        "MOVE",
+        "RENAME",
+        "WRITE",
+        "READ",
+        "GROW"
+      ],
+      "default": "NO_ACTION"
+    },
     "filespbCopyRequest": {
       "type": "object",
       "properties": {
@@ -335,6 +349,20 @@
       "properties": {
         "url": {
           "type": "string"
+        }
+      }
+    },
+    "filespbEvent": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/filespbAction"
+        },
+        "path": {
+          "type": "string"
+        },
+        "file_info": {
+          "$ref": "#/definitions/filespbNodeInfo"
         }
       }
     },
@@ -507,6 +535,18 @@
     }
   },
   "x-stream-definitions": {
+    "filespbEvent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/filespbEvent"
+        },
+        "error": {
+          "$ref": "#/definitions/runtimeStreamError"
+        }
+      },
+      "title": "Stream result of filespbEvent"
+    },
     "filespbNodeInfo": {
       "type": "object",
       "properties": {
