@@ -294,6 +294,9 @@ func (dao *SQL) TableHasIndex(index SQLIndex) (bool, error) {
 }
 
 func (dao *SQL) RawQuery(query string, scannerName string, params ...interface{}) (DBCursor, error) {
+	for name, value := range dao.vars {
+		query = strings.Replace(query, name, value, -1)
+	}
 	rows, err := dao.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -306,6 +309,10 @@ func (dao *SQL) RawQuery(query string, scannerName string, params ...interface{}
 }
 
 func (dao *SQL) RawQueryOne(query string, scannerName string, params ...interface{}) (interface{}, error) {
+	for name, value := range dao.vars {
+		query = strings.Replace(query, name, value, -1)
+	}
+
 	rows, err := dao.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -331,7 +338,9 @@ func (dao *SQL) RawExec(rawQuery string) *SQlv2Result {
 	defer dao.wUnlock()
 	var r sql.Result
 	result := &SQlv2Result{}
-
+	for name, value := range dao.vars {
+		rawQuery = strings.Replace(rawQuery, name, value, -1)
+	}
 	r, result.Error = dao.DB.Exec(rawQuery)
 	if result.Error == nil && dao.dialect != "sqlite3" {
 		result.LastInserted, _ = r.LastInsertId()
