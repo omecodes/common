@@ -264,49 +264,49 @@ service Files {
     rpc Sync(SyncMessage) returns (stream Event);
 
     rpc List (ListRequest) returns (ListResponse) {
-        option(google.api.http).get = "/api/tree/list/{dir=**}";
+        option(google.api.http).get = "/api/list/{dir=**}";
     };
 
     rpc GetListStream(GetListStreamRequest) returns (stream Stats);
 
     rpc Create (CreateRequest) returns (CreateResponse) {
-        option(google.api.http).get = "/api/tree/create/{path=**}";
+        option(google.api.http).get = "/api/create/{path=**}";
     };
 
     rpc GetStats (StatsRequest) returns (StatsResponse) {
-        option(google.api.http).get = "/api/tree/info/{path=**}";
+        option(google.api.http).get = "/api/info/{path=**}";
     };
 
     rpc StatsSession(stream StatsRequest) returns (stream Stats);
 
     rpc GetMeta (GetMetaRequest) returns (GetMetaResponse) {
-        option(google.api.http).get = "/api/tree/meta/{path=**}";
+        option(google.api.http).get = "/api/meta/{path=**}";
     };
     rpc SetMeta (SetMetaRequest) returns (SetMetaResponse) {
         option(google.api.http) = {
-            post: "/api/tree/meta/{path=**}";
+            post: "/api/meta/{path=**}";
             body: "*";
         };
     };
     rpc DownloadURL (DownloadURLRequest) returns (DownloadURLResponse) {
-        option(google.api.http).get = "/api/tree/download_url/{node_path=**}";
+        option(google.api.http).get = "/api/download_url/{node_path=**}";
     };
     rpc UploadURL (UploadURLRequest) returns (UploadURLResponse) {
-        option(google.api.http).get = "/api/tree/upload_url/{node_path=**}";
+        option(google.api.http).get = "/api/upload_url/{node_path=**}";
     };
     rpc Copy (CopyRequest) returns (CopyResponse) {
         option(google.api.http) = {
-            post: "/api/tree/copy";
+            post: "/api/copy";
             body: "*";
         };
     };
     rpc Move (MoveRequest) returns (MoveResponse) {
         option(google.api.http) = {
-            post: "/api/tree/move";
+            post: "/api/move";
             body: "*";
         };
     };
     rpc Delete (DeleteRequest) returns (DeleteResponse) {
-        option(google.api.http).get = "/api/tree/delete/{path=**}";
+        option(google.api.http).get = "/api/delete/{path=**}";
     };
 }
