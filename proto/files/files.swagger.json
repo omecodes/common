@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "tree.proto",
+    "title": "files.proto",
     "version": "version not set"
   },
   "schemes": [
@@ -37,7 +37,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
@@ -65,15 +65,15 @@
             "required": false,
             "type": "string",
             "enum": [
-              "UNKNOWN",
-              "FILE",
-              "DIRECTORY"
+              "Unknown",
+              "File",
+              "Directory"
             ],
-            "default": "UNKNOWN"
+            "default": "Unknown"
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
@@ -97,42 +97,42 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
-    "/api/tree/download_url/{file}": {
+    "/api/tree/download_url/{node_path}": {
       "get": {
         "operationId": "DownloadURL",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/filespbDownloadInfoResponse"
+              "$ref": "#/definitions/filespbDownloadURLResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "file",
+            "name": "node_path",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
     "/api/tree/info/{path}": {
       "get": {
-        "operationId": "GetInfo",
+        "operationId": "GetStats",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/filespbGetInfoResponse"
+              "$ref": "#/definitions/filespbStatsResponse"
             }
           }
         },
@@ -152,7 +152,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
@@ -183,7 +183,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
@@ -207,7 +207,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       },
       "post": {
@@ -237,7 +237,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
@@ -263,24 +263,24 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     },
-    "/api/tree/upload_url/{file}": {
+    "/api/tree/upload_url/{node_path}": {
       "get": {
         "operationId": "UploadURL",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/filespbUploadInfoResponse"
+              "$ref": "#/definitions/filespbUploadURLResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "file",
+            "name": "node_path",
             "in": "path",
             "required": true,
             "type": "string"
@@ -301,7 +301,7 @@
           }
         ],
         "tags": [
-          "TreeService"
+          "Files"
         ]
       }
     }
@@ -310,16 +310,17 @@
     "filespbAction": {
       "type": "string",
       "enum": [
-        "NO_ACTION",
-        "CREATE",
-        "DELETE",
-        "MOVE",
-        "RENAME",
-        "WRITE",
-        "READ",
-        "GROW"
+        "NoAction",
+        "Create",
+        "Delete",
+        "Move",
+        "Rename",
+        "Edit",
+        "Read",
+        "Share",
+        "UnShare"
       ],
-      "default": "NO_ACTION"
+      "default": "NoAction"
     },
     "filespbCopyRequest": {
       "type": "object",
@@ -344,7 +345,7 @@
     "filespbDeleteResponse": {
       "type": "object"
     },
-    "filespbDownloadInfoResponse": {
+    "filespbDownloadURLResponse": {
       "type": "object",
       "properties": {
         "url": {
@@ -361,16 +362,8 @@
         "path": {
           "type": "string"
         },
-        "file_info": {
-          "$ref": "#/definitions/filespbNodeInfo"
-        }
-      }
-    },
-    "filespbGetInfoResponse": {
-      "type": "object",
-      "properties": {
-        "info": {
-          "$ref": "#/definitions/filespbNodeInfo"
+        "stats": {
+          "$ref": "#/definitions/filespbStats"
         }
       }
     },
@@ -391,7 +384,7 @@
         "list": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/filespbNodeInfo"
+            "$ref": "#/definitions/filespbStats"
           }
         },
         "page": {
@@ -407,13 +400,24 @@
     "filespbMeta": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
+        "type": {
+          "$ref": "#/definitions/filespbMetaType"
         },
-        "value": {
+        "json_encoded_value": {
           "type": "string"
         }
       }
+    },
+    "filespbMetaType": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Downloads",
+        "Stars",
+        "Comments",
+        "LastEditedBy"
+      ],
+      "default": "None"
     },
     "filespbMoveRequest": {
       "type": "object",
@@ -424,7 +428,7 @@
             "type": "string"
           }
         },
-        "destination_folder": {
+        "dir": {
           "type": "string"
         }
       }
@@ -432,14 +436,31 @@
     "filespbMoveResponse": {
       "type": "object"
     },
-    "filespbNodeInfo": {
+    "filespbSetMetaRequest": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/filespbMeta"
+          }
+        }
+      }
+    },
+    "filespbSetMetaResponse": {
+      "type": "object"
+    },
+    "filespbStats": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/filespbNodeType"
+          "$ref": "#/definitions/filespbType"
         },
         "name": {
           "type": "string"
@@ -468,27 +489,24 @@
         }
       }
     },
-    "filespbNodeType": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "FILE",
-        "DIRECTORY"
-      ],
-      "default": "UNKNOWN"
-    },
-    "filespbSetMetaRequest": {
+    "filespbStatsResponse": {
       "type": "object",
       "properties": {
-        "path": {
-          "type": "string"
+        "stats": {
+          "$ref": "#/definitions/filespbStats"
         }
       }
     },
-    "filespbSetMetaResponse": {
-      "type": "object"
+    "filespbType": {
+      "type": "string",
+      "enum": [
+        "Unknown",
+        "File",
+        "Directory"
+      ],
+      "default": "Unknown"
     },
-    "filespbUploadInfoResponse": {
+    "filespbUploadURLResponse": {
       "type": "object",
       "properties": {
         "url": {
@@ -547,17 +565,17 @@
       },
       "title": "Stream result of filespbEvent"
     },
-    "filespbNodeInfo": {
+    "filespbStats": {
       "type": "object",
       "properties": {
         "result": {
-          "$ref": "#/definitions/filespbNodeInfo"
+          "$ref": "#/definitions/filespbStats"
         },
         "error": {
           "$ref": "#/definitions/runtimeStreamError"
         }
       },
-      "title": "Stream result of filespbNodeInfo"
+      "title": "Stream result of filespbStats"
     }
   }
 }

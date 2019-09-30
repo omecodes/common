@@ -1,18 +1,18 @@
 package filespb
 
 type EventHandler interface {
-	OnEvent(event *Event) error
+	OnEvent(event *Event)
 }
 
 type handlerFunc struct {
-	f func(*Event) error
+	f func(*Event)
 }
 
-func (h *handlerFunc) OnEvent(event *Event) error {
-	return h.f(event)
+func (h *handlerFunc) OnEvent(event *Event) {
+	h.f(event)
 }
 
-func EventHandlerFunc(f func(*Event) error) EventHandler {
+func EventHandlerFunc(f func(*Event)) EventHandler {
 	return &handlerFunc{
 		f: f,
 	}
