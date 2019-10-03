@@ -39,7 +39,7 @@ func NewSQLTree(dbCfg conf.Map, prefix string) (*SQLTree, error) {
 		AddStatement("select_tree_path", `SELECT * FROM $prefix$_trees WHERE path LIKE ?;`).
 		AddStatement("select_tree_path_id", `SELECT id FROM $prefix$_trees WHERE path=?;`).
 		AddStatement("select_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
-		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? order by node_name;`).
+		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name OFFSET ? ROWS;`).
 		RegisterScanner("tree_path_scanner", NewScannerFunc(db.scanNodePathID)).
 		RegisterScanner("encoded_scanner", NewScannerFunc(db.scanEncoded))
 
@@ -77,23 +77,22 @@ func (dao *SQLTree) getNodePathID(p string) (int, error) {
 	return i.(int), err
 }
 
-func (dao *SQLTree) CreateNode(parent string, name string, encoded string, isLeaf bool) error {
+func (dao *SQLTree) CreateNode(nodePath string, encoded string, isLeaf bool) error {
+	parent, name := path.Split(nodePath)
 	var e error
-	dirID, e := dao.getNodePathID(parent)
+	parentID, e := dao.getNodePathID(parent)
 	if e != nil {
 		return e
 	}
 
-	if dirID > 0 {
-		err := dao.Exec("insert_encoded", dirID, name, encoded).Error
-		if err != nil {
-			return err
-		}
+	err := dao.Exec("insert_encoded", parentID, name, encoded).Error
+	if err != nil {
+		return err
 	}
 
 	if !isLeaf {
-		fullpath := path.Join(parent, name)
-		return dao.Exec("insert_tree_path", fullpath).Error
+		fullPath := path.Join(parent, name)
+		return dao.Exec("insert_tree_path", fullPath).Error
 	}
 	return nil
 }
@@ -140,9 +139,12 @@ func (dao *SQLTree) RenameNode(src string, newName string) error {
 	return dao.MoveNode(src, newPath)
 }
 
-func (dao *SQLTree) DeleteNode(nodePath string, isLeaf bool) error {
+func (dao *SQLTree) DeleteNode(nodePath string) error {
 	name := path.Base(nodePath)
 	parent := path.Dir(nodePath)
+
+	nodePathID, _ := dao.getNodePathID(nodePath)
+	isLeaf := nodePathID == 0
 
 	parentID, e := dao.getNodePathID(parent)
 	if e != nil {
@@ -184,30 +186,12 @@ func (dao *SQLTree) Encoded(nodePath string) (string, error) {
 	return item.(string), err
 }
 
-func (dao *SQLTree) List(dir string, offset, count int) ([]string, error) {
+func (dao *SQLTree) List(dir string, offset int) (Cursor, error) {
 	parentID, e := dao.getNodePathID(dir)
 	if e != nil {
 		return nil, e
 	}
-
-	var list []string
-	cursor, err := dao.Query("ls", "encoded_scanner", parentID)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		_ = cursor.Close()
-	}()
-
-	for cursor.HasNext() {
-		i, err := cursor.Next()
-		if err != nil {
-			return nil, err
-		}
-		encoded := i.(string)
-		list = append(list, encoded)
-	}
-	return list, err
+	return dao.Query("ls", "encoded_scanner", parentID, offset)
 }
 
 func (dao *SQLTree) scanNodePathID(row Row) (interface{}, error) {
