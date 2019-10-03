@@ -23,23 +23,23 @@ func NewSQLTree(dbCfg conf.Map, prefix string) (*SQLTree, error) {
 				parent INT NOT NULL,
 				node_name VARCHAR(255) NOT NULL,
 				encoded TEXT NOT NULL,
-				foreign key (parent) references $prefix$_directories(id) on delete cascade
+				foreign key (parent) references $prefix$_trees(id) on delete cascade
 			);`).
 		AddStatement("clear", `DELETE FROM $prefix$_trees;`).
 		AddStatement("insert_tree_path", `INSERT INTO $prefix$_trees (path) VALUES(?);`).
-		AddStatement("insert_encoded", `INSERT INTO $prefix$_encoded VALUES(?, ?, ?, ?, ?, ?, ?, ?);`).
+		AddStatement("insert_encoded", `INSERT INTO $prefix$_encoded VALUES(?, ?, ?);`).
 		AddStatement("update_encoded", `UPDATE $prefix$_encoded SET encoded=? WHERE parent=? and node_name=?;`).
 		AddStatement("update_tree_path", `UPDATE $prefix$_trees SET path=replace(path, ?, ?) WHERE path LIKE ?;`).
-		//AddStatement("update_parent", `UPDATE $prefix$_files SET parent=? WHERE parent=?;`).
+		//AddStatement("update_parent", `UPDATE $prefix$_encoded SET parent=? WHERE parent=?;`).
 		AddStatement("update_parent", `UPDATE $prefix$_encoded SET parent=? WHERE parent=? AND node_name=?;`).
-		AddStatement("update_name", `UPDATE $prefix$_files SET node_name=? WHERE node_name=? AND parent=?;`).
+		AddStatement("update_name", `UPDATE $prefix$_encoded SET node_name=? WHERE node_name=? AND parent=?;`).
 		AddStatement("update_tree_path", `UPDATE $prefix$_trees SET path=? WHERE path=?;`).
 		AddStatement("delete_tree_path", `DELETE FROM $prefix$_trees WHERE path LIKE ?;`).
 		AddStatement("delete_encoded", `DELETE FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_tree_path", `SELECT * FROM $prefix$_trees WHERE path LIKE ?;`).
 		AddStatement("select_tree_path_id", `SELECT id FROM $prefix$_trees WHERE path=?;`).
 		AddStatement("select_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
-		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name OFFSET ? ROWS;`).
+		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
 		RegisterScanner("tree_path_scanner", NewScannerFunc(db.scanNodePathID)).
 		RegisterScanner("encoded_scanner", NewScannerFunc(db.scanEncoded))
 
@@ -70,7 +70,7 @@ func (dao *SQLTree) Clear() error {
 }
 
 func (dao *SQLTree) getNodePathID(p string) (int, error) {
-	i, err := dao.QueryOne("get_tree_path_id", "tree_path_scanner", p)
+	i, err := dao.QueryOne("select_tree_path_id", "tree_path_scanner", p)
 	if err != nil {
 		return 0, err
 	}
@@ -179,19 +179,19 @@ func (dao *SQLTree) Encoded(nodePath string) (string, error) {
 		return "", e
 	}
 
-	item, err := dao.QueryOne("get_encoded", "encoded_scanner", parentID, name)
+	item, err := dao.QueryOne("select_encoded", "encoded_scanner", parentID, name)
 	if err != nil {
 		return "", err
 	}
 	return item.(string), err
 }
 
-func (dao *SQLTree) List(dir string, offset int) (Cursor, error) {
+func (dao *SQLTree) List(dir string) (Cursor, error) {
 	parentID, e := dao.getNodePathID(dir)
 	if e != nil {
 		return nil, e
 	}
-	return dao.Query("ls", "encoded_scanner", parentID, offset)
+	return dao.Query("select_all_encoded", "encoded_scanner", parentID)
 }
 
 func (dao *SQLTree) scanNodePathID(row Row) (interface{}, error) {

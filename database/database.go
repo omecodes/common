@@ -92,6 +92,10 @@ func Connect(c conf.Map) (string, interface{}, error) {
 			}
 		} else {
 			s, err := sql.Open(c["driver"].(string), dsn)
+			if err != nil {
+				return driver, s, err
+			}
+			_, _ = s.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", c["name"]))
 			return driver, s, err
 		}
 
