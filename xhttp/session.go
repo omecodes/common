@@ -25,10 +25,8 @@ func SetCookie(ctx context.Context, cookie *Cookie) {
 	http.SetCookie(rw.(http.ResponseWriter), &cookie.Cookie)
 }
 
-func GetSession(ctx context.Context, r *http.Request, name string) Session {
-	rw := ctx.Value(CtxResponseWriter)
-	cs := ctx.Value(CtxCCookiesStore)
-	return newSession(name, r, rw.(http.ResponseWriter), cs.(*sessions.CookieStore))
+func GetSession(name string, w http.ResponseWriter, r *http.Request, store *sessions.CookieStore) Session {
+	return newSession(name, r, w, store)
 }
 
 type session struct {
