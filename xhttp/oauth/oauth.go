@@ -10,6 +10,7 @@ import (
 	"github.com/zoenion/common/crypto"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type Provider interface {
@@ -60,21 +61,12 @@ func (rb *urlBuilder) SetRedirectURI(uri string) *urlBuilder {
 }
 
 func (rb *urlBuilder) URL(providerURL string) (string, error) {
-	nonce := make([]byte, 32)
-	_, err := rand.Read(nonce)
+
+	authMessage, nonce, err := CreateAuth(rb.clientSecret)
 	if err != nil {
 		return "", err
 	}
 
-	nonceStr := base64.URLEncoding.EncodeToString(nonce)
-
-	secretBytes := []byte(rb.clientSecret)
-
-	m := hmac.New(sha512.New, secretBytes)
-	m.Write(nonce)
-	mm := m.Sum(nil)
-
-	authMessage := base64.URLEncoding.EncodeToString(mm)
 	encodedRedirectURI := base64.URLEncoding.EncodeToString([]byte(rb.redirectURI))
 	return fmt.Sprintf("%s?%s=%s&%s=%s&%s=%s&%s=%s&%s=%s&%s=%s",
 		providerURL,
@@ -85,7 +77,7 @@ func (rb *urlBuilder) URL(providerURL string) (string, error) {
 		ParamScope,
 		rb.scope,
 		ParamNonce,
-		nonceStr,
+		nonce,
 		ParamClientAuthMessage,
 		authMessage,
 		ParamRedirectURI,
@@ -157,4 +149,87 @@ func NewClient(provider Provider) *Client {
 	c := new(Client)
 	c.provider = provider
 	return c
+}
+
+// Params
+type AuthorizeParams struct {
+	ClientID    string
+	AuthMessage string
+	Nonce       string
+	State       string
+	Scope       string
+	RedirectURI string
+}
+
+func (p *AuthorizeParams) FromURL(u *url.URL) error {
+	query := u.Query()
+
+	p.ClientID = query.Get(ParamClientID)
+	if p.ClientID == "" {
+		return errors.New("missing " + ParamClientID)
+	}
+
+	p.AuthMessage = query.Get(ParamClientAuthMessage)
+	if p.ClientID == "" {
+		return errors.New("missing " + ParamClientAuthMessage)
+	}
+
+	p.Scope = query.Get(ParamScope)
+	if p.Scope == "" {
+		return errors.New("missing " + ParamScope)
+	}
+
+	p.Nonce = query.Get(ParamNonce)
+	if p.ClientID == "" {
+		return errors.New("missing " + ParamNonce)
+	}
+
+	p.State = query.Get(ParamState)
+	if p.ClientID == "" {
+		return errors.New("missing " + ParamState)
+	}
+
+	p.RedirectURI = query.Get(ParamRedirectURI)
+	if p.ClientID == "" {
+		return errors.New("missing " + ParamRedirectURI)
+	}
+
+	return nil
+}
+
+type GetAccessTokenParams struct {
+	ClientID string
+	Code     string
+}
+
+func (p *GetAccessTokenParams) FromURL(u *url.URL) error {
+	return nil
+}
+
+func CreateAuth(secret string) (string, string, error) {
+	nonceBytes := make([]byte, 16)
+	_, err := rand.Read(nonceBytes)
+	if err != nil {
+		return "", "", err
+	}
+
+	nonce := base64.URLEncoding.EncodeToString(nonceBytes)
+	secretBytes := []byte(secret)
+	m := hmac.New(sha512.New, secretBytes)
+	m.Write(nonceBytes)
+	mm := m.Sum(nil)
+	return base64.StdEncoding.EncodeToString(mm), nonce, nil
+}
+
+func VerifyAuth(secret, nonce, authMessage string) (bool, error) {
+	nonceBytes, err := base64.StdEncoding.DecodeString(nonce)
+	if err != nil {
+		return false, err
+	}
+
+	m := hmac.New(sha512.New, []byte(secret))
+	m.Write(nonceBytes)
+	mm := m.Sum(nil)
+
+	return string(mm) == authMessage, nil
 }
