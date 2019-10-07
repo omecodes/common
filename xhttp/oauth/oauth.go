@@ -29,6 +29,7 @@ const (
 	ParamScope             = "scope"
 	ParamRedirectURI       = "redirect_uri"
 	ParamCode              = "code"
+	ParamAlg               = "algorithm"
 )
 
 type urlBuilder struct {
@@ -232,4 +233,109 @@ func VerifyAuth(secret, nonce, authMessage string) (bool, error) {
 	mm := m.Sum(nil)
 
 	return string(mm) == authMessage, nil
+}
+
+// CodeChallenge
+type CodeChallenge struct {
+	Alg           string
+	EncryptedCode string
+}
+
+func (c *CodeChallenge) ProcessChallenge(secret string) ([]byte, error) {
+	if c.Alg == "aes-gcm-256" {
+		keyBytes, err := base64.StdEncoding.DecodeString(secret)
+		if err != nil {
+			return nil, err
+		}
+
+		challengeData, err := base64.StdEncoding.DecodeString(c.EncryptedCode)
+		if err != nil {
+			return nil, err
+		}
+
+		codeDataBytes, err := crypto2.AESGCMDecrypt(keyBytes, challengeData)
+		if err != nil {
+			return nil, err
+		}
+
+		salt := codeDataBytes[:12]
+		codeBytes := codeDataBytes[12:]
+
+		return crypto2.AESGCMEncryptWithSalt(keyBytes, salt, codeBytes)
+	}
+	return nil, errors.New("unsupported algorithm")
+}
+
+func CreateCodeChallenge(secret string) (*CodeChallenge, []byte, error) {
+	codeBytes := make([]byte, 16)
+	_, err := rand.Read(codeBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	key, err := base64.StdEncoding.DecodeString(secret)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	clientSalt := make([]byte, 12)
+	salt := make([]byte, 12)
+
+	_, err = rand.Read(salt)
+	if err != nil {
+		return nil, nil, err
+	}
+	_, err = rand.Read(clientSalt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	encryptedCode, err := crypto2.AESGCMEncryptWithSalt(key, salt, append(clientSalt, codeBytes...))
+	if err != nil {
+		return nil, nil, err
+	}
+	codeChallenge := base64.URLEncoding.EncodeToString(encryptedCode)
+
+	return &CodeChallenge{
+		Alg:           "aes-gcm-256",
+		EncryptedCode: codeChallenge,
+	}, codeBytes, nil
+}
+
+// CodeChallengeResult
+type CodeChallengeResult struct {
+	Alg           string
+	ClientID      string
+	EncryptedCode string
+}
+
+func (c *CodeChallengeResult) GetCode(secret string) ([]byte, error) {
+	if c.Alg == "aes-gcm-256" {
+		keyBytes, err := base64.StdEncoding.DecodeString(secret)
+		if err != nil {
+			return nil, err
+		}
+
+		encryptedCodeData, err := base64.StdEncoding.DecodeString(c.EncryptedCode)
+		if err != nil {
+			return nil, err
+		}
+		return crypto2.AESGCMDecrypt(keyBytes, encryptedCodeData)
+	}
+	return nil, errors.New("unsupported algorithm")
+}
+
+func (c *CodeChallengeResult) FromURL(u *url.URL) error {
+	c.EncryptedCode = u.Query().Get(ParamCode)
+	if c.EncryptedCode == "" {
+		return errors.New("missing " + ParamCode)
+	}
+
+	c.ClientID = u.Query().Get(ParamClientID)
+	if c.ClientID == "" {
+		return errors.New("missing " + ParamClientID)
+	}
+
+	c.ClientID = u.Query().Get(ParamAlg)
+	return nil
 }
