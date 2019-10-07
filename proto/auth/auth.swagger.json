@@ -15,82 +15,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/account/create": {
-      "post": {
-        "operationId": "CreateCredentials",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbCreateCredentialsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authpbCreateCredentialsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
-    },
-    "/api/email/validate": {
-      "get": {
-        "operationId": "ValidateEmail",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbValidateEmailResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "info",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
-    },
-    "/api/email/validation/trigger": {
-      "post": {
-        "operationId": "TriggerEmailValidation",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbTriggerEmailValidationResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authpbTriggerEmailValidationRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
-    },
     "/api/jwt-store/find/{jti}": {
       "get": {
         "operationId": "FindToken",
@@ -120,187 +44,9 @@
           "JWTStore"
         ]
       }
-    },
-    "/api/jwt/get": {
-      "post": {
-        "operationId": "Authenticate",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbGetTokenResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authpbAuthenticateRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
-    },
-    "/api/jwt/revoke": {
-      "get": {
-        "operationId": "RevokeToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbRevokeTokenResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "jwt.header.typ",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.header.alg",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.iss",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.sub",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.aud",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.exp",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "jwt.claims.nbf",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "jwt.claims.iat",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "jwt.claims.jti",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.version",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.scope",
-            "in": "query",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
-          },
-          {
-            "name": "jwt.claims.requester",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.store",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.claims.data",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "jwt.signature",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
-    },
-    "/api/password/update": {
-      "post": {
-        "operationId": "SetPassword",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authpbSetPasswordResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authpbSetPasswordRequest"
-            }
-          }
-        ],
-        "tags": [
-          "IDMService"
-        ]
-      }
     }
   },
   "definitions": {
-    "authpbAuthenticateRequest": {
-      "type": "object",
-      "properties": {
-        "subject": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
     "authpbClaims": {
       "type": "object",
       "properties": {
@@ -328,8 +74,9 @@
         "jti": {
           "type": "string"
         },
-        "version": {
-          "type": "string"
+        "admin": {
+          "type": "boolean",
+          "format": "boolean"
         },
         "scope": {
           "type": "array",
@@ -337,22 +84,21 @@
             "type": "string"
           }
         },
-        "requester": {
-          "type": "string"
-        },
-        "store": {
-          "type": "string"
-        },
         "data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "val": {
           "type": "string"
-        }
-      }
-    },
-    "authpbCreateCredentialsRequest": {
-      "type": "object",
-      "properties": {
-        "credentials": {
-          "$ref": "#/definitions/authpbCredentials"
+        },
+        "jwk_cert": {
+          "type": "string"
+        },
+        "email_verified": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },
@@ -366,6 +112,17 @@
         "email_taken": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "authpbCreateTokenResponse": {
+      "type": "object",
+      "properties": {
+        "jwt": {
+          "$ref": "#/definitions/authpbJWT"
         }
       }
     },
@@ -415,10 +172,6 @@
       "properties": {
         "jwt": {
           "type": "string"
-        },
-        "code": {
-          "type": "integer",
-          "format": "int64"
         }
       }
     },
@@ -492,37 +245,12 @@
     "authpbRevokeTokenResponse": {
       "type": "object"
     },
-    "authpbSetPasswordRequest": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "old_password": {
-          "type": "string"
-        },
-        "new_password": {
-          "type": "string"
-        }
-      }
-    },
     "authpbSetPasswordResponse": {
       "type": "object",
       "properties": {
         "already_used": {
           "type": "boolean",
           "format": "boolean"
-        }
-      }
-    },
-    "authpbTriggerEmailValidationRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
         }
       }
     },
