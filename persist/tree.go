@@ -1,17 +1,29 @@
-package dao
+package persist
 
 import (
 	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/dao"
 	"github.com/zoenion/common/errors"
 	"path"
 )
 
-type SQLTree struct {
-	SQL
+type Tree interface {
+	CreateNode(nodePath string, content string, isLeaf bool) error
+	MoveNode(nodePath string, newPath string) error
+	RenameNode(nodePath string, newName string) error
+	DeleteNode(nodePath string) error
+	UpdateNode(nodePath string, content string) error
+	Content(nodePath string) (string, error)
+	Children(nodePath string) (dao.Cursor, error)
+	Clear() error
 }
 
-func NewSQLTree(dbCfg conf.Map, prefix string) (*SQLTree, error) {
-	db := new(SQLTree)
+type sqlTree struct {
+	dao.SQL
+}
+
+func NewSQLTree(dbCfg conf.Map, prefix string) (*sqlTree, error) {
+	db := new(sqlTree)
 
 	db.SetTablePrefix(prefix).
 		AddTableDefinition("directories", `CREATE TABLE IF NOT EXISTS $prefix$_trees (
@@ -40,64 +52,64 @@ func NewSQLTree(dbCfg conf.Map, prefix string) (*SQLTree, error) {
 		AddStatement("select_tree_path_id", `SELECT id FROM $prefix$_trees WHERE path=?;`).
 		AddStatement("select_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
-		RegisterScanner("tree_path_scanner", NewScannerFunc(db.scanNodePathID)).
-		RegisterScanner("encoded_scanner", NewScannerFunc(db.scanEncoded))
+		RegisterScanner("tree_path_scanner", dao.NewScannerFunc(db.intScanner)).
+		RegisterScanner("encoded_scanner", dao.NewScannerFunc(db.stringScanner))
 
 	err := db.Init(dbCfg)
 	if err != nil {
 		return nil, err
 	}
 
-	_ = db.AddUniqueIndex(SQLIndex{}, false)
+	_ = db.AddUniqueIndex(dao.SQLIndex{}, false)
 
 	return db, db.init()
 }
 
-func (dao *SQLTree) init() error {
-	_, err := dao.getNodePathID("/")
+func (t *sqlTree) init() error {
+	_, err := t.getNodePathID("/")
 	if err != nil {
 		if !errors.IsNotFound(err) {
 			return err
 		}
-		return dao.Exec("insert_tree_path", "/").Error
+		return t.Exec("insert_tree_path", "/").Error
 	}
 	return nil
 }
 
-func (dao *SQLTree) Clear() error {
-	res := dao.Exec("clear")
+func (t *sqlTree) Clear() error {
+	res := t.Exec("clear")
 	return res.Error
 }
 
-func (dao *SQLTree) getNodePathID(p string) (int, error) {
-	i, err := dao.QueryOne("select_tree_path_id", "tree_path_scanner", p)
+func (t *sqlTree) getNodePathID(p string) (int, error) {
+	i, err := t.QueryOne("select_tree_path_id", "tree_path_scanner", p)
 	if err != nil {
 		return 0, err
 	}
 	return i.(int), err
 }
 
-func (dao *SQLTree) CreateNode(nodePath string, encoded string, isLeaf bool) error {
+func (t *sqlTree) CreateNode(nodePath string, encoded string, isLeaf bool) error {
 	parent, name := path.Split(nodePath)
 	var e error
-	parentID, e := dao.getNodePathID(parent)
+	parentID, e := t.getNodePathID(parent)
 	if e != nil {
 		return e
 	}
 
-	err := dao.Exec("insert_encoded", parentID, name, encoded).Error
+	err := t.Exec("insert_encoded", parentID, name, encoded).Error
 	if err != nil {
 		return err
 	}
 
 	if !isLeaf {
 		fullPath := path.Join(parent, name)
-		return dao.Exec("insert_tree_path", fullPath).Error
+		return t.Exec("insert_tree_path", fullPath).Error
 	}
 	return nil
 }
 
-func (dao *SQLTree) MoveNode(src string, dst string) error {
+func (t *sqlTree) MoveNode(src string, dst string) error {
 	if src == "" || dst == "" {
 		return errors.New("bad input")
 	}
@@ -106,102 +118,102 @@ func (dao *SQLTree) MoveNode(src string, dst string) error {
 
 	srcBase := path.Base(src)
 	srcParent := path.Dir(src)
-	srcParentID, e := dao.getNodePathID(srcParent)
+	srcParentID, e := t.getNodePathID(srcParent)
 	if e != nil {
 		return e
 	}
 
 	dstBase := path.Base(dst)
 	dstParent := path.Dir(dst)
-	dstParentID, e := dao.getNodePathID(dstParent)
+	dstParentID, e := t.getNodePathID(dstParent)
 	if e != nil {
 		return e
 	}
 
-	err := dao.Exec("update_tree_path", src, dst, pattern).Error
+	err := t.Exec("update_tree_path", src, dst, pattern).Error
 	if err != nil {
 		return err
 	}
 
 	if dstBase != srcBase {
-		err = dao.Exec("update_name", path.Base(dst), path.Base(src), srcParentID).Error
+		err = t.Exec("update_name", path.Base(dst), path.Base(src), srcParentID).Error
 		if err != nil {
 			return err
 		}
 	}
 
-	return dao.Exec("update_parent", dstParentID, srcParentID, path.Base(src)).Error
+	return t.Exec("update_parent", dstParentID, srcParentID, path.Base(src)).Error
 }
 
-func (dao *SQLTree) RenameNode(src string, newName string) error {
+func (t *sqlTree) RenameNode(src string, newName string) error {
 	parent := path.Dir(src)
 	newPath := path.Join(parent, newName)
-	return dao.MoveNode(src, newPath)
+	return t.MoveNode(src, newPath)
 }
 
-func (dao *SQLTree) DeleteNode(nodePath string) error {
+func (t *sqlTree) DeleteNode(nodePath string) error {
 	name := path.Base(nodePath)
 	parent := path.Dir(nodePath)
 
-	nodePathID, _ := dao.getNodePathID(nodePath)
+	nodePathID, _ := t.getNodePathID(nodePath)
 	isLeaf := nodePathID == 0
 
-	parentID, e := dao.getNodePathID(parent)
+	parentID, e := t.getNodePathID(parent)
 	if e != nil {
 		return e
 	}
 
-	if err := dao.Exec("delete_encoded", parentID, name).Error; err != nil {
+	if err := t.Exec("delete_encoded", parentID, name).Error; err != nil {
 		return err
 	}
 
 	if !isLeaf {
-		return dao.Exec("delete_tree_path", nodePath+"/%").Error
+		return t.Exec("delete_tree_path", nodePath+"/%").Error
 	}
 	return nil
 }
 
-func (dao *SQLTree) UpdateNode(nodePath string, encoded string) error {
-	parentID, e := dao.getNodePathID(path.Dir(nodePath))
+func (t *sqlTree) UpdateNode(nodePath string, encoded string) error {
+	parentID, e := t.getNodePathID(path.Dir(nodePath))
 	if e != nil {
 		return e
 	}
-	return dao.Exec("update_encoded", encoded, parentID, path.Base(nodePath)).Error
+	return t.Exec("update_encoded", encoded, parentID, path.Base(nodePath)).Error
 }
 
-func (dao *SQLTree) Encoded(nodePath string) (string, error) {
+func (t *sqlTree) Content(nodePath string) (string, error) {
 
 	name := path.Base(nodePath)
 	parent := path.Dir(nodePath)
 
-	parentID, e := dao.getNodePathID(parent)
+	parentID, e := t.getNodePathID(parent)
 	if e != nil {
 		return "", e
 	}
 
-	item, err := dao.QueryOne("select_encoded", "encoded_scanner", parentID, name)
+	item, err := t.QueryOne("select_encoded", "encoded_scanner", parentID, name)
 	if err != nil {
 		return "", err
 	}
 	return item.(string), err
 }
 
-func (dao *SQLTree) List(dir string) (Cursor, error) {
-	parentID, e := dao.getNodePathID(dir)
+func (t *sqlTree) Children(dir string) (dao.Cursor, error) {
+	parentID, e := t.getNodePathID(dir)
 	if e != nil {
 		return nil, e
 	}
-	return dao.Query("select_all_encoded", "encoded_scanner", parentID)
+	return t.Query("select_all_encoded", "encoded_scanner", parentID)
 }
 
-func (dao *SQLTree) scanNodePathID(row Row) (interface{}, error) {
+func (t *sqlTree) intScanner(row dao.Row) (interface{}, error) {
 	var id int
 	err := row.Scan(&id)
 	return id, err
 }
 
-func (dao *SQLTree) scanEncoded(row Row) (interface{}, error) {
-	var encoded string
-	err := row.Scan(&encoded)
-	return encoded, err
+func (t *sqlTree) stringScanner(row dao.Row) (interface{}, error) {
+	var content string
+	err := row.Scan(&content)
+	return content, err
 }

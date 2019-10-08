@@ -8,7 +8,7 @@ import (
 // List is a convenience for persistence list
 type Sequence interface {
 	Append(data []byte) error
-	Get(index int64) ([]byte, error)
+	Get(index int64) (string, error)
 	GetAfter(index int64) (dao.Cursor, error)
 	Clear() error
 	Close() error
@@ -22,12 +22,12 @@ func (l *listDB) Append(data []byte) error {
 	return l.Exec("insert", data).Error
 }
 
-func (l *listDB) Get(index int64) ([]byte, error) {
+func (l *listDB) Get(index int64) (string, error) {
 	o, err := l.QueryOne("select", "bytes", index)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return o.([]byte), err
+	return o.(string), err
 }
 
 func (l *listDB) GetAfter(index int64) (dao.Cursor, error) {
@@ -50,7 +50,7 @@ func NewDBList(dbConf conf.Map, prefix string) (Sequence, error) {
 		AddStatement("select", "select val from $prefix$_list where ind=?;").
 		AddStatement("select_from", "select val from $prefix$_list where ind>?;").
 		AddStatement("clear", "delete from $prefix$_list;").
-		RegisterScanner("bytes", dao.NewScannerFunc(scanBytes))
+		RegisterScanner("scanner", dao.NewScannerFunc(scanData))
 	err := d.Init(dbConf)
 	return d, err
 }

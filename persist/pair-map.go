@@ -6,9 +6,10 @@ import (
 )
 
 type MappedPairs interface {
-	Set(firstKey, secondKey string, val []byte) error
-	Get(firstKey, secondKey string) ([]byte, error)
-	GetAll(primaryKey string) (map[string][]byte, error)
+	Set(firstKey, secondKey string, val string) error
+	Get(firstKey, secondKey string) (string, error)
+	GetForFirst(firstKey string) (map[string]string, error)
+	GetAll() (dao.Cursor, error)
 	Delete(firstKey, secondKey string) error
 	DeleteAll(firstKey string) error
 	Clear() error
@@ -19,24 +20,24 @@ type sqlPairMap struct {
 	dao.SQL
 }
 
-func (s *sqlPairMap) Set(firstKey, secondKey string, val []byte) error {
+func (s *sqlPairMap) Set(firstKey, secondKey string, val string) error {
 	if s.Exec("insert", firstKey, secondKey, val).Error != nil {
 		return s.Exec("update", val, firstKey, secondKey).Error
 	}
 	return nil
 }
 
-func (s *sqlPairMap) Get(firstKey, secondKey string) ([]byte, error) {
+func (s *sqlPairMap) Get(firstKey, secondKey string) (string, error) {
 	o, err := s.QueryOne("select", "scanner", firstKey, secondKey)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return o.([]byte), nil
+	return o.(string), nil
 }
 
-func (s *sqlPairMap) GetAll(primaryKey string) (map[string][]byte, error) {
-	result := map[string][]byte{}
-	c, err := s.Query("select_by_first_key", "scanner", primaryKey)
+func (s *sqlPairMap) GetForFirst(primaryKey string) (map[string]string, error) {
+	result := map[string]string{}
+	c, err := s.Query("select_by_first_key", "pair_scanner", primaryKey)
 	if err != nil {
 		return nil, err
 	}
@@ -47,10 +48,14 @@ func (s *sqlPairMap) GetAll(primaryKey string) (map[string][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		p := o.(*pair)
-		result[p.Key] = p.Value
+		p := o.(*Pair)
+		result[p.First] = p.Second
 	}
 	return result, nil
+}
+
+func (s *sqlPairMap) GetAll() (dao.Cursor, error) {
+	return s.Query("select", "triplet_scanner")
 }
 
 func (s *sqlPairMap) Delete(firstKey, secondKey string) error {
@@ -72,15 +77,19 @@ func (s *sqlPairMap) Close() error {
 func NewMappedPairs(dbConf conf.Map, prefix string) (MappedPairs, error) {
 	d := new(sqlPairMap)
 	d.SetTablePrefix(prefix).
-		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_data (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").
-		AddStatement("insert", "insert into $prefix$_data values (?, ?, ?);").
-		AddStatement("update", "update $prefix$_data set val=? where first_key=? and second_key=?;").
-		AddStatement("select", "select val from $prefix$_data where first_key=? and second_key=?;").
-		AddStatement("select_by_first_key", "select second_key, val from $prefix$_data where first_key=?;").
-		AddStatement("delete", "delete from $prefix$_data where name=?;").
-		AddStatement("delete_by_first_key", "delete from $prefix$_data where name=?;").
-		AddStatement("clear", "delete from $prefix$_data;").
-		RegisterScanner("nonce", dao.NewScannerFunc(scanBytes))
+		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_mapping (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").
+		AddStatement("insert", "insert into $prefix$_mapping values (?, ?, ?);").
+		AddStatement("update", "update $prefix$_mapping set val=? where first_key=? and second_key=?;").
+		AddStatement("select", "select val from $prefix$_mapping where first_key=? and second_key=?;").
+		AddStatement("select_by_first_key", "select second_key, val from $prefix$_mapping where first_key=?;").
+		AddStatement("select_all", "select * from $prefix$_mapping;").
+		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
+		AddStatement("delete_by_first_key", "delete from $prefix$_mapping where name=?;").
+		AddStatement("clear", "delete from $prefix$_mapping;").
+		RegisterScanner("scanner", dao.NewScannerFunc(scanData)).
+		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair)).
+		RegisterScanner("triplet_scanner", dao.NewScannerFunc(scanTriplet))
+
 	err := d.Init(dbConf)
 	if err != nil {
 		return nil, err

@@ -7,8 +7,9 @@ import (
 
 // Dict is a convenience for persistence dict
 type Dict interface {
-	Set(key string, val []byte) error
-	Get(key string) ([]byte, error)
+	Set(key string, data string) error
+	Get(key string) (string, error)
+	GetAll() (dao.Cursor, error)
 	Del(key string) error
 	Clear() error
 	Close() error
@@ -18,7 +19,7 @@ type dictDB struct {
 	dao.SQL
 }
 
-func (d *dictDB) Set(key string, data []byte) error {
+func (d *dictDB) Set(key string, data string) error {
 	err := d.Exec("insert", key, data).Error
 	if err != nil {
 		err = d.Exec("update", data, key).Error
@@ -26,12 +27,16 @@ func (d *dictDB) Set(key string, data []byte) error {
 	return err
 }
 
-func (d *dictDB) Get(key string) ([]byte, error) {
-	o, err := d.QueryOne("select", "bytes", key)
+func (d *dictDB) Get(key string) (string, error) {
+	o, err := d.QueryOne("select", "pair_scanner", key)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return o.([]byte), nil
+	return o.(string), nil
+}
+
+func (d *dictDB) GetAll() (dao.Cursor, error) {
+	return d.Query("select_all", "pair_scanner")
 }
 
 func (d *dictDB) Del(key string) error {
@@ -49,13 +54,14 @@ func (d *dictDB) Close() error {
 func NewDBDict(dbConf conf.Map, prefix string) (Dict, error) {
 	d := new(dictDB)
 	d.SetTablePrefix(prefix).
-		AddTableDefinition("map", "create table if not exists $prefix$_dict (name varchar(255) not null primary key, val longblob not null);").
-		AddStatement("insert", "insert into $prefix$_dict values (?, ?);").
-		AddStatement("update", "update $prefix$_dict set val=? where name=?;").
-		AddStatement("select", "select val from $prefix$_dict where name=?;").
-		AddStatement("delete", "delete from $prefix$_dict where name=?;").
-		AddStatement("clear", "delete from $prefix$_dict;").
-		RegisterScanner("nonce", dao.NewScannerFunc(scanBytes))
+		AddTableDefinition("map", "create table if not exists $prefix$_mapping (name varchar(255) not null primary key, val longblob not null);").
+		AddStatement("insert", "insert into $prefix$_mapping values (?, ?);").
+		AddStatement("update", "update $prefix$_mapping set val=? where name=?;").
+		AddStatement("select", "select val from $prefix$_mapping where name=?;").
+		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
+		AddStatement("clear", "delete from $prefix$_mapping;").
+		RegisterScanner("scanner", dao.NewScannerFunc(scanData)).
+		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair))
 	err := d.Init(dbConf)
 	return d, err
 }
