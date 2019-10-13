@@ -230,7 +230,7 @@ func (item Map) String() string {
 	}
 }
 
-//Load load content from json file
+//Init load content from json file
 func Load(filename string, item *Map) error {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {

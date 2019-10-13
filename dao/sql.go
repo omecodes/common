@@ -450,13 +450,12 @@ func (dao *SQL) mysqlIndexScan(row Row) (interface{}, error) {
 		return nil, err
 	}
 
-	var ok bool
-	index.Name, ok = m["Key_name"].(string)
-	if !ok {
+	index.Name = fmt.Sprintf("%s", m["Key_name"])
+	if index.Name == "" {
 		return nil, errors.New("mysql index scanned row 'Name' field type mismatches")
 	}
-	index.Table, ok = m["Table"].(string)
-	if !ok {
+	index.Table = fmt.Sprintf("%s", m["Table"])
+	if index.Table == "" {
 		return nil, errors.New("mysql index scanned row 'Table' field type mismatches")
 	}
 	return index, nil

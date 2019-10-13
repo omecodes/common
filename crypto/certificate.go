@@ -24,8 +24,8 @@ import (
 	"github.com/zoenion/common/log"
 )
 
-//Template specs for generating a certificate
-type Template struct {
+//CertificateTemplate specs for generating a certificate
+type CertificateTemplate struct {
 	Organization      string
 	Name              string
 	Domains           []string
@@ -83,7 +83,7 @@ func serviceKeyUsage() x509.KeyUsage {
 }
 
 //GenerateCACertificate generates a certificate for a CA
-func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
+func GenerateCACertificate(t *CertificateTemplate) (*x509.Certificate, error) {
 	notBefore := time.Now()
 	notAfter := notBefore.Add(t.Expiry)
 	template := &x509.Certificate{
@@ -138,7 +138,7 @@ func GenerateCACertificate(t *Template) (*x509.Certificate, error) {
 }
 
 //GenerateServiceCertificate generates a certificate for a service
-func GenerateServiceCertificate(t *Template) (*x509.Certificate, error) {
+func GenerateServiceCertificate(t *CertificateTemplate) (*x509.Certificate, error) {
 
 	notBefore := time.Now()
 	notAfter := notBefore.Add(t.Expiry)

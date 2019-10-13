@@ -15,7 +15,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/jwt-store/find/{jti}": {
+    "/jwt/find/{jti}": {
       "get": {
         "operationId": "FindToken",
         "responses": {
@@ -253,12 +253,6 @@
           "format": "boolean"
         }
       }
-    },
-    "authpbTriggerEmailValidationResponse": {
-      "type": "object"
-    },
-    "authpbValidateEmailResponse": {
-      "type": "object"
     },
     "protobufAny": {
       "type": "object",

@@ -1,90 +1,34 @@
 syntax = "proto3";
 
-package capb;
+package pb;
 
 import "google/api/annotations.proto";
 
-enum ServiceTypeFlag {
-    Unknown = 0;
-    ServiceProvider = 1;
-    IdentityProvider = 2;
+enum Purpose {
+    ServiceProvider = 0;
+    CertificateSigning = 1;
 }
 
-message Application {
-    string name = 1;
-    ServiceTypeFlag type_flags = 2;
-    string label = 3;
-    string description = 4;
-    int64 create_at = 5;
-}
-
-message Authentication {
-    string app_name = 1;
-    string nonce = 2;
-    string challenge = 3;
-}
-
-message AppCredentials {
-    string name = 1;
-    string access_key = 2;
-    string access_secret = 3;
-}
-
-message CertificateTemplate {
+message CSRData {
     repeated string addresses = 1;
     repeated string domains = 2;
-    bytes public_key = 3;
-    string service_name = 4;
-}
-
-message RegisterApplicationRequest {
-    Application application = 1;
-}
-message RegisterApplicationResponse {}
-
-message SignKeyRequest {
-    bytes key_bytes = 1;
-}
-message SignKeyResponse {
-    bytes signature = 1;
+    string public_key = 3;
+    string subject = 4;
+    Purpose purpose = 5;
 }
 
 message SignCertificateRequest {
-    CertificateTemplate template = 1;
+    CSRData csr = 1;
 }
 message SignCertificateResponse {
-    bytes raw_certificate = 1;
+    string raw_certificate = 1;
 }
 
-message ValidateAuthRequest {
-    Authentication authentication = 1;
-}
-message ValidateAuthResponse {
-    string nonce = 1;
-    bool valid = 2;
-}
-
-
-service AuthorityService {
-    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
-        option(google.api.http) = {
-            post: "/api/app/register";
-            body: "*";
-        };
-    };
-    rpc SignKey(SignKeyRequest)returns(SignKeyResponse){
-        option(google.api.http) = {
-            post: "/api/sign/key";
-            body:"*";
-        };
-    };
+service CSR {
     rpc SignCertificate(SignCertificateRequest)returns(SignCertificateResponse){
         option(google.api.http) = {
-            post: "/api/app/sign/cert";
+            post: "/cert/sign";
             body:"*";
         };
-    };
-    rpc ValidateAuth(ValidateAuthRequest)returns(ValidateAuthResponse){
-        option(google.api.http).get = "/api/auth/validate";
     };
 }

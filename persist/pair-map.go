@@ -83,8 +83,8 @@ func NewMappedPairs(dbConf conf.Map, prefix string) (MappedPairs, error) {
 		AddStatement("select", "select val from $prefix$_mapping where first_key=? and second_key=?;").
 		AddStatement("select_by_first_key", "select second_key, val from $prefix$_mapping where first_key=?;").
 		AddStatement("select_all", "select * from $prefix$_mapping;").
-		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
-		AddStatement("delete_by_first_key", "delete from $prefix$_mapping where name=?;").
+		AddStatement("delete", "delete from $prefix$_mapping where first_key=?;").
+		AddStatement("delete_by_first_key", "delete from $prefix$_mapping where first_key=?;").
 		AddStatement("clear", "delete from $prefix$_mapping;").
 		RegisterScanner("scanner", dao.NewScannerFunc(scanData)).
 		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair)).
@@ -95,6 +95,6 @@ func NewMappedPairs(dbConf conf.Map, prefix string) (MappedPairs, error) {
 		return nil, err
 	}
 
-	err = d.AddUniqueIndex(dao.SQLIndex{Name: "unique_keys", Table: "$prefix$_data"}, false)
+	err = d.AddUniqueIndex(dao.SQLIndex{Name: "unique_keys", Table: "$prefix$_mapping", Fields: []string{"first_key", "second_key"}}, false)
 	return d, err
 }

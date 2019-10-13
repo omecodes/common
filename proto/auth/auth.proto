@@ -62,7 +62,7 @@ service JWTStore {
     rpc Feed (stream JwtEvent) returns (stream FeedResponse);
     rpc Listen (ListenRequest) returns (stream JwtEvent);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
-        option (google.api.http).get = "/api/jwt-store/find/{jti}";
+        option (google.api.http).get = "/jwt/find/{jti}";
     };
 }
 
@@ -106,14 +106,7 @@ service IDMService {
     rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
     rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
     rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
-    rpc ValidateEmail (ValidateEmailRequest) returns (ValidateEmailResponse);
-    rpc TriggerEmailValidation (TriggerEmailValidationRequest) returns (TriggerEmailValidationResponse);
     rpc CreateToken (CreateTokenRequest) returns (CreateTokenResponse);
-}
-
-message EmailValidationData {
-    string email = 1;
-    int64 request_expiry = 2;
 }
 
 message CreateCredentialsRequest {
@@ -137,29 +130,10 @@ message GetTokenResponse {
     string jwt = 1;
 }
 
-message ValidateEmailRequest {
-    string data = 1;
-}
-message ValidateEmailResponse {
-}
-
-message TriggerEmailValidationRequest {
-    string email = 1;
-}
-message TriggerEmailValidationResponse {
-}
-
 message RevokeTokenRequest {
     JWT jwt = 1;
 }
 message RevokeTokenResponse {
-}
-
-message GetResetPasswordEmailTokenRequest {
-    string email = 1;
-    string callback_url = 2;
-}
-message GetResetPasswordEmailTokenResponse {
 }
 
 message SetPasswordRequest {
