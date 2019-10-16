@@ -87,7 +87,7 @@ message FindJWTRequest {
     string signature = 2;
 }
 message FindJWTResponse {
-    string found = 1;
+    JWTState state = 1;
 }
 
 message DeleteJWTRequest {
@@ -111,7 +111,6 @@ service IDMService {
 
 message CreateCredentialsRequest {
     Credentials credentials = 1;
-    string email_validation_redirect_uri = 2;
 }
 message CreateCredentialsResponse {
     bool user_taken = 1;

@@ -162,8 +162,8 @@
     "authpbFindJWTResponse": {
       "type": "object",
       "properties": {
-        "found": {
-          "type": "string"
+        "state": {
+          "$ref": "#/definitions/authpbJWTState"
         }
       }
     },
