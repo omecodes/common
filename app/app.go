@@ -1,61 +1,149 @@
 package app
 
 import (
-	"fmt"
-	"github.com/mitchellh/go-homedir"
+	"encoding/json"
 	"github.com/shibukawa/configdir"
+	"github.com/zoenion/common/app/lang"
+	"github.com/zoenion/common/app/templates"
+	"golang.org/x/text/language"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
 
+func New(vendor, name, version string) *App {
+	return &App{
+		vendor:  vendor,
+		name:    name,
+		version: version,
+	}
+}
+
 type App struct {
-	Vendor   string
-	Name     string
-	Version  string
-	dataDir  string
-	confDir  string
-	cacheDir string
+	vendor  string
+	name    string
+	version string
+
+	translationsDir string
+	templatesDir    string
+	dataDir         string
+	cacheDir        string
+	webDir          string
+	//homeDir 		string
+	Resources *Resources
 }
 
-func (a *App) DataDir() (string, error) {
-	if a.dataDir == "" {
+func (a *App) CreateDirs() error {
+	dirs := configdir.New(a.vendor, a.name)
+	globalFolder := dirs.QueryFolders(configdir.Global)[0]
+	cacheFolder := dirs.QueryFolders(configdir.Cache)[0]
 
-		hd, err := homedir.Dir()
-		if err != nil {
-			return "", err
-		}
-		a.dataDir = filepath.Join(hd, fmt.Sprintf(".%s", a.Vendor), a.Name)
-		err = os.MkdirAll(a.dataDir, os.ModePerm)
-		if err != nil {
-			return a.dataDir, err
-		}
-	}
-	return a.dataDir, nil
-}
-
-func (a *App) CacheDir() (string, error) {
-	if a.cacheDir == "" {
-		dirs := configdir.New(a.Vendor, a.Name)
-		appData := dirs.QueryFolders(configdir.Cache)[0]
-		a.confDir = appData.Path
-		err := os.MkdirAll(a.cacheDir, os.ModePerm)
-		if err != nil {
-			return a.cacheDir, err
-		}
-	}
-	return a.cacheDir, nil
-}
-
-func (a *App) ConfigsDir() (string, error) {
-	if a.confDir != "" {
-		return a.confDir, nil
-	}
-	dirs := configdir.New(a.Vendor, a.Name)
-	appData := dirs.QueryFolders(configdir.Global)[0]
-	a.confDir = appData.Path
-	err := os.MkdirAll(a.confDir, os.ModePerm)
+	a.dataDir = globalFolder.Path
+	err := os.MkdirAll(a.dataDir, os.ModePerm)
 	if err != nil {
-		return a.confDir, err
+		log.Println("could not create configs dir:", err)
+		return err
 	}
-	return a.confDir, nil
+
+	a.cacheDir = cacheFolder.Path
+	err = os.MkdirAll(a.cacheDir, os.ModePerm)
+	if err != nil {
+		log.Println("could not create cache dir:", err)
+		return err
+	}
+	return nil
+}
+
+func (a *App) Init(opts ...Option) error {
+	appOptions := new(options)
+	for _, opt := range opts {
+		opt(appOptions)
+	}
+
+	err := a.CreateDirs()
+	if err != nil {
+		return err
+	}
+
+	if appOptions.withResources {
+		webDir := filepath.Join(a.dataDir, "res", "www")
+		err = os.MkdirAll(webDir, os.ModePerm)
+		if err != nil {
+			log.Println("could not create www dir:", err)
+			return err
+		}
+		a.webDir = webDir
+
+		templatesDir := filepath.Join(a.dataDir, "res", "templates")
+		err = os.MkdirAll(templatesDir, os.ModePerm)
+		if err != nil {
+			log.Println("could not create templates dir:", err)
+			return err
+		}
+
+		i18nDir := filepath.Join(a.dataDir, "res", "i18n")
+		err = os.MkdirAll(i18nDir, os.ModePerm)
+		if err != nil {
+			log.Println("could not create i18n dir:", err)
+			return err
+		}
+
+		a.Resources = new(Resources)
+		a.Resources.templates = templates.New(templatesDir)
+
+		a.Resources.i18n = &lang.I18n{}
+		langDir, err := os.Open(i18nDir)
+		if err != nil {
+			log.Println("could not read i18n dir")
+			return err
+		}
+		names, err := langDir.Readdirnames(-1)
+		if err != nil {
+			log.Println("could not read i18n dir")
+			return err
+		}
+
+		for _, name := range names {
+			text := map[string]string{}
+			fullPath := filepath.Join(i18nDir, name)
+			content, err := ioutil.ReadFile(fullPath)
+			if err != nil {
+				log.Printf("[i18n]\ncould not read %s content: %s\n", fullPath, err)
+				continue
+			}
+
+			err = json.Unmarshal(content, &text)
+			if err != nil {
+				log.Printf("[i18n]\ncould not parse %s content: %s\n", fullPath, err)
+				continue
+			}
+
+			var extension = filepath.Ext(name)
+			name = name[0 : len(name)-len(extension)]
+			tag, err := language.Parse(name)
+			if err != nil {
+				log.Printf("[i18n]\t%s is not a knwon language name: %s\n", name, err)
+			} else {
+				entry := lang.Entry{}
+				err = a.Resources.i18n.AddEntry(tag, entry)
+				if err != nil {
+					log.Printf("[i18n]\tcould not register %v entry for language %s: %s\n", entry, tag, err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (a *App) DataDir() string {
+	return a.dataDir
+}
+
+func (a *App) CacheDir() string {
+	return a.cacheDir
+}
+
+func (a *App) WebDir() string {
+	return a.webDir
 }

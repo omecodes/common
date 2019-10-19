@@ -211,11 +211,19 @@ func (mailer *Mailer) Prompt() error {
 		return err
 	}
 
-	port, err := prompt.IntegerWithDefaultValue("Port", int64(mailer.Port))
-	if err != nil {
-		return nil
+	if mailer.Port > 0 {
+		port, err := prompt.IntegerWithDefaultValue("Port", int64(mailer.Port))
+		if err != nil {
+			return nil
+		}
+		mailer.Port = int(port)
+	} else {
+		port, err := prompt.Integer("Port")
+		if err != nil {
+			return nil
+		}
+		mailer.Port = int(port)
 	}
-	mailer.Port = int(port)
 
 	mailer.User, err = prompt.TextWithDefault("User", mailer.User, false)
 	if err != nil {
@@ -227,6 +235,16 @@ func (mailer *Mailer) Prompt() error {
 		return err
 	}
 	return err
+}
+
+func (mailer *Mailer) SetValues(cfg conf.Map) {
+	if cfg == nil {
+		return
+	}
+	mailer.Server, _ = cfg.GetString("host")
+	mailer.User, _ = cfg.GetString("user")
+	p, _ := cfg.GetInt32("port")
+	mailer.Port = int(p)
 }
 
 func (mailer *Mailer) ToConf() conf.Map {
@@ -259,68 +277,3 @@ type Security struct {
 	Filename string
 	Type     int
 }
-
-/*func PromptCertificate(ca bool, dir string, name string, password []byte) (*x509.Certificate, crypto.PrivateKey, error) {
-	localAddresses := network.LocalAddresses()
-	publicAddress := network.PublicAddresses()
-	addresses := append(localAddresses, publicAddress...)
-
-	ip, err := prompt.Selection("ip", addresses)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	domain, err := prompt.Text("domain", true)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	certFile := filepath.Join(dir, name+".crt")
-	keyFile := filepath.Join(dir, name+".key")
-
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var ips []net.IP
-	var cert *x509.Certificate
-
-	ips = append(ips, net.ParseIP(ip))
-
-	if ca {
-		cert, err = crypto2.GenerateCACertificate(&crypto2.Template{
-			Name:             name,
-			Domains:          []string{domain},
-			IPs:              ips,
-			Expiry:           time.Hour * 24 * 5 * 365, // about 5 years
-			PublicKey:        privateKey.Public(),
-			SignerPrivateKey: privateKey,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-	} else {
-		cert, err = crypto2.GenerateServiceCertificate(&crypto2.Template{
-			Name:             name,
-			Domains:          []string{domain},
-			IPs:              ips,
-			Expiry:           time.Hour * 24 * 5 * 365, // about 5 years
-			PublicKey:        privateKey.Public(),
-			SignerPrivateKey: privateKey,
-		})
-		if err != nil {
-			return nil, nil, err
-		}
-	}
-
-	if err := crypto2.StoreCertificate(cert, certFile, os.ModePerm); err != nil {
-		log.Println("could not save certificate")
-	}
-
-	if err := crypto2.StorePrivateKey(privateKey, password, keyFile); err != nil {
-		log.Println("could not save private key")
-	}
-
-	return cert, privateKey, nil
-}*/
