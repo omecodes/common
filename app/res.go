@@ -4,6 +4,7 @@ import (
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"golang.org/x/text/language"
+	"io"
 )
 
 type Resources struct {
@@ -19,6 +20,6 @@ func (r *Resources) Translated(locale language.Tag, name string, args ...interfa
 	return r.i18n.Translated(locale, name, args...)
 }
 
-func (r *Resources) LoadTemplate(locale language.Tag, name string, data interface{}) (string, []byte, error) {
-	return r.templates.Load(locale.String(), name, data)
+func (r *Resources) LoadTemplate(locale language.Tag, name string, data interface{}, out io.Writer) (string, error) {
+	return r.templates.Load(locale.String(), name, data, out)
 }

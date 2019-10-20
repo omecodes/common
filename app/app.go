@@ -127,10 +127,15 @@ func (a *App) Init(opts ...Option) error {
 			if err != nil {
 				log.Printf("[i18n]\t%s is not a knwon language name: %s\n", name, err)
 			} else {
-				entry := lang.Entry{}
-				err = a.Resources.i18n.AddEntry(tag, entry)
-				if err != nil {
-					log.Printf("[i18n]\tcould not register %v entry for language %s: %s\n", entry, tag, err)
+				for key, value := range text {
+					entry := lang.Entry{
+						Key:   key,
+						Value: value,
+					}
+					err = a.Resources.i18n.AddEntry(tag, entry)
+					if err != nil {
+						log.Printf("[i18n]\tcould not register %v entry for language %s: %s\n", entry, tag, err)
+					}
 				}
 			}
 		}
