@@ -152,7 +152,7 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 	}
 
 	if redirectURL, ok := data.(*RedirectURL); ok {
-		writeRedirect(redirectURL, w)
+		writeRedirect(w, redirectURL)
 		return
 	}
 
@@ -167,6 +167,10 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 	if err != nil {
 		log.Println("error wile writing http response content: ", err)
 	}
+}
+
+func Redirect(w http.ResponseWriter, url *RedirectURL) {
+	writeRedirect(w, url)
 }
 
 func writeContent(c *Content, w http.ResponseWriter) {
@@ -255,7 +259,7 @@ func writeResource(status int, resource *Resource, w http.ResponseWriter) {
 	}
 }
 
-func writeRedirect(red *RedirectURL, w http.ResponseWriter) {
+func writeRedirect(w http.ResponseWriter, red *RedirectURL) {
 	b := strings.Builder{}
 	b.WriteString(fmt.Sprintf("<head>\n"))
 	b.WriteString(fmt.Sprintf("\t<meta http-equiv=\"refresh\" content=\"0; URL=%s\" />\n", red.URL))

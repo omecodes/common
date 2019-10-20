@@ -28,7 +28,7 @@ func (d *dictDB) Set(key string, data string) error {
 }
 
 func (d *dictDB) Get(key string) (string, error) {
-	o, err := d.QueryOne("select", "pair_scanner", key)
+	o, err := d.QueryOne("select", "data_scanner", key)
 	if err != nil {
 		return "", err
 	}
@@ -61,7 +61,8 @@ func NewDBDict(dbConf conf.Map, prefix string) (Dict, error) {
 		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
 		AddStatement("clear", "delete from $prefix$_mapping;").
 		RegisterScanner("scanner", dao.NewScannerFunc(scanData)).
-		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair))
+		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair)).
+		RegisterScanner("data_scanner", dao.NewScannerFunc(scanData))
 	err := d.Init(dbConf)
 	return d, err
 }
