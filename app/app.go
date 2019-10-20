@@ -12,11 +12,12 @@ import (
 	"path/filepath"
 )
 
-func New(vendor, name, version string) *App {
+func New(vendor, name, version, label string) *App {
 	return &App{
 		vendor:  vendor,
 		name:    name,
 		version: version,
+		label:   label,
 	}
 }
 
@@ -24,6 +25,7 @@ type App struct {
 	vendor  string
 	name    string
 	version string
+	label   string
 
 	translationsDir string
 	templatesDir    string
@@ -146,4 +148,8 @@ func (a *App) CacheDir() string {
 
 func (a *App) WebDir() string {
 	return a.webDir
+}
+
+func (a *App) Label() string {
+	return a.label
 }
