@@ -5,6 +5,7 @@ import (
 	"github.com/shibukawa/configdir"
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
+	"github.com/zoenion/common/app/web"
 	"golang.org/x/text/language"
 	"io/ioutil"
 	"log"
@@ -31,7 +32,6 @@ type App struct {
 	templatesDir    string
 	dataDir         string
 	cacheDir        string
-	webDir          string
 	//homeDir 		string
 	Resources *Resources
 }
@@ -69,13 +69,15 @@ func (a *App) Init(opts ...Option) error {
 	}
 
 	if appOptions.withResources {
+		a.Resources = new(Resources)
+
 		webDir := filepath.Join(a.dataDir, "res", "www")
 		err = os.MkdirAll(webDir, os.ModePerm)
 		if err != nil {
 			log.Println("could not create www dir:", err)
 			return err
 		}
-		a.webDir = webDir
+		a.Resources.web = web.New(webDir)
 
 		templatesDir := filepath.Join(a.dataDir, "res", "templates")
 		err = os.MkdirAll(templatesDir, os.ModePerm)
@@ -90,8 +92,6 @@ func (a *App) Init(opts ...Option) error {
 			log.Println("could not create i18n dir:", err)
 			return err
 		}
-
-		a.Resources = new(Resources)
 		a.Resources.templates = templates.New(templatesDir)
 
 		a.Resources.i18n = &lang.I18n{}
@@ -149,10 +149,6 @@ func (a *App) DataDir() string {
 
 func (a *App) CacheDir() string {
 	return a.cacheDir
-}
-
-func (a *App) WebDir() string {
-	return a.webDir
 }
 
 func (a *App) Label() string {

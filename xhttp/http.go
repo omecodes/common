@@ -133,7 +133,7 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 	}
 
 	if reader, ok := data.(io.Reader); ok {
-		writeReader(status, reader, w)
+		WriteData(w, status, reader)
 		return
 	}
 
@@ -186,21 +186,17 @@ func writeContent(c *Content, w http.ResponseWriter) {
 
 	switch d := c.Data.(type) {
 	case io.Reader:
-		buffer := make([]byte, 4096)
-		for {
+		done := false
+		buffer := make([]byte, 1024)
+		for !done {
 			n, err := d.Read(buffer)
-			if n > 0 {
-				_, err = w.Write(buffer[:n])
-				if err != nil {
-					log.Println("error wile writing http response content: ", err)
-					break
-				}
+			done = err == io.EOF
+			if !done && err != nil {
+				return
 			}
+			_, err = w.Write(buffer[:n])
 			if err != nil {
-				if io.EOF != err {
-					log.Print(err)
-				}
-				break
+				log.Println("[xhttp]:\tcould not write response:", err)
 			}
 		}
 	case []byte:
@@ -215,21 +211,41 @@ func writeContent(c *Content, w http.ResponseWriter) {
 	}
 }
 
-func writeReader(status int, reader io.Reader, w http.ResponseWriter) {
+func WriteData(w http.ResponseWriter, status int, reader io.Reader) {
 	w.WriteHeader(status)
+	done := false
 	buffer := make([]byte, 1024)
-	for {
+	for !done {
 		n, err := reader.Read(buffer)
-		if n > 0 {
-			_, err = w.Write(buffer[:n])
-			if err != nil {
-				log.Println("error wile writing http response content: ", err)
-				return
-			}
-		}
-		if err != nil && io.EOF != err {
-			log.Print(err)
+		done = err == io.EOF
+		if !done && err != nil {
 			return
+		}
+		_, err = w.Write(buffer[:n])
+		if err != nil {
+			log.Println("[xhttp]:\tcould not write response:", err)
+		}
+	}
+}
+
+func WriteContent(w http.ResponseWriter, contentType string, size int64, reader io.Reader) {
+
+	if contentType != "" {
+		w.Header().Set("Content-Type", contentType)
+	}
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", size))
+	w.WriteHeader(http.StatusOK)
+	done := false
+	buffer := make([]byte, 1024)
+	for !done {
+		n, err := reader.Read(buffer)
+		done = err == io.EOF
+		if !done && err != nil {
+			return
+		}
+		_, err = w.Write(buffer[:n])
+		if err != nil {
+			log.Println("[xhttp]:\tcould not write response:", err)
 		}
 	}
 }
@@ -239,19 +255,17 @@ func writeResource(status int, resource *Resource, w http.ResponseWriter) {
 	w.WriteHeader(status)
 
 	if resource.Stream != nil {
+		done := false
 		buffer := make([]byte, 1024)
-		for {
+		for !done {
 			n, err := resource.Stream.Read(buffer)
-			if n > 0 {
-				_, _ = w.Write(buffer[:n])
-			}
-
-			if err != nil || n == 0 {
-				if io.EOF != err {
-					log.Print(err)
-				}
-				_ = resource.Stream.Close()
+			done = err == io.EOF
+			if !done && err != nil {
 				return
+			}
+			_, err = w.Write(buffer[:n])
+			if err != nil {
+				log.Println("[xhttp]:\tcould not write response:", err)
 			}
 		}
 	} else if resource.BytesData != nil {

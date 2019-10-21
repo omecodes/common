@@ -1,10 +1,9 @@
 package templates
 
 import (
+	"github.com/zoenion/common/futils"
 	htmpl "html/template"
 	"io"
-	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -28,7 +27,7 @@ type Templates struct {
 func (r *Templates) Load(locale string, name string, data interface{}, out io.Writer) (string, error) {
 	resPath := filepath.Join(r.dir, locale, name)
 	baseName := filepath.Base(resPath)
-	contentType := fileContentType(resPath)
+	contentType := futils.Mime(resPath)
 
 	if strings.HasPrefix(contentType, "text/html") {
 		ht := htmpl.New(baseName)
@@ -46,24 +45,4 @@ func (r *Templates) Load(locale string, name string, data interface{}, out io.Wr
 		}
 		return contentType, tpl.Execute(out, &data)
 	}
-}
-
-func fileContentType(filename string) (contentType string) {
-	contentType = "text/plain"
-
-	f, err := os.Open(filename)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-
-	buffer := make([]byte, 512)
-
-	_, err = f.Read(buffer)
-	if err != nil {
-		return
-	}
-
-	contentType = http.DetectContentType(buffer)
-	return
 }
