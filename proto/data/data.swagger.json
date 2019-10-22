@@ -15,171 +15,118 @@
     "application/json"
   ],
   "paths": {
-    "/api/data/get/{query.app}/{query.user}/{query.key}": {
-      "get": {
-        "operationId": "Get",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbGetDataResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "query.app",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "query.user",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "query.key",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserDataStore"
-        ]
-      },
-      "delete": {
-        "operationId": "Delete",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbDeleteDataResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "query.app",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "query.user",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "query.key",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserDataStore"
-        ]
-      }
-    },
-    "/api/data/{data.app}/{data.user}": {
+    "/data": {
       "post": {
-        "operationId": "Set",
+        "operationId": "GetAttributes",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/datapbSetDataResponse"
+              "$ref": "#/definitions/datapbGetAttributesResponse"
             }
           }
         },
         "parameters": [
-          {
-            "name": "data.app",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "data.user",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/datapbSetDataRequest"
+              "$ref": "#/definitions/datapbGetAttributesRequest"
             }
           }
         ],
         "tags": [
-          "UserDataStore"
+          "DataStore"
+        ]
+      }
+    },
+    "/data/save": {
+      "post": {
+        "operationId": "SetAttributes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbSetAttributesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/datapbSetAttributesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DataStore"
         ]
       }
     }
   },
   "definitions": {
-    "datapbDeleteDataResponse": {
-      "type": "object"
-    },
-    "datapbFeedResponse": {
-      "type": "object"
-    },
-    "datapbGetDataResponse": {
+    "datapbAttribute": {
       "type": "object",
       "properties": {
-        "data": {
-          "$ref": "#/definitions/datapbUserData"
-        }
-      }
-    },
-    "datapbQuery": {
-      "type": "object",
-      "properties": {
-        "user": {
+        "id": {
           "type": "string"
         },
-        "app": {
+        "context": {
           "type": "string"
         },
-        "key": {
-          "type": "string"
-        }
-      }
-    },
-    "datapbSetDataRequest": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "$ref": "#/definitions/datapbUserData"
-        }
-      }
-    },
-    "datapbSetDataResponse": {
-      "type": "object"
-    },
-    "datapbUserData": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "type": "string"
-        },
-        "app": {
-          "type": "string"
-        },
-        "key": {
+        "mime": {
           "type": "string"
         },
         "uri": {
           "type": "string"
         }
       }
+    },
+    "datapbGetAttributesRequest": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "contextual_attribute_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "datapbGetAttributesResponse": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/datapbAttribute"
+          }
+        }
+      }
+    },
+    "datapbSetAttributesRequest": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/datapbAttribute"
+          }
+        }
+      }
+    },
+    "datapbSetAttributesResponse": {
+      "type": "object"
     }
   }
 }

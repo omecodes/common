@@ -4,50 +4,54 @@ package datapb;
 
 import "google/api/annotations.proto";
 
-message UserData {
-    string user = 1;
-    string app = 2;
-    string key = 3;
+enum Scope {
+    Public = 0;
+    Personal = 1;
+    ContextRestricted = 2;
+}
+
+message AttributeDefinition {
+    string id = 1;
+    string label = 2;
+    string mime = 3;
+    string description = 4;
+    bool unique = 5;
+    Scope scope = 6;
+}
+
+message Attribute {
+    string id = 1;
+    string context = 2;
+    string mime = 3;
     string uri = 4;
 }
 
-message Query {
-    string user = 1;
-    string app = 2;
-    string key = 3;
-}
 
-service UserDataStore {
-    rpc Set (SetDataRequest) returns (SetDataResponse) {
-        option (google.api.http) = {
-            post: "/api/data/{data.app}/{data.user}";
+service DataStore {
+    rpc SetAttributes(SetAttributesRequest) returns (SetAttributesResponse) {
+        option(google.api.http) = {
+            post: "/data/save";
             body: "*";
         };
     };
-    rpc Get (GetDataRequest) returns (GetDataResponse) {
-        option (google.api.http).get = "/api/data/get/{query.app}/{query.user}/{query.key}";
+    rpc GetAttributes(GetAttributesRequest) returns (GetAttributesResponse) {
+        option(google.api.http) = {
+            post: "/data";
+            body: "*";
+        };
     };
-    rpc Delete (DeleteDataRequest) returns (DeleteDataResponse) {
-        option (google.api.http).delete = "/api/data/get/{query.app}/{query.user}/{query.key}";
-    };
-    rpc Feed(stream UserData) returns (FeedResponse);
 }
 
-message SetDataRequest {
-    UserData data = 1;
+message SetAttributesRequest {
+    string subject = 1;
+    repeated Attribute attributes = 2;
 }
-message SetDataResponse {}
+message SetAttributesResponse {}
 
-message GetDataRequest {
-    Query query = 1;
+message GetAttributesRequest {
+    string subject = 1;
+    map<string, string> contextual_attribute_ids = 2;
 }
-message GetDataResponse {
-    UserData data = 1;
+message GetAttributesResponse {
+    map<string, Attribute> attributes = 1;
 }
-
-message DeleteDataRequest {
-    Query query = 1;
-}
-message DeleteDataResponse {}
-
-message FeedResponse {}
