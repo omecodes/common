@@ -15,7 +15,33 @@
     "application/json"
   ],
   "paths": {
-    "/data": {
+    "/data/delete": {
+      "post": {
+        "operationId": "DeleteAttributes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteAttributesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteAttributesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      }
+    },
+    "/data/get": {
       "post": {
         "operationId": "GetAttributes",
         "responses": {
@@ -41,7 +67,7 @@
         ]
       }
     },
-    "/data/save": {
+    "/data/set": {
       "post": {
         "operationId": "SetAttributes",
         "responses": {
@@ -86,17 +112,22 @@
         }
       }
     },
+    "datapbDeleteAttributesRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "$ref": "#/definitions/datapbQuery"
+        }
+      }
+    },
+    "datapbDeleteAttributesResponse": {
+      "type": "object"
+    },
     "datapbGetAttributesRequest": {
       "type": "object",
       "properties": {
-        "subject": {
-          "type": "string"
-        },
-        "contextual_attribute_ids": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+        "query": {
+          "$ref": "#/definitions/datapbQuery"
         }
       }
     },
@@ -104,9 +135,23 @@
       "type": "object",
       "properties": {
         "attributes": {
-          "type": "object",
-          "additionalProperties": {
+          "type": "array",
+          "items": {
             "$ref": "#/definitions/datapbAttribute"
+          }
+        }
+      }
+    },
+    "datapbQuery": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "attribute_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

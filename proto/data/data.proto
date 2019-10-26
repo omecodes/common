@@ -26,20 +26,32 @@ message Attribute {
     string uri = 4;
 }
 
+message Query {
+    string subject = 1;
+    repeated string attribute_ids = 2;
+}
+
 
 service DataStore {
     rpc SetAttributes(SetAttributesRequest) returns (SetAttributesResponse) {
         option(google.api.http) = {
-            post: "/data/save";
+            post: "/data/set";
             body: "*";
         };
     };
     rpc GetAttributes(GetAttributesRequest) returns (GetAttributesResponse) {
         option(google.api.http) = {
-            post: "/data";
+            post: "/data/get";
             body: "*";
         };
     };
+
+    rpc DeleteAttributes(DeleteAttributesRequest) returns (DeleteAttributesResponse) {
+        option (google.api.http) = {
+            post: "/data/delete";
+            body: "*";
+        };
+    }
 }
 
 message SetAttributesRequest {
@@ -49,9 +61,14 @@ message SetAttributesRequest {
 message SetAttributesResponse {}
 
 message GetAttributesRequest {
-    string subject = 1;
-    map<string, string> contextual_attribute_ids = 2;
+    Query query = 1;
 }
 message GetAttributesResponse {
-    map<string, Attribute> attributes = 1;
+    repeated Attribute attributes = 1;
 }
+
+message DeleteAttributesRequest {
+    Query query = 1;
+
+}
+message DeleteAttributesResponse {}
