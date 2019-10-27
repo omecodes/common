@@ -13,6 +13,8 @@ type Cookie struct {
 type Session interface {
 	Set(name string, value interface{})
 	Get(name string) interface{}
+	GetString(name string) string
+	GetBool(name string) bool
 	Delete(name string)
 	Save() error
 }
@@ -55,6 +57,31 @@ func (s *session) Get(name string) interface{} {
 		return nil
 	}
 	return v
+}
+
+func (s *session) GetString(name string) string {
+	v, ok := s.httpSession.Values[name]
+	if !ok {
+		return ""
+	}
+	str, ok := v.(string)
+	if !ok {
+		return ""
+	}
+	return str
+}
+
+func (s *session) GetBool(name string) bool {
+	v, ok := s.httpSession.Values[name]
+	if !ok {
+		return ok
+	}
+
+	b, ok := v.(bool)
+	if !ok {
+		return false
+	}
+	return b
 }
 
 func (s *session) Delete(key string) {

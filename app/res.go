@@ -9,6 +9,7 @@ import (
 )
 
 type Resources struct {
+	dir       string
 	i18n      *lang.I18n
 	templates *templates.Templates
 	web       *web.Server
@@ -28,4 +29,8 @@ func (r *Resources) LoadTemplate(locale language.Tag, name string, data interfac
 
 func (r *Resources) FileContent(locale language.Tag, name string) (string, io.ReadCloser, int64, error) {
 	return r.web.Serve(locale.String(), name)
+}
+
+func (r *Resources) Translations(locale language.Tag) (map[string]string, error) {
+	return r.i18n.Translations(locale)
 }

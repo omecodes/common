@@ -1,13 +1,10 @@
 package app
 
 import (
-	"encoding/json"
 	"github.com/shibukawa/configdir"
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"github.com/zoenion/common/app/web"
-	"golang.org/x/text/language"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -94,50 +91,11 @@ func (a *App) Init(opts ...Option) error {
 		}
 		a.Resources.templates = templates.New(templatesDir)
 
-		a.Resources.i18n = &lang.I18n{}
-		langDir, err := os.Open(i18nDir)
+		a.Resources.i18n = lang.NewManager(i18nDir)
+		err = a.Resources.i18n.Load()
 		if err != nil {
-			log.Println("could not read i18n dir")
+			log.Println("could not laod translations")
 			return err
-		}
-		names, err := langDir.Readdirnames(-1)
-		if err != nil {
-			log.Println("could not read i18n dir")
-			return err
-		}
-
-		for _, name := range names {
-			text := map[string]string{}
-			fullPath := filepath.Join(i18nDir, name)
-			content, err := ioutil.ReadFile(fullPath)
-			if err != nil {
-				log.Printf("[i18n]\ncould not read %s content: %s\n", fullPath, err)
-				continue
-			}
-
-			err = json.Unmarshal(content, &text)
-			if err != nil {
-				log.Printf("[i18n]\ncould not parse %s content: %s\n", fullPath, err)
-				continue
-			}
-
-			var extension = filepath.Ext(name)
-			name = name[0 : len(name)-len(extension)]
-			tag, err := language.Parse(name)
-			if err != nil {
-				log.Printf("[i18n]\t%s is not a knwon language name: %s\n", name, err)
-			} else {
-				for key, value := range text {
-					entry := lang.Entry{
-						Key:   key,
-						Value: value,
-					}
-					err = a.Resources.i18n.AddEntry(tag, entry)
-					if err != nil {
-						log.Printf("[i18n]\tcould not register %v entry for language %s: %s\n", entry, tag, err)
-					}
-				}
-			}
 		}
 	}
 	return nil
