@@ -112,3 +112,7 @@ func (a *App) CacheDir() string {
 func (a *App) Label() string {
 	return a.label
 }
+
+func (a *App) Name() string {
+	return a.name
+}
