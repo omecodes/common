@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -32,6 +33,7 @@ type (
 
 	RedirectURL struct {
 		URL         string
+		Params      map[string]string
 		Code        int
 		ContentType string
 	}
@@ -274,6 +276,14 @@ func writeResource(status int, resource *Resource, w http.ResponseWriter) {
 }
 
 func writeRedirect(w http.ResponseWriter, red *RedirectURL) {
+	if red.Params != nil && len(red.Params) > 0 {
+		values := url.Values{}
+		for n, v := range red.Params {
+			values.Add(n, v)
+		}
+		red.URL = fmt.Sprintf("%s?%s", red.URL, values.Encode())
+	}
+
 	b := strings.Builder{}
 	b.WriteString(fmt.Sprintf("<head>\n"))
 	b.WriteString(fmt.Sprintf("\t<meta http-equiv=\"refresh\" content=\"0; URL=%s\" />\n", red.URL))
