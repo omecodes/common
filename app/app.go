@@ -1,7 +1,9 @@
 package app
 
 import (
+	"fmt"
 	"github.com/shibukawa/configdir"
+	"github.com/spf13/cobra"
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"github.com/zoenion/common/app/web"
@@ -9,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 )
+
+type CmdRunFunc func()
 
 func New(vendor, name, version, label string) *App {
 	return &App{
@@ -19,11 +23,78 @@ func New(vendor, name, version, label string) *App {
 	}
 }
 
+func WithDefaultCommands(vendor, version, label string, configure, start CmdRunFunc) *App {
+	a := &App{
+		vendor:  vendor,
+		version: version,
+		label:   label,
+	}
+
+	a.cmd = &cobra.Command{
+		Use:   filepath.Base(os.Args[0]),
+		Short: "Configure and run instances",
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := cmd.Help(); err != nil {
+				log.Fatalln(err)
+			}
+		},
+	}
+
+	a.configureCMD = &cobra.Command{
+		Use:   "configure",
+		Short: "Configures an instance",
+		Run: func(cmd *cobra.Command, args []string) {
+			if a.name == "" {
+				if err := cmd.Help(); err != nil {
+					log.Fatalln(err)
+				}
+				log.Fatalln("missing --name flag")
+			}
+			configure()
+		},
+	}
+
+	a.startCMD = &cobra.Command{
+		Use:   "start",
+		Short: "Starts an instance",
+		Run: func(cmd *cobra.Command, args []string) {
+			if a.name == "" {
+				if err := cmd.Help(); err != nil {
+					log.Fatalln(err)
+				}
+				log.Fatalln("missing --name flag")
+			}
+			start()
+		},
+	}
+
+	a.versionCMD = &cobra.Command{
+		Use:   "version",
+		Short: "Displays application name and version",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(a.version)
+		},
+	}
+
+	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as application data folder base name")
+
+	a.cmd.AddCommand(a.configureCMD)
+	a.cmd.AddCommand(a.startCMD)
+	a.cmd.AddCommand(a.versionCMD)
+
+	return a
+}
+
 type App struct {
 	vendor  string
 	name    string
 	version string
 	label   string
+
+	cmd          *cobra.Command
+	configureCMD *cobra.Command
+	startCMD     *cobra.Command
+	versionCMD   *cobra.Command
 
 	translationsDir string
 	templatesDir    string
@@ -31,6 +102,14 @@ type App struct {
 	cacheDir        string
 	//homeDir 		string
 	Resources *Resources
+}
+
+func (a *App) SetName(name string) {
+	a.name = name
+}
+
+func (a *App) GetCommand() *cobra.Command {
+	return a.cmd
 }
 
 func (a *App) CreateDirs() error {
