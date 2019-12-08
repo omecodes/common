@@ -41,7 +41,7 @@
         ]
       }
     },
-    "/data/def/{name}": {
+    "/data/def/{id}": {
       "get": {
         "operationId": "GetDefinition",
         "responses": {
@@ -54,7 +54,7 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -76,7 +76,7 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -281,10 +281,7 @@
           "type": "string"
         },
         "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/datapbData"
-          }
+          "$ref": "#/definitions/datapbData"
         }
       }
     },

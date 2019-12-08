@@ -54,7 +54,7 @@ service DataStore {
     };
 
     rpc GetDefinition(GetDefinitionRequest) returns (GetDefinitionResponse) {
-        option(google.api.http).get = "/data/def/{name}";
+        option(google.api.http).get = "/data/def/{id}";
     };
 
     rpc SetDefinition(SetDefinitionRequest) returns (SetDefinitionResponse) {
@@ -65,13 +65,13 @@ service DataStore {
     };
 
     rpc DeleteDefinition(DeleteDefinitionRequest) returns (DeleteDefinitionResponse) {
-        option (google.api.http).delete = "/data/def/{name}";
+        option (google.api.http).delete = "/data/def/{id}";
     };
 };
 
 message SetDataRequest {
     string subject = 1;
-    repeated Data data = 2;
+    Data data = 2;
 }
 message SetDataResponse {}
 
@@ -94,13 +94,13 @@ message SetDefinitionRequest {
 message SetDefinitionResponse {}
 
 message GetDefinitionRequest {
-    string name = 1;
+    string id = 1;
 }
 message GetDefinitionResponse {
     Definition definition = 1;
 }
 
 message DeleteDefinitionRequest {
-    string name = 1;
+    string id = 1;
 }
 message DeleteDefinitionResponse {}
