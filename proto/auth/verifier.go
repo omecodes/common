@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/zoenion/common"
 	"math/big"
 	"strings"
 	"sync"
@@ -172,9 +171,6 @@ func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) error {
 		return err
 	}
 	_, err = stv.verifier.Verify(ctx, t)
-	if err == nil {
-		ctx = context.WithValue(ctx, common.ContextToken, t)
-	}
 	return err
 }
 
