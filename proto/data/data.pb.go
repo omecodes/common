@@ -9,6 +9,8 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -51,142 +53,142 @@ func (Scope) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{0}
 }
 
-type AttributeDefinition struct {
+type Definition struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Label                string   `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
-	Mime                 string   `protobuf:"bytes,3,opt,name=mime,proto3" json:"mime,omitempty"`
-	Description          string   `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Unique               bool     `protobuf:"varint,5,opt,name=unique,proto3" json:"unique,omitempty"`
+	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Mime                 string   `protobuf:"bytes,4,opt,name=mime,proto3" json:"mime,omitempty"`
+	Context              string   `protobuf:"bytes,5,opt,name=context,proto3" json:"context,omitempty"`
 	Scope                Scope    `protobuf:"varint,6,opt,name=scope,proto3,enum=datapb.Scope" json:"scope,omitempty"`
+	Categories           []string `protobuf:"bytes,7,rep,name=categories,proto3" json:"categories,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AttributeDefinition) Reset()         { *m = AttributeDefinition{} }
-func (m *AttributeDefinition) String() string { return proto.CompactTextString(m) }
-func (*AttributeDefinition) ProtoMessage()    {}
-func (*AttributeDefinition) Descriptor() ([]byte, []int) {
+func (m *Definition) Reset()         { *m = Definition{} }
+func (m *Definition) String() string { return proto.CompactTextString(m) }
+func (*Definition) ProtoMessage()    {}
+func (*Definition) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{0}
 }
 
-func (m *AttributeDefinition) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AttributeDefinition.Unmarshal(m, b)
+func (m *Definition) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Definition.Unmarshal(m, b)
 }
-func (m *AttributeDefinition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AttributeDefinition.Marshal(b, m, deterministic)
+func (m *Definition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Definition.Marshal(b, m, deterministic)
 }
-func (m *AttributeDefinition) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AttributeDefinition.Merge(m, src)
+func (m *Definition) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Definition.Merge(m, src)
 }
-func (m *AttributeDefinition) XXX_Size() int {
-	return xxx_messageInfo_AttributeDefinition.Size(m)
+func (m *Definition) XXX_Size() int {
+	return xxx_messageInfo_Definition.Size(m)
 }
-func (m *AttributeDefinition) XXX_DiscardUnknown() {
-	xxx_messageInfo_AttributeDefinition.DiscardUnknown(m)
+func (m *Definition) XXX_DiscardUnknown() {
+	xxx_messageInfo_Definition.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AttributeDefinition proto.InternalMessageInfo
+var xxx_messageInfo_Definition proto.InternalMessageInfo
 
-func (m *AttributeDefinition) GetId() string {
+func (m *Definition) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetLabel() string {
+func (m *Definition) GetLabel() string {
 	if m != nil {
 		return m.Label
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetMime() string {
-	if m != nil {
-		return m.Mime
-	}
-	return ""
-}
-
-func (m *AttributeDefinition) GetDescription() string {
+func (m *Definition) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetUnique() bool {
-	if m != nil {
-		return m.Unique
-	}
-	return false
-}
-
-func (m *AttributeDefinition) GetScope() Scope {
-	if m != nil {
-		return m.Scope
-	}
-	return Scope_Public
-}
-
-type Attribute struct {
-	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Context              string   `protobuf:"bytes,2,opt,name=context,proto3" json:"context,omitempty"`
-	Mime                 string   `protobuf:"bytes,3,opt,name=mime,proto3" json:"mime,omitempty"`
-	Uri                  string   `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Attribute) Reset()         { *m = Attribute{} }
-func (m *Attribute) String() string { return proto.CompactTextString(m) }
-func (*Attribute) ProtoMessage()    {}
-func (*Attribute) Descriptor() ([]byte, []int) {
-	return fileDescriptor_871986018790d2fd, []int{1}
-}
-
-func (m *Attribute) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Attribute.Unmarshal(m, b)
-}
-func (m *Attribute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Attribute.Marshal(b, m, deterministic)
-}
-func (m *Attribute) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Attribute.Merge(m, src)
-}
-func (m *Attribute) XXX_Size() int {
-	return xxx_messageInfo_Attribute.Size(m)
-}
-func (m *Attribute) XXX_DiscardUnknown() {
-	xxx_messageInfo_Attribute.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Attribute proto.InternalMessageInfo
-
-func (m *Attribute) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-func (m *Attribute) GetContext() string {
-	if m != nil {
-		return m.Context
-	}
-	return ""
-}
-
-func (m *Attribute) GetMime() string {
+func (m *Definition) GetMime() string {
 	if m != nil {
 		return m.Mime
 	}
 	return ""
 }
 
-func (m *Attribute) GetUri() string {
+func (m *Definition) GetContext() string {
+	if m != nil {
+		return m.Context
+	}
+	return ""
+}
+
+func (m *Definition) GetScope() Scope {
+	if m != nil {
+		return m.Scope
+	}
+	return Scope_Public
+}
+
+func (m *Definition) GetCategories() []string {
+	if m != nil {
+		return m.Categories
+	}
+	return nil
+}
+
+type Data struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Context              string   `protobuf:"bytes,2,opt,name=context,proto3" json:"context,omitempty"`
+	Uri                  string   `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Data) Reset()         { *m = Data{} }
+func (m *Data) String() string { return proto.CompactTextString(m) }
+func (*Data) ProtoMessage()    {}
+func (*Data) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{1}
+}
+
+func (m *Data) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Data.Unmarshal(m, b)
+}
+func (m *Data) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Data.Marshal(b, m, deterministic)
+}
+func (m *Data) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Data.Merge(m, src)
+}
+func (m *Data) XXX_Size() int {
+	return xxx_messageInfo_Data.Size(m)
+}
+func (m *Data) XXX_DiscardUnknown() {
+	xxx_messageInfo_Data.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Data proto.InternalMessageInfo
+
+func (m *Data) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *Data) GetContext() string {
+	if m != nil {
+		return m.Context
+	}
+	return ""
+}
+
+func (m *Data) GetUri() string {
 	if m != nil {
 		return m.Uri
 	}
@@ -195,7 +197,7 @@ func (m *Attribute) GetUri() string {
 
 type Query struct {
 	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
-	AttributeIds         []string `protobuf:"bytes,2,rep,name=attribute_ids,json=attributeIds,proto3" json:"attribute_ids,omitempty"`
+	Keys                 []string `protobuf:"bytes,2,rep,name=keys,proto3" json:"keys,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -233,288 +235,528 @@ func (m *Query) GetSubject() string {
 	return ""
 }
 
-func (m *Query) GetAttributeIds() []string {
+func (m *Query) GetKeys() []string {
 	if m != nil {
-		return m.AttributeIds
+		return m.Keys
 	}
 	return nil
 }
 
-type SetAttributesRequest struct {
-	Subject              string       `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
-	Attributes           []*Attribute `protobuf:"bytes,2,rep,name=attributes,proto3" json:"attributes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
+type SetDataRequest struct {
+	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
+	Data                 []*Data  `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SetAttributesRequest) Reset()         { *m = SetAttributesRequest{} }
-func (m *SetAttributesRequest) String() string { return proto.CompactTextString(m) }
-func (*SetAttributesRequest) ProtoMessage()    {}
-func (*SetAttributesRequest) Descriptor() ([]byte, []int) {
+func (m *SetDataRequest) Reset()         { *m = SetDataRequest{} }
+func (m *SetDataRequest) String() string { return proto.CompactTextString(m) }
+func (*SetDataRequest) ProtoMessage()    {}
+func (*SetDataRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{3}
 }
 
-func (m *SetAttributesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SetAttributesRequest.Unmarshal(m, b)
+func (m *SetDataRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetDataRequest.Unmarshal(m, b)
 }
-func (m *SetAttributesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SetAttributesRequest.Marshal(b, m, deterministic)
+func (m *SetDataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetDataRequest.Marshal(b, m, deterministic)
 }
-func (m *SetAttributesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SetAttributesRequest.Merge(m, src)
+func (m *SetDataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetDataRequest.Merge(m, src)
 }
-func (m *SetAttributesRequest) XXX_Size() int {
-	return xxx_messageInfo_SetAttributesRequest.Size(m)
+func (m *SetDataRequest) XXX_Size() int {
+	return xxx_messageInfo_SetDataRequest.Size(m)
 }
-func (m *SetAttributesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SetAttributesRequest.DiscardUnknown(m)
+func (m *SetDataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetDataRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SetAttributesRequest proto.InternalMessageInfo
+var xxx_messageInfo_SetDataRequest proto.InternalMessageInfo
 
-func (m *SetAttributesRequest) GetSubject() string {
+func (m *SetDataRequest) GetSubject() string {
 	if m != nil {
 		return m.Subject
 	}
 	return ""
 }
 
-func (m *SetAttributesRequest) GetAttributes() []*Attribute {
+func (m *SetDataRequest) GetData() []*Data {
 	if m != nil {
-		return m.Attributes
+		return m.Data
 	}
 	return nil
 }
 
-type SetAttributesResponse struct {
+type SetDataResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SetAttributesResponse) Reset()         { *m = SetAttributesResponse{} }
-func (m *SetAttributesResponse) String() string { return proto.CompactTextString(m) }
-func (*SetAttributesResponse) ProtoMessage()    {}
-func (*SetAttributesResponse) Descriptor() ([]byte, []int) {
+func (m *SetDataResponse) Reset()         { *m = SetDataResponse{} }
+func (m *SetDataResponse) String() string { return proto.CompactTextString(m) }
+func (*SetDataResponse) ProtoMessage()    {}
+func (*SetDataResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{4}
 }
 
-func (m *SetAttributesResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SetAttributesResponse.Unmarshal(m, b)
+func (m *SetDataResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetDataResponse.Unmarshal(m, b)
 }
-func (m *SetAttributesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SetAttributesResponse.Marshal(b, m, deterministic)
+func (m *SetDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetDataResponse.Marshal(b, m, deterministic)
 }
-func (m *SetAttributesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SetAttributesResponse.Merge(m, src)
+func (m *SetDataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetDataResponse.Merge(m, src)
 }
-func (m *SetAttributesResponse) XXX_Size() int {
-	return xxx_messageInfo_SetAttributesResponse.Size(m)
+func (m *SetDataResponse) XXX_Size() int {
+	return xxx_messageInfo_SetDataResponse.Size(m)
 }
-func (m *SetAttributesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SetAttributesResponse.DiscardUnknown(m)
+func (m *SetDataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetDataResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SetAttributesResponse proto.InternalMessageInfo
+var xxx_messageInfo_SetDataResponse proto.InternalMessageInfo
 
-type GetAttributesRequest struct {
-	Query                *Query   `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+type GetDataRequest struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetAttributesRequest) Reset()         { *m = GetAttributesRequest{} }
-func (m *GetAttributesRequest) String() string { return proto.CompactTextString(m) }
-func (*GetAttributesRequest) ProtoMessage()    {}
-func (*GetAttributesRequest) Descriptor() ([]byte, []int) {
+func (m *GetDataRequest) Reset()         { *m = GetDataRequest{} }
+func (m *GetDataRequest) String() string { return proto.CompactTextString(m) }
+func (*GetDataRequest) ProtoMessage()    {}
+func (*GetDataRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{5}
 }
 
-func (m *GetAttributesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAttributesRequest.Unmarshal(m, b)
+func (m *GetDataRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetDataRequest.Unmarshal(m, b)
 }
-func (m *GetAttributesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAttributesRequest.Marshal(b, m, deterministic)
+func (m *GetDataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetDataRequest.Marshal(b, m, deterministic)
 }
-func (m *GetAttributesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAttributesRequest.Merge(m, src)
+func (m *GetDataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetDataRequest.Merge(m, src)
 }
-func (m *GetAttributesRequest) XXX_Size() int {
-	return xxx_messageInfo_GetAttributesRequest.Size(m)
+func (m *GetDataRequest) XXX_Size() int {
+	return xxx_messageInfo_GetDataRequest.Size(m)
 }
-func (m *GetAttributesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAttributesRequest.DiscardUnknown(m)
+func (m *GetDataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetDataRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAttributesRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetDataRequest proto.InternalMessageInfo
 
-func (m *GetAttributesRequest) GetQuery() *Query {
+func (m *GetDataRequest) GetId() string {
 	if m != nil {
-		return m.Query
+		return m.Id
 	}
-	return nil
+	return ""
 }
 
-type GetAttributesResponse struct {
-	Attributes           []*Attribute `protobuf:"bytes,1,rep,name=attributes,proto3" json:"attributes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
+type GetDataResponse struct {
+	Definition           *Definition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	Value                *Data       `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *GetAttributesResponse) Reset()         { *m = GetAttributesResponse{} }
-func (m *GetAttributesResponse) String() string { return proto.CompactTextString(m) }
-func (*GetAttributesResponse) ProtoMessage()    {}
-func (*GetAttributesResponse) Descriptor() ([]byte, []int) {
+func (m *GetDataResponse) Reset()         { *m = GetDataResponse{} }
+func (m *GetDataResponse) String() string { return proto.CompactTextString(m) }
+func (*GetDataResponse) ProtoMessage()    {}
+func (*GetDataResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{6}
 }
 
-func (m *GetAttributesResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAttributesResponse.Unmarshal(m, b)
+func (m *GetDataResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetDataResponse.Unmarshal(m, b)
 }
-func (m *GetAttributesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAttributesResponse.Marshal(b, m, deterministic)
+func (m *GetDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetDataResponse.Marshal(b, m, deterministic)
 }
-func (m *GetAttributesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAttributesResponse.Merge(m, src)
+func (m *GetDataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetDataResponse.Merge(m, src)
 }
-func (m *GetAttributesResponse) XXX_Size() int {
-	return xxx_messageInfo_GetAttributesResponse.Size(m)
+func (m *GetDataResponse) XXX_Size() int {
+	return xxx_messageInfo_GetDataResponse.Size(m)
 }
-func (m *GetAttributesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAttributesResponse.DiscardUnknown(m)
+func (m *GetDataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetDataResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAttributesResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetDataResponse proto.InternalMessageInfo
 
-func (m *GetAttributesResponse) GetAttributes() []*Attribute {
+func (m *GetDataResponse) GetDefinition() *Definition {
 	if m != nil {
-		return m.Attributes
+		return m.Definition
 	}
 	return nil
 }
 
-type DeleteAttributesRequest struct {
+func (m *GetDataResponse) GetValue() *Data {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type DeleteDataRequest struct {
 	Query                *Query   `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteAttributesRequest) Reset()         { *m = DeleteAttributesRequest{} }
-func (m *DeleteAttributesRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteAttributesRequest) ProtoMessage()    {}
-func (*DeleteAttributesRequest) Descriptor() ([]byte, []int) {
+func (m *DeleteDataRequest) Reset()         { *m = DeleteDataRequest{} }
+func (m *DeleteDataRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteDataRequest) ProtoMessage()    {}
+func (*DeleteDataRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{7}
 }
 
-func (m *DeleteAttributesRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteAttributesRequest.Unmarshal(m, b)
+func (m *DeleteDataRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteDataRequest.Unmarshal(m, b)
 }
-func (m *DeleteAttributesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteAttributesRequest.Marshal(b, m, deterministic)
+func (m *DeleteDataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteDataRequest.Marshal(b, m, deterministic)
 }
-func (m *DeleteAttributesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteAttributesRequest.Merge(m, src)
+func (m *DeleteDataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteDataRequest.Merge(m, src)
 }
-func (m *DeleteAttributesRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteAttributesRequest.Size(m)
+func (m *DeleteDataRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteDataRequest.Size(m)
 }
-func (m *DeleteAttributesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteAttributesRequest.DiscardUnknown(m)
+func (m *DeleteDataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteDataRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteAttributesRequest proto.InternalMessageInfo
+var xxx_messageInfo_DeleteDataRequest proto.InternalMessageInfo
 
-func (m *DeleteAttributesRequest) GetQuery() *Query {
+func (m *DeleteDataRequest) GetQuery() *Query {
 	if m != nil {
 		return m.Query
 	}
 	return nil
 }
 
-type DeleteAttributesResponse struct {
+type DeleteDataResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteAttributesResponse) Reset()         { *m = DeleteAttributesResponse{} }
-func (m *DeleteAttributesResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteAttributesResponse) ProtoMessage()    {}
-func (*DeleteAttributesResponse) Descriptor() ([]byte, []int) {
+func (m *DeleteDataResponse) Reset()         { *m = DeleteDataResponse{} }
+func (m *DeleteDataResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteDataResponse) ProtoMessage()    {}
+func (*DeleteDataResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_871986018790d2fd, []int{8}
 }
 
-func (m *DeleteAttributesResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteAttributesResponse.Unmarshal(m, b)
+func (m *DeleteDataResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteDataResponse.Unmarshal(m, b)
 }
-func (m *DeleteAttributesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteAttributesResponse.Marshal(b, m, deterministic)
+func (m *DeleteDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteDataResponse.Marshal(b, m, deterministic)
 }
-func (m *DeleteAttributesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteAttributesResponse.Merge(m, src)
+func (m *DeleteDataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteDataResponse.Merge(m, src)
 }
-func (m *DeleteAttributesResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteAttributesResponse.Size(m)
+func (m *DeleteDataResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteDataResponse.Size(m)
 }
-func (m *DeleteAttributesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteAttributesResponse.DiscardUnknown(m)
+func (m *DeleteDataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteDataResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteAttributesResponse proto.InternalMessageInfo
+var xxx_messageInfo_DeleteDataResponse proto.InternalMessageInfo
+
+type SetDefinitionRequest struct {
+	Definition           *Definition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *SetDefinitionRequest) Reset()         { *m = SetDefinitionRequest{} }
+func (m *SetDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*SetDefinitionRequest) ProtoMessage()    {}
+func (*SetDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{9}
+}
+
+func (m *SetDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetDefinitionRequest.Unmarshal(m, b)
+}
+func (m *SetDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *SetDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetDefinitionRequest.Merge(m, src)
+}
+func (m *SetDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_SetDefinitionRequest.Size(m)
+}
+func (m *SetDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetDefinitionRequest proto.InternalMessageInfo
+
+func (m *SetDefinitionRequest) GetDefinition() *Definition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type SetDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SetDefinitionResponse) Reset()         { *m = SetDefinitionResponse{} }
+func (m *SetDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*SetDefinitionResponse) ProtoMessage()    {}
+func (*SetDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{10}
+}
+
+func (m *SetDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetDefinitionResponse.Unmarshal(m, b)
+}
+func (m *SetDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *SetDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetDefinitionResponse.Merge(m, src)
+}
+func (m *SetDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_SetDefinitionResponse.Size(m)
+}
+func (m *SetDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetDefinitionResponse proto.InternalMessageInfo
+
+type GetDefinitionRequest struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetDefinitionRequest) Reset()         { *m = GetDefinitionRequest{} }
+func (m *GetDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*GetDefinitionRequest) ProtoMessage()    {}
+func (*GetDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{11}
+}
+
+func (m *GetDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetDefinitionRequest.Unmarshal(m, b)
+}
+func (m *GetDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *GetDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetDefinitionRequest.Merge(m, src)
+}
+func (m *GetDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_GetDefinitionRequest.Size(m)
+}
+func (m *GetDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetDefinitionRequest proto.InternalMessageInfo
+
+func (m *GetDefinitionRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type GetDefinitionResponse struct {
+	Definition           *Definition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *GetDefinitionResponse) Reset()         { *m = GetDefinitionResponse{} }
+func (m *GetDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*GetDefinitionResponse) ProtoMessage()    {}
+func (*GetDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{12}
+}
+
+func (m *GetDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetDefinitionResponse.Unmarshal(m, b)
+}
+func (m *GetDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *GetDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetDefinitionResponse.Merge(m, src)
+}
+func (m *GetDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_GetDefinitionResponse.Size(m)
+}
+func (m *GetDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetDefinitionResponse proto.InternalMessageInfo
+
+func (m *GetDefinitionResponse) GetDefinition() *Definition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type DeleteDefinitionRequest struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteDefinitionRequest) Reset()         { *m = DeleteDefinitionRequest{} }
+func (m *DeleteDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteDefinitionRequest) ProtoMessage()    {}
+func (*DeleteDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{13}
+}
+
+func (m *DeleteDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteDefinitionRequest.Unmarshal(m, b)
+}
+func (m *DeleteDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteDefinitionRequest.Merge(m, src)
+}
+func (m *DeleteDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteDefinitionRequest.Size(m)
+}
+func (m *DeleteDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteDefinitionRequest proto.InternalMessageInfo
+
+func (m *DeleteDefinitionRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type DeleteDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteDefinitionResponse) Reset()         { *m = DeleteDefinitionResponse{} }
+func (m *DeleteDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteDefinitionResponse) ProtoMessage()    {}
+func (*DeleteDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_871986018790d2fd, []int{14}
+}
+
+func (m *DeleteDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteDefinitionResponse.Unmarshal(m, b)
+}
+func (m *DeleteDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteDefinitionResponse.Merge(m, src)
+}
+func (m *DeleteDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteDefinitionResponse.Size(m)
+}
+func (m *DeleteDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteDefinitionResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterEnum("datapb.Scope", Scope_name, Scope_value)
-	proto.RegisterType((*AttributeDefinition)(nil), "datapb.AttributeDefinition")
-	proto.RegisterType((*Attribute)(nil), "datapb.Attribute")
+	proto.RegisterType((*Definition)(nil), "datapb.Definition")
+	proto.RegisterType((*Data)(nil), "datapb.Data")
 	proto.RegisterType((*Query)(nil), "datapb.Query")
-	proto.RegisterType((*SetAttributesRequest)(nil), "datapb.SetAttributesRequest")
-	proto.RegisterType((*SetAttributesResponse)(nil), "datapb.SetAttributesResponse")
-	proto.RegisterType((*GetAttributesRequest)(nil), "datapb.GetAttributesRequest")
-	proto.RegisterType((*GetAttributesResponse)(nil), "datapb.GetAttributesResponse")
-	proto.RegisterType((*DeleteAttributesRequest)(nil), "datapb.DeleteAttributesRequest")
-	proto.RegisterType((*DeleteAttributesResponse)(nil), "datapb.DeleteAttributesResponse")
+	proto.RegisterType((*SetDataRequest)(nil), "datapb.SetDataRequest")
+	proto.RegisterType((*SetDataResponse)(nil), "datapb.SetDataResponse")
+	proto.RegisterType((*GetDataRequest)(nil), "datapb.GetDataRequest")
+	proto.RegisterType((*GetDataResponse)(nil), "datapb.GetDataResponse")
+	proto.RegisterType((*DeleteDataRequest)(nil), "datapb.DeleteDataRequest")
+	proto.RegisterType((*DeleteDataResponse)(nil), "datapb.DeleteDataResponse")
+	proto.RegisterType((*SetDefinitionRequest)(nil), "datapb.SetDefinitionRequest")
+	proto.RegisterType((*SetDefinitionResponse)(nil), "datapb.SetDefinitionResponse")
+	proto.RegisterType((*GetDefinitionRequest)(nil), "datapb.GetDefinitionRequest")
+	proto.RegisterType((*GetDefinitionResponse)(nil), "datapb.GetDefinitionResponse")
+	proto.RegisterType((*DeleteDefinitionRequest)(nil), "datapb.DeleteDefinitionRequest")
+	proto.RegisterType((*DeleteDefinitionResponse)(nil), "datapb.DeleteDefinitionResponse")
 }
 
 func init() { proto.RegisterFile("data.proto", fileDescriptor_871986018790d2fd) }
 
 var fileDescriptor_871986018790d2fd = []byte{
-	// 508 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xcd, 0x8e, 0xd3, 0x3c,
-	0x14, 0x86, 0xbf, 0xa4, 0x93, 0x7e, 0xd3, 0xd3, 0x1f, 0xb5, 0xa6, 0xa5, 0x51, 0x35, 0x88, 0x28,
-	0xdd, 0x54, 0x5d, 0xb4, 0xa2, 0x6c, 0xd0, 0x20, 0x21, 0x21, 0x2a, 0x22, 0x58, 0x0d, 0xe9, 0x92,
-	0x05, 0x72, 0x92, 0x43, 0x65, 0x94, 0x89, 0xd3, 0xd8, 0x91, 0x60, 0xcb, 0x2d, 0x70, 0x1f, 0xdc,
-	0x04, 0x97, 0xc0, 0x2d, 0x70, 0x21, 0x28, 0x76, 0x12, 0x86, 0x4e, 0x3a, 0x1a, 0xb1, 0xf3, 0xf9,
-	0xc9, 0xfb, 0xbc, 0xe7, 0xd8, 0x0a, 0x40, 0x44, 0x25, 0x5d, 0xa5, 0x19, 0x97, 0x9c, 0xb4, 0x8b,
-	0x73, 0x1a, 0xcc, 0x2e, 0xf6, 0x9c, 0xef, 0x63, 0x5c, 0xd3, 0x94, 0xad, 0x69, 0x92, 0x70, 0x49,
-	0x25, 0xe3, 0x89, 0xd0, 0x5d, 0xee, 0x77, 0x03, 0x1e, 0xbc, 0x94, 0x32, 0x63, 0x41, 0x2e, 0x71,
-	0x8b, 0x1f, 0x59, 0xc2, 0x8a, 0x32, 0x19, 0x80, 0xc9, 0x22, 0xdb, 0x70, 0x8c, 0x45, 0xc7, 0x37,
-	0x59, 0x44, 0xc6, 0x60, 0xc5, 0x34, 0xc0, 0xd8, 0x36, 0x55, 0x4a, 0x07, 0x84, 0xc0, 0xd9, 0x35,
-	0xbb, 0x46, 0xbb, 0xa5, 0x92, 0xea, 0x4c, 0x1c, 0xe8, 0x46, 0x28, 0xc2, 0x8c, 0xa5, 0x85, 0x90,
-	0x7d, 0xa6, 0x4a, 0x37, 0x53, 0xe4, 0x21, 0xb4, 0xf3, 0x84, 0x1d, 0x72, 0xb4, 0x2d, 0xc7, 0x58,
-	0x9c, 0xfb, 0x65, 0x44, 0xe6, 0x60, 0x89, 0x90, 0xa7, 0x68, 0xb7, 0x1d, 0x63, 0x31, 0xd8, 0xf4,
-	0x57, 0x7a, 0x82, 0xd5, 0xae, 0x48, 0xfa, 0xba, 0xe6, 0xbe, 0x87, 0x4e, 0xed, 0xf7, 0x96, 0x4b,
-	0x1b, 0xfe, 0x0f, 0x79, 0x22, 0xf1, 0xb3, 0x2c, 0x7d, 0x56, 0x61, 0xa3, 0xd3, 0x21, 0xb4, 0xf2,
-	0x8c, 0x95, 0x0e, 0x8b, 0xa3, 0xfb, 0x1a, 0xac, 0x77, 0x39, 0x66, 0x5f, 0x0a, 0x21, 0x91, 0x07,
-	0x9f, 0x30, 0x94, 0xa5, 0x7a, 0x15, 0x92, 0x39, 0xf4, 0x69, 0xc5, 0xff, 0xc0, 0x22, 0x61, 0x9b,
-	0x4e, 0x6b, 0xd1, 0xf1, 0x7b, 0x75, 0xf2, 0x4d, 0x24, 0xdc, 0x10, 0xc6, 0x3b, 0x94, 0xb5, 0x4f,
-	0xe1, 0xe3, 0x21, 0x47, 0x21, 0xef, 0x90, 0x7d, 0x02, 0x50, 0x2b, 0x68, 0xcd, 0xee, 0x66, 0x54,
-	0x2d, 0xa0, 0x16, 0xf2, 0x6f, 0x34, 0xb9, 0x53, 0x98, 0x1c, 0x41, 0x44, 0xca, 0x13, 0x81, 0xee,
-	0x73, 0x18, 0x7b, 0x4d, 0xf4, 0x39, 0x58, 0x87, 0x62, 0x3a, 0xc5, 0xee, 0xfe, 0xd9, 0xaf, 0x1a,
-	0xd9, 0xd7, 0x35, 0xf7, 0x2d, 0x4c, 0xbc, 0x26, 0xd5, 0x23, 0x87, 0xc6, 0x7d, 0x1c, 0xbe, 0x80,
-	0xe9, 0x16, 0x63, 0x94, 0xf8, 0x8f, 0x5e, 0x66, 0x60, 0xdf, 0xfe, 0x5e, 0xdb, 0x59, 0x3e, 0x03,
-	0x4b, 0xbd, 0x0b, 0x02, 0xd0, 0xbe, 0xca, 0x83, 0x98, 0x85, 0xc3, 0xff, 0x48, 0x0f, 0xce, 0xaf,
-	0x30, 0x13, 0x3c, 0xa1, 0xf1, 0xd0, 0x20, 0x13, 0x18, 0xbd, 0xd2, 0xd7, 0xef, 0xa3, 0x90, 0x19,
-	0x0b, 0x25, 0x46, 0x43, 0x73, 0xf3, 0xc3, 0x84, 0xce, 0x96, 0x4a, 0xba, 0x93, 0x3c, 0x43, 0x12,
-	0x40, 0xff, 0xaf, 0x2d, 0x92, 0x8b, 0xfa, 0xd9, 0x35, 0xec, 0x70, 0xf6, 0xe8, 0x44, 0xb5, 0x5c,
-	0xfd, 0xf8, 0xeb, 0xcf, 0x5f, 0xdf, 0xcc, 0x81, 0xdb, 0x59, 0x17, 0x6d, 0x6b, 0x81, 0xf2, 0xd2,
-	0x58, 0x16, 0x0c, 0xaf, 0x99, 0xe1, 0xdd, 0xc9, 0xf0, 0xee, 0xc3, 0xd8, 0x6b, 0x46, 0x02, 0xc3,
-	0xe3, 0x5d, 0x91, 0xc7, 0x95, 0xd0, 0x89, 0x5b, 0x98, 0x39, 0xa7, 0x1b, 0x4a, 0xd8, 0x54, 0xc1,
-	0x46, 0x6e, 0x4f, 0xc3, 0x22, 0xd5, 0x77, 0x69, 0x2c, 0x83, 0xb6, 0xfa, 0x7f, 0x3c, 0xfd, 0x1d,
-	0x00, 0x00, 0xff, 0xff, 0xbc, 0x60, 0x15, 0x1d, 0x73, 0x04, 0x00, 0x00,
+	// 639 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x26, 0x6e, 0x9c, 0x92, 0x69, 0x9b, 0x26, 0xa3, 0x94, 0x98, 0xa8, 0x80, 0xb5, 0xbd, 0x54,
+	0x91, 0x68, 0xa4, 0x20, 0xa4, 0x8a, 0x23, 0x54, 0xb2, 0x04, 0x1c, 0x8a, 0x73, 0xe5, 0xe2, 0xd8,
+	0x93, 0x68, 0xc1, 0xf5, 0xa6, 0xf6, 0x06, 0x51, 0x21, 0x2e, 0xbc, 0x02, 0x0f, 0x85, 0xc4, 0x95,
+	0x57, 0xe0, 0x41, 0xd0, 0xae, 0x37, 0xa9, 0xed, 0xa4, 0x11, 0xea, 0x6d, 0x76, 0x7e, 0xbe, 0x6f,
+	0xbe, 0x99, 0x71, 0x02, 0x10, 0x05, 0x32, 0x38, 0x9b, 0xa7, 0x42, 0x0a, 0x6c, 0x28, 0x7b, 0x3e,
+	0xe9, 0x1f, 0xcf, 0x84, 0x98, 0xc5, 0x34, 0x0c, 0xe6, 0x7c, 0x18, 0x24, 0x89, 0x90, 0x81, 0xe4,
+	0x22, 0xc9, 0xf2, 0x2c, 0xf6, 0xab, 0x06, 0x70, 0x41, 0x53, 0x9e, 0x70, 0xe5, 0xc5, 0x16, 0x58,
+	0x3c, 0x72, 0x6a, 0x6e, 0xed, 0xb4, 0xe9, 0x5b, 0x3c, 0xc2, 0x2e, 0xd8, 0x71, 0x30, 0xa1, 0xd8,
+	0xb1, 0xb4, 0x2b, 0x7f, 0xa0, 0x0b, 0x7b, 0x11, 0x65, 0x61, 0xca, 0xe7, 0xaa, 0xc8, 0xd9, 0xd1,
+	0xb1, 0xa2, 0x0b, 0x11, 0xea, 0x57, 0xfc, 0x8a, 0x9c, 0xba, 0x0e, 0x69, 0x1b, 0x1d, 0xd8, 0x0d,
+	0x45, 0x22, 0xe9, 0xab, 0x74, 0x6c, 0xed, 0x5e, 0x3e, 0xf1, 0x04, 0xec, 0x2c, 0x14, 0x73, 0x72,
+	0x1a, 0x6e, 0xed, 0xb4, 0x35, 0x3a, 0x38, 0xcb, 0x5b, 0x3f, 0x1b, 0x2b, 0xa7, 0x9f, 0xc7, 0xf0,
+	0x29, 0x40, 0x18, 0x48, 0x9a, 0x89, 0x94, 0x53, 0xe6, 0xec, 0xba, 0x3b, 0xa7, 0x4d, 0xbf, 0xe0,
+	0x61, 0xaf, 0xa1, 0x7e, 0x11, 0xc8, 0x60, 0x4d, 0x42, 0x81, 0xd6, 0x2a, 0xd3, 0xb6, 0x61, 0x67,
+	0x91, 0x72, 0xd3, 0xbe, 0x32, 0xd9, 0x4b, 0xb0, 0x3f, 0x2c, 0x28, 0xbd, 0x51, 0x45, 0xd9, 0x62,
+	0xf2, 0x89, 0x42, 0x69, 0x90, 0x96, 0x4f, 0xa5, 0xec, 0x33, 0xdd, 0x64, 0x8e, 0xa5, 0x1b, 0xd0,
+	0x36, 0x7b, 0x0f, 0xad, 0x31, 0x49, 0xc5, 0xee, 0xd3, 0xf5, 0x82, 0x32, 0xb9, 0xa5, 0xde, 0x85,
+	0xba, 0x52, 0xa7, 0xeb, 0xf7, 0x46, 0xfb, 0x4b, 0xa9, 0xba, 0x58, 0x47, 0x58, 0x07, 0x0e, 0x57,
+	0x68, 0xd9, 0x5c, 0x24, 0x19, 0x31, 0x17, 0x5a, 0x5e, 0x99, 0xa0, 0xa2, 0x92, 0x71, 0x38, 0xf4,
+	0xca, 0x45, 0x38, 0x02, 0x88, 0x56, 0x9b, 0xd5, 0xa9, 0x7b, 0x23, 0x5c, 0xf1, 0xad, 0x22, 0x7e,
+	0x21, 0x0b, 0x19, 0xd8, 0x5f, 0x82, 0x78, 0x41, 0x7a, 0x54, 0xd5, 0xf6, 0xf2, 0x10, 0x3b, 0x87,
+	0xce, 0x05, 0xc5, 0x24, 0xa9, 0xd8, 0xcf, 0x09, 0xd8, 0xd7, 0x6a, 0x72, 0x86, 0x67, 0xb5, 0x42,
+	0x3d, 0x4e, 0x3f, 0x8f, 0xb1, 0x2e, 0x60, 0xb1, 0xd2, 0x88, 0x7b, 0x0b, 0x5d, 0xa5, 0xf7, 0xb6,
+	0x21, 0x03, 0x79, 0x8f, 0xfe, 0x59, 0x0f, 0x8e, 0x2a, 0x58, 0x86, 0x64, 0x00, 0x5d, 0x6f, 0x13,
+	0x09, 0x42, 0x3d, 0x09, 0xae, 0xc8, 0x4c, 0x52, 0xdb, 0xec, 0x1d, 0x1c, 0x79, 0x9b, 0x40, 0xee,
+	0xd5, 0xd1, 0x73, 0xe8, 0x19, 0xcd, 0xff, 0xc5, 0xdd, 0x07, 0x67, 0x3d, 0x3d, 0xa7, 0x1f, 0x9c,
+	0x83, 0xad, 0xbf, 0x08, 0x04, 0x68, 0x5c, 0x2e, 0x26, 0x31, 0x0f, 0xdb, 0x0f, 0x70, 0x1f, 0x1e,
+	0x5e, 0x52, 0x9a, 0x89, 0x24, 0x88, 0xdb, 0x35, 0x3c, 0x82, 0xce, 0x9b, 0xfc, 0xba, 0x7d, 0xca,
+	0x64, 0xca, 0x43, 0x49, 0x51, 0xdb, 0x1a, 0xfd, 0xae, 0x43, 0x53, 0xcd, 0x7c, 0x2c, 0x45, 0x4a,
+	0x78, 0x09, 0xbb, 0xe6, 0xc0, 0xf0, 0xd1, 0xea, 0x53, 0x2b, 0x9d, 0x57, 0xbf, 0xb7, 0xe6, 0x37,
+	0x73, 0xec, 0xfe, 0xf8, 0xf3, 0xf7, 0xa7, 0xd5, 0x62, 0xcd, 0xa1, 0x4a, 0x18, 0x66, 0x24, 0x5f,
+	0xd5, 0x06, 0x0a, 0xd1, 0xab, 0x22, 0x7a, 0x77, 0x20, 0x7a, 0xdb, 0x11, 0x67, 0x39, 0xe2, 0x47,
+	0xf5, 0xb3, 0xb4, 0x3c, 0x15, 0x7c, 0x7c, 0x3b, 0xe4, 0xca, 0xe1, 0xf5, 0xfb, 0x9b, 0x42, 0x06,
+	0xba, 0xa7, 0xa1, 0x3b, 0x6c, 0x3f, 0x87, 0x8e, 0x74, 0x86, 0x42, 0x9f, 0xc2, 0x41, 0x69, 0xc3,
+	0x78, 0x5c, 0xec, 0xae, 0xba, 0xa8, 0xfe, 0x93, 0x3b, 0xa2, 0x86, 0xc6, 0xd1, 0x34, 0x88, 0xed,
+	0x25, 0xcd, 0x74, 0xf8, 0x4d, 0x2d, 0xf3, 0x3b, 0x4e, 0xe0, 0x60, 0xbc, 0x99, 0x67, 0xbc, 0x95,
+	0x67, 0xf3, 0x0d, 0x57, 0x26, 0x15, 0xd1, 0x54, 0x69, 0x11, 0xd0, 0xae, 0x5e, 0x0c, 0x3e, 0xab,
+	0x0c, 0x65, 0x8d, 0xc9, 0xbd, 0x3b, 0xa1, 0x2c, 0x6a, 0xb0, 0x26, 0x6a, 0xd2, 0xd0, 0xff, 0x1c,
+	0x2f, 0xfe, 0x05, 0x00, 0x00, 0xff, 0xff, 0xdc, 0xd5, 0x7a, 0x0e, 0x6d, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -529,9 +771,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DataStoreClient interface {
-	SetAttributes(ctx context.Context, in *SetAttributesRequest, opts ...grpc.CallOption) (*SetAttributesResponse, error)
-	GetAttributes(ctx context.Context, in *GetAttributesRequest, opts ...grpc.CallOption) (*GetAttributesResponse, error)
-	DeleteAttributes(ctx context.Context, in *DeleteAttributesRequest, opts ...grpc.CallOption) (*DeleteAttributesResponse, error)
+	SetData(ctx context.Context, in *SetDataRequest, opts ...grpc.CallOption) (*SetDataResponse, error)
+	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
+	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
+	GetDefinition(ctx context.Context, in *GetDefinitionRequest, opts ...grpc.CallOption) (*GetDefinitionResponse, error)
+	SetDefinition(ctx context.Context, in *SetDefinitionRequest, opts ...grpc.CallOption) (*SetDefinitionResponse, error)
+	DeleteDefinition(ctx context.Context, in *DeleteDefinitionRequest, opts ...grpc.CallOption) (*DeleteDefinitionResponse, error)
 }
 
 type dataStoreClient struct {
@@ -542,27 +787,54 @@ func NewDataStoreClient(cc *grpc.ClientConn) DataStoreClient {
 	return &dataStoreClient{cc}
 }
 
-func (c *dataStoreClient) SetAttributes(ctx context.Context, in *SetAttributesRequest, opts ...grpc.CallOption) (*SetAttributesResponse, error) {
-	out := new(SetAttributesResponse)
-	err := c.cc.Invoke(ctx, "/datapb.DataStore/SetAttributes", in, out, opts...)
+func (c *dataStoreClient) SetData(ctx context.Context, in *SetDataRequest, opts ...grpc.CallOption) (*SetDataResponse, error) {
+	out := new(SetDataResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/SetData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataStoreClient) GetAttributes(ctx context.Context, in *GetAttributesRequest, opts ...grpc.CallOption) (*GetAttributesResponse, error) {
-	out := new(GetAttributesResponse)
-	err := c.cc.Invoke(ctx, "/datapb.DataStore/GetAttributes", in, out, opts...)
+func (c *dataStoreClient) GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error) {
+	out := new(GetDataResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/GetData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataStoreClient) DeleteAttributes(ctx context.Context, in *DeleteAttributesRequest, opts ...grpc.CallOption) (*DeleteAttributesResponse, error) {
-	out := new(DeleteAttributesResponse)
-	err := c.cc.Invoke(ctx, "/datapb.DataStore/DeleteAttributes", in, out, opts...)
+func (c *dataStoreClient) DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error) {
+	out := new(DeleteDataResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/DeleteData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataStoreClient) GetDefinition(ctx context.Context, in *GetDefinitionRequest, opts ...grpc.CallOption) (*GetDefinitionResponse, error) {
+	out := new(GetDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/GetDefinition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataStoreClient) SetDefinition(ctx context.Context, in *SetDefinitionRequest, opts ...grpc.CallOption) (*SetDefinitionResponse, error) {
+	out := new(SetDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/SetDefinition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataStoreClient) DeleteDefinition(ctx context.Context, in *DeleteDefinitionRequest, opts ...grpc.CallOption) (*DeleteDefinitionResponse, error) {
+	out := new(DeleteDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/datapb.DataStore/DeleteDefinition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -571,65 +843,145 @@ func (c *dataStoreClient) DeleteAttributes(ctx context.Context, in *DeleteAttrib
 
 // DataStoreServer is the server API for DataStore service.
 type DataStoreServer interface {
-	SetAttributes(context.Context, *SetAttributesRequest) (*SetAttributesResponse, error)
-	GetAttributes(context.Context, *GetAttributesRequest) (*GetAttributesResponse, error)
-	DeleteAttributes(context.Context, *DeleteAttributesRequest) (*DeleteAttributesResponse, error)
+	SetData(context.Context, *SetDataRequest) (*SetDataResponse, error)
+	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
+	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
+	GetDefinition(context.Context, *GetDefinitionRequest) (*GetDefinitionResponse, error)
+	SetDefinition(context.Context, *SetDefinitionRequest) (*SetDefinitionResponse, error)
+	DeleteDefinition(context.Context, *DeleteDefinitionRequest) (*DeleteDefinitionResponse, error)
+}
+
+// UnimplementedDataStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedDataStoreServer struct {
+}
+
+func (*UnimplementedDataStoreServer) SetData(ctx context.Context, req *SetDataRequest) (*SetDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetData not implemented")
+}
+func (*UnimplementedDataStoreServer) GetData(ctx context.Context, req *GetDataRequest) (*GetDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
+}
+func (*UnimplementedDataStoreServer) DeleteData(ctx context.Context, req *DeleteDataRequest) (*DeleteDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteData not implemented")
+}
+func (*UnimplementedDataStoreServer) GetDefinition(ctx context.Context, req *GetDefinitionRequest) (*GetDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDefinition not implemented")
+}
+func (*UnimplementedDataStoreServer) SetDefinition(ctx context.Context, req *SetDefinitionRequest) (*SetDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetDefinition not implemented")
+}
+func (*UnimplementedDataStoreServer) DeleteDefinition(ctx context.Context, req *DeleteDefinitionRequest) (*DeleteDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDefinition not implemented")
 }
 
 func RegisterDataStoreServer(s *grpc.Server, srv DataStoreServer) {
 	s.RegisterService(&_DataStore_serviceDesc, srv)
 }
 
-func _DataStore_SetAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetAttributesRequest)
+func _DataStore_SetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataStoreServer).SetAttributes(ctx, in)
+		return srv.(DataStoreServer).SetData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/datapb.DataStore/SetAttributes",
+		FullMethod: "/datapb.DataStore/SetData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataStoreServer).SetAttributes(ctx, req.(*SetAttributesRequest))
+		return srv.(DataStoreServer).SetData(ctx, req.(*SetDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataStore_GetAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAttributesRequest)
+func _DataStore_GetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataStoreServer).GetAttributes(ctx, in)
+		return srv.(DataStoreServer).GetData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/datapb.DataStore/GetAttributes",
+		FullMethod: "/datapb.DataStore/GetData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataStoreServer).GetAttributes(ctx, req.(*GetAttributesRequest))
+		return srv.(DataStoreServer).GetData(ctx, req.(*GetDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataStore_DeleteAttributes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAttributesRequest)
+func _DataStore_DeleteData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataStoreServer).DeleteAttributes(ctx, in)
+		return srv.(DataStoreServer).DeleteData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/datapb.DataStore/DeleteAttributes",
+		FullMethod: "/datapb.DataStore/DeleteData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataStoreServer).DeleteAttributes(ctx, req.(*DeleteAttributesRequest))
+		return srv.(DataStoreServer).DeleteData(ctx, req.(*DeleteDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataStore_GetDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataStoreServer).GetDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/datapb.DataStore/GetDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataStoreServer).GetDefinition(ctx, req.(*GetDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataStore_SetDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataStoreServer).SetDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/datapb.DataStore/SetDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataStoreServer).SetDefinition(ctx, req.(*SetDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataStore_DeleteDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataStoreServer).DeleteDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/datapb.DataStore/DeleteDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataStoreServer).DeleteDefinition(ctx, req.(*DeleteDefinitionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -639,16 +991,28 @@ var _DataStore_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*DataStoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SetAttributes",
-			Handler:    _DataStore_SetAttributes_Handler,
+			MethodName: "SetData",
+			Handler:    _DataStore_SetData_Handler,
 		},
 		{
-			MethodName: "GetAttributes",
-			Handler:    _DataStore_GetAttributes_Handler,
+			MethodName: "GetData",
+			Handler:    _DataStore_GetData_Handler,
 		},
 		{
-			MethodName: "DeleteAttributes",
-			Handler:    _DataStore_DeleteAttributes_Handler,
+			MethodName: "DeleteData",
+			Handler:    _DataStore_DeleteData_Handler,
+		},
+		{
+			MethodName: "GetDefinition",
+			Handler:    _DataStore_GetDefinition_Handler,
+		},
+		{
+			MethodName: "SetDefinition",
+			Handler:    _DataStore_SetDefinition_Handler,
+		},
+		{
+			MethodName: "DeleteDefinition",
+			Handler:    _DataStore_DeleteDefinition_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

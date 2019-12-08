@@ -10,65 +10,97 @@ enum Scope {
     ContextRestricted = 2;
 }
 
-message AttributeDefinition {
+message Definition {
     string id = 1;
     string label = 2;
-    string mime = 3;
-    string description = 4;
-    bool unique = 5;
+    string description = 3;
+    string mime = 4;
+    string context = 5;
     Scope scope = 6;
+    repeated string categories = 7;
 }
 
-message Attribute {
+message Data {
     string id = 1;
     string context = 2;
-    string mime = 3;
-    string uri = 4;
+    string uri = 3;
 }
 
 message Query {
     string subject = 1;
-    repeated string attribute_ids = 2;
+    repeated string keys = 2;
 }
 
-
 service DataStore {
-    rpc SetAttributes(SetAttributesRequest) returns (SetAttributesResponse) {
+    rpc SetData(SetDataRequest) returns (SetDataResponse) {
         option(google.api.http) = {
             post: "/data/set";
             body: "*";
         };
     };
-    rpc GetAttributes(GetAttributesRequest) returns (GetAttributesResponse) {
+
+    rpc GetData(GetDataRequest) returns (GetDataResponse) {
         option(google.api.http) = {
             post: "/data/get";
             body: "*";
         };
     };
 
-    rpc DeleteAttributes(DeleteAttributesRequest) returns (DeleteAttributesResponse) {
+    rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse) {
         option (google.api.http) = {
             post: "/data/delete";
             body: "*";
         };
-    }
-}
+    };
 
-message SetAttributesRequest {
+    rpc GetDefinition(GetDefinitionRequest) returns (GetDefinitionResponse) {
+        option(google.api.http).get = "/data/def/{name}";
+    };
+
+    rpc SetDefinition(SetDefinitionRequest) returns (SetDefinitionResponse) {
+        option (google.api.http) = {
+            post: "/data/def";
+            body: "*";
+        };
+    };
+
+    rpc DeleteDefinition(DeleteDefinitionRequest) returns (DeleteDefinitionResponse) {
+        option (google.api.http).delete = "/data/def/{name}";
+    };
+};
+
+message SetDataRequest {
     string subject = 1;
-    repeated Attribute attributes = 2;
+    repeated Data data = 2;
 }
-message SetAttributesResponse {}
+message SetDataResponse {}
 
-message GetAttributesRequest {
+message GetDataRequest {
+    string id = 1;
+}
+message GetDataResponse {
+    Definition definition = 1;
+    Data value = 2;
+}
+
+message DeleteDataRequest {
     Query query = 1;
 }
-message GetAttributesResponse {
-    repeated Attribute attributes = 1;
+message DeleteDataResponse {}
+
+message SetDefinitionRequest {
+    Definition definition = 1;
+}
+message SetDefinitionResponse {}
+
+message GetDefinitionRequest {
+    string name = 1;
+}
+message GetDefinitionResponse {
+    Definition definition = 1;
 }
 
-message DeleteAttributesRequest {
-    Query query = 1;
-
+message DeleteDefinitionRequest {
+    string name = 1;
 }
-message DeleteAttributesResponse {}
+message DeleteDefinitionResponse {}

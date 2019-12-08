@@ -15,14 +15,14 @@
     "application/json"
   ],
   "paths": {
-    "/data/delete": {
+    "/data/def": {
       "post": {
-        "operationId": "DeleteAttributes",
+        "operationId": "SetDefinition",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/datapbDeleteAttributesResponse"
+              "$ref": "#/definitions/datapbSetDefinitionResponse"
             }
           }
         },
@@ -32,7 +32,79 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/datapbDeleteAttributesRequest"
+              "$ref": "#/definitions/datapbSetDefinitionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      }
+    },
+    "/data/def/{name}": {
+      "get": {
+        "operationId": "GetDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbGetDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      }
+    },
+    "/data/delete": {
+      "post": {
+        "operationId": "DeleteData",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteDataResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteDataRequest"
             }
           }
         ],
@@ -43,12 +115,12 @@
     },
     "/data/get": {
       "post": {
-        "operationId": "GetAttributes",
+        "operationId": "GetData",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/datapbGetAttributesResponse"
+              "$ref": "#/definitions/datapbGetDataResponse"
             }
           }
         },
@@ -58,7 +130,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/datapbGetAttributesRequest"
+              "$ref": "#/definitions/datapbGetDataRequest"
             }
           }
         ],
@@ -69,12 +141,12 @@
     },
     "/data/set": {
       "post": {
-        "operationId": "SetAttributes",
+        "operationId": "SetData",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/datapbSetAttributesResponse"
+              "$ref": "#/definitions/datapbSetDataResponse"
             }
           }
         },
@@ -84,7 +156,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/datapbSetAttributesRequest"
+              "$ref": "#/definitions/datapbSetDataRequest"
             }
           }
         ],
@@ -95,7 +167,7 @@
     }
   },
   "definitions": {
-    "datapbAttribute": {
+    "datapbData": {
       "type": "object",
       "properties": {
         "id": {
@@ -104,41 +176,78 @@
         "context": {
           "type": "string"
         },
-        "mime": {
-          "type": "string"
-        },
         "uri": {
           "type": "string"
         }
       }
     },
-    "datapbDeleteAttributesRequest": {
+    "datapbDefinition": {
       "type": "object",
       "properties": {
-        "query": {
-          "$ref": "#/definitions/datapbQuery"
-        }
-      }
-    },
-    "datapbDeleteAttributesResponse": {
-      "type": "object"
-    },
-    "datapbGetAttributesRequest": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "$ref": "#/definitions/datapbQuery"
-        }
-      }
-    },
-    "datapbGetAttributesResponse": {
-      "type": "object",
-      "properties": {
-        "attributes": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mime": {
+          "type": "string"
+        },
+        "context": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/definitions/datapbScope"
+        },
+        "categories": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/datapbAttribute"
+            "type": "string"
           }
+        }
+      }
+    },
+    "datapbDeleteDataRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "$ref": "#/definitions/datapbQuery"
+        }
+      }
+    },
+    "datapbDeleteDataResponse": {
+      "type": "object"
+    },
+    "datapbDeleteDefinitionResponse": {
+      "type": "object"
+    },
+    "datapbGetDataRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "datapbGetDataResponse": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/definitions/datapbDefinition"
+        },
+        "value": {
+          "$ref": "#/definitions/datapbData"
+        }
+      }
+    },
+    "datapbGetDefinitionResponse": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/definitions/datapbDefinition"
         }
       }
     },
@@ -148,7 +257,7 @@
         "subject": {
           "type": "string"
         },
-        "attribute_ids": {
+        "keys": {
           "type": "array",
           "items": {
             "type": "string"
@@ -156,21 +265,41 @@
         }
       }
     },
-    "datapbSetAttributesRequest": {
+    "datapbScope": {
+      "type": "string",
+      "enum": [
+        "Public",
+        "Personal",
+        "ContextRestricted"
+      ],
+      "default": "Public"
+    },
+    "datapbSetDataRequest": {
       "type": "object",
       "properties": {
         "subject": {
           "type": "string"
         },
-        "attributes": {
+        "data": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/datapbAttribute"
+            "$ref": "#/definitions/datapbData"
           }
         }
       }
     },
-    "datapbSetAttributesResponse": {
+    "datapbSetDataResponse": {
+      "type": "object"
+    },
+    "datapbSetDefinitionRequest": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/definitions/datapbDefinition"
+        }
+      }
+    },
+    "datapbSetDefinitionResponse": {
       "type": "object"
     }
   }
