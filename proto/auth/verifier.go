@@ -22,11 +22,8 @@ type TokenVerifier interface {
 
 type tokenVerifier struct {
 	sync.Mutex
-	singerCert     *x509.Certificate
-	contextUpdater WithTokenValidated
+	singerCert *x509.Certificate
 }
-
-type WithTokenValidated func(ctx context.Context, t *JWT) context.Context
 
 func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
 	if t.Claims == nil {
@@ -97,17 +94,12 @@ func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 	if err != nil {
 		return JWTState_NOT_VALID, errors.Forbidden
 	}
-
-	if v.contextUpdater != nil {
-		ctx = v.contextUpdater(ctx, t)
-	}
 	return state, nil
 }
 
-func NewTokenVerifier(certificate *x509.Certificate, withTokenValidated WithTokenValidated) *tokenVerifier {
+func NewTokenVerifier(certificate *x509.Certificate) *tokenVerifier {
 	return &tokenVerifier{
-		singerCert:     certificate,
-		contextUpdater: withTokenValidated,
+		singerCert: certificate,
 	}
 }
 
@@ -165,13 +157,13 @@ type StringTokenVerifier struct {
 	verifier TokenVerifier
 }
 
-func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) error {
+func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) (context.Context, error) {
 	t, err := TokenFromJWT(jwt)
 	if err != nil {
-		return err
+		return ctx, err
 	}
 	_, err = stv.verifier.Verify(ctx, t)
-	return err
+	return ctx, err
 }
 
 func NewStringTokenVerifier(tv TokenVerifier) *StringTokenVerifier {
