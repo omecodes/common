@@ -1,99 +1,83 @@
 package errors
 
-var (
-	HttpForbidden      = &Error{Code: 403, Message: "HTTP forbidden"}
-	HttpUnauthorized   = &Error{Code: 401, Message: "HTTP not allowed"}
-	HttpNotFound       = &Error{Code: 404, Message: "HTTP not found"}
-	HttpInternal       = &Error{Code: 500, Message: "HTTP internal service error"}
-	HttpBadRequest     = &Error{Code: 400, Message: "HTTP bad request"}
-	HttpNotImplemented = &Error{Code: 501, Message: "HTTP not implemented"}
-	HttpProcessing     = &Error{Code: 502, Message: "HTTP processing"}
-	HttpTimeOut        = &Error{Code: 408, Message: "HTTP timeout"}
-	NotFound           = &Error{Code: 1, Message: "not found"}
-	Unauthorized       = &Error{Code: 2, Message: "unauthorized"}
-	NotSupported       = &Error{Code: 3, Message: "not supported"}
-	Duplicate          = &Error{Code: 4, Message: "duplicate key"}
-	Unexpected         = &Error{Code: 5, Message: "unexpected"}
-	WrongContent       = &Error{Code: 6, Message: "wrong content"}
-	BadInput           = &Error{Code: 7, Message: "bad input"}
-	TimeOut            = &Error{Code: 8, Message: "time out"}
-	Forbidden          = &Error{Code: 8, Message: "forbidden"}
-	Internal           = &Error{Code: 8, Message: "internal"}
+import (
+	"errors"
+	"fmt"
+	"net/http"
 )
 
-type Error struct {
-	Code    int
-	Message string
-}
+var New = errors.New
+var Errorf = fmt.Errorf
 
-func (e *Error) Error() string {
-	return e.Message
-}
+type Error uint32
 
-func New(message string) error {
-	return &Error{
-		Code:    HttpInternal.Code,
-		Message: message,
-	}
-}
+const (
+	Internal       = Error(1)
+	NotFound       = Error(2)
+	Unavailable    = Error(3)
+	Forbidden      = Error(4)
+	Unauthorized   = Error(5)
+	Duplicate      = Error(6)
+	BadInput       = Error(7)
+	NotSupported   = Error(8)
+	NotImplemented = Error(9)
+)
 
-func Parse(e error) *Error {
-	return ParseString(e.Error())
-}
+func (e Error) Error() string {
+	switch e {
+	case NotFound:
+		return "not found"
 
-func ParseString(str string) *Error {
-	switch str {
-	case HttpForbidden.Message:
-		return HttpForbidden
-	case HttpUnauthorized.Message:
-		return HttpUnauthorized
-	case HttpNotFound.Message:
-		return HttpNotFound
-	case HttpBadRequest.Message:
-		return HttpBadRequest
-	case HttpNotImplemented.Message:
-		return HttpNotImplemented
-	case HttpProcessing.Message:
-		return HttpProcessing
-	case HttpTimeOut.Message:
-		return HttpTimeOut
-	case NotFound.Message:
-		return NotFound
-	case Unauthorized.Message:
-		return NotFound
-	case Unexpected.Message:
-		return NotFound
-	case Duplicate.Message:
-		return Duplicate
-	case NotSupported.Message:
-		return NotSupported
-	case WrongContent.Message:
-		return WrongContent
-	case TimeOut.Message:
-		return TimeOut
-	case BadInput.Message:
-		return BadInput
+	case Duplicate:
+		return "duplicate"
+
+	case Forbidden:
+		return "forbidden"
+
+	case Unauthorized:
+		return "unauthorized"
+
+	case Unavailable:
+		return "unavailable"
+
+	case BadInput:
+		return "bad input"
+
+	case NotSupported:
+		return "not supported"
+
+	case NotImplemented:
+		return "not implemented"
+
 	default:
-		return HttpInternal
+		return "internal"
 	}
 }
 
-func IsHttpNotFound(e error) bool {
-	return Parse(e) == HttpNotFound
-}
-
-func IsHttpUnauthorized(e error) bool {
-	return Parse(e) == HttpUnauthorized
+func HttpStatus(e error) int {
+	str := e.Error()
+	switch str {
+	case "not found":
+		return http.StatusNotFound
+	case "duplicate":
+		return http.StatusConflict
+	case "forbidden":
+		return http.StatusForbidden
+	case "unauthorized":
+		return http.StatusUnauthorized
+	case "unavailable":
+		return http.StatusServiceUnavailable
+	case "bad input":
+		return http.StatusBadRequest
+	case "not supported":
+		return http.StatusHTTPVersionNotSupported
+	case "not implemented":
+		return http.StatusNotImplemented
+	default:
+		return http.StatusInternalServerError
+	}
 }
 
 func IsNotFound(e error) bool {
-	return Parse(e) == NotFound
-}
-
-func IsTimeOut(e error) bool {
-	return Parse(e) == TimeOut
-}
-
-func IsDuplicate(e error) bool {
-	return Parse(e) == Duplicate
+	return e == NotFound || e.Error() == "not found"
 }

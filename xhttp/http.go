@@ -116,7 +116,7 @@ func HttpBasicMiddlewareStack(ctx context.Context, h http.HandlerFunc, cookieSto
 }
 
 func WriteError(w http.ResponseWriter, err error) {
-	status := errors.Parse(err).Code
+	status := errors.HttpStatus(err)
 	w.WriteHeader(status)
 }
 

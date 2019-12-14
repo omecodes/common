@@ -113,7 +113,7 @@ func (bam *BearerAuthenticationMiddleware) Wrap(next http.HandlerFunc) http.Hand
 			next(w, r)
 			return
 		}
-		WriteError(w, errors.HttpForbidden)
+		WriteError(w, errors.Forbidden)
 	}
 }
 

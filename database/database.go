@@ -110,7 +110,7 @@ func Connect(c conf.Map) (string, interface{}, error) {
 		b, err := bolt.Open(path, 0600, nil)
 		return t, b, err
 	default:
-		return "", nil, errors.HttpNotImplemented
+		return "", nil, errors.NotImplemented
 	}
 }
 
