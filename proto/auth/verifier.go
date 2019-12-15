@@ -4,10 +4,10 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"math/big"
 	"strings"
 	"sync"
@@ -22,14 +22,24 @@ type TokenVerifier interface {
 
 type tokenVerifier struct {
 	sync.Mutex
-	singerCert *x509.Certificate
+	key *ecdsa.PublicKey
 }
 
 func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
 	if t.Claims == nil {
 		return false, errors.Forbidden
 	}
-	parts := strings.Split(t.Signature, ":")
+
+	claimsBytes, err := proto.Marshal(t.Claims)
+	if err != nil {
+		return false, fmt.Errorf("could not encode claims: %s", err)
+	}
+
+	sha := sha256.New()
+	sha.Write(claimsBytes)
+	hash := sha.Sum(nil)
+
+	parts := strings.Split(t.Signature, ".")
 	r, err := base64.StdEncoding.DecodeString(parts[0])
 	if err != nil {
 		return false, errors.New("token wrong format")
@@ -39,26 +49,14 @@ func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
 		return false, errors.New("token wrong format")
 	}
 
-	rInt := &big.Int{}
+	rInt := new(big.Int)
 	rInt.SetBytes(r)
-	sInt := &big.Int{}
+	sInt := new(big.Int)
 	sInt.SetBytes(s)
 
-	claimsBytes, err := json.Marshal(t.Claims)
-	if err != nil {
-		return false, fmt.Errorf("could not encode claims: %s", err)
-	}
-
-	sha := sha256.New()
-	sha.Write(claimsBytes)
-	hash := sha.Sum(nil)
-
 	if t.Header.Alg == "ecdsa" {
-		key, ok := v.singerCert.PublicKey.(*ecdsa.PublicKey)
-		if !ok {
-			return false, errors.New("could not verify token with the public key")
-		}
-		return ecdsa.Verify(key, hash, rInt, sInt), nil
+		return ecdsa.Verify(v.key, hash, rInt, sInt), nil
+
 	} else {
 		return false, errors.NotSupported
 	}
@@ -97,9 +95,9 @@ func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 	return state, nil
 }
 
-func NewTokenVerifier(certificate *x509.Certificate) *tokenVerifier {
+func NewTokenVerifier(key *ecdsa.PublicKey) *tokenVerifier {
 	return &tokenVerifier{
-		singerCert: certificate,
+		key: key,
 	}
 }
 

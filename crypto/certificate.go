@@ -286,6 +286,14 @@ func PEMEncodeCertificate(cert *x509.Certificate) ([]byte, error) {
 	return buff.Bytes(), nil
 }
 
+func PEMDecodeCertificate(pemBytes []byte) (*x509.Certificate, error) {
+	block, _ := pem.Decode(pemBytes)
+	if block == nil {
+		return nil, errors.New("could not decode input bytes")
+	}
+	return x509.ParseCertificate(block.Bytes)
+}
+
 func PEMEncodeKey(key crypto.PrivateKey) ([]byte, error) {
 	var block *pem.Block
 
@@ -302,4 +310,35 @@ func PEMEncodeKey(key crypto.PrivateKey) ([]byte, error) {
 		return nil, errors.NotSupported
 	}
 	return pem.EncodeToMemory(block), nil
+}
+
+func PEMEncodePublicKey(k crypto.PublicKey) ([]byte, error) {
+	var block *pem.Block
+	b, err := x509.MarshalPKIXPublicKey(k)
+	if err != nil {
+		return nil, err
+	}
+
+	block = &pem.Block{Bytes: b}
+
+	switch k.(type) {
+	case *ecdsa.PublicKey:
+		block.Type = "ECDSA PUBLIC KEY"
+	case *rsa.PublicKey:
+		block.Type = "RSA PUBLIC KEY"
+	default:
+		block.Type = "PUBLIC KEY"
+	}
+
+	return pem.EncodeToMemory(block), nil
+}
+
+func PEMDecodePublicKey(pemBytes []byte) (interface{}, string, error) {
+	block, _ := pem.Decode(pemBytes)
+	if block == nil {
+		return nil, "", errors.New("could not decode PEM bytes")
+	}
+
+	k, err := x509.ParsePKIXPublicKey(block.Bytes)
+	return k, block.Type, err
 }

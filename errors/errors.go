@@ -54,6 +54,10 @@ func (e Error) Error() string {
 	}
 }
 
+func (e Error) HttpCode() int {
+	return HttpStatus(e)
+}
+
 func HttpStatus(e error) int {
 	str := e.Error()
 	switch str {
