@@ -11,24 +11,20 @@ enum Scope {
 }
 
 message Definition {
-    string id = 1;
+    string name = 1;
     string label = 2;
     string description = 3;
     string mime = 4;
     string context = 5;
     Scope scope = 6;
     repeated string categories = 7;
+    bool editable_out_of_context = 8;
 }
 
 message Data {
-    string id = 1;
-    string context = 2;
+    string context = 1;
+    string name = 2;
     string uri = 3;
-}
-
-message Query {
-    string subject = 1;
-    repeated string keys = 2;
 }
 
 service DataStore {
@@ -54,7 +50,7 @@ service DataStore {
     };
 
     rpc GetDefinition(GetDefinitionRequest) returns (GetDefinitionResponse) {
-        option(google.api.http).get = "/data/def/{id}";
+        option(google.api.http).get = "/data/def";
     };
 
     rpc SetDefinition(SetDefinitionRequest) returns (SetDefinitionResponse) {
@@ -65,7 +61,7 @@ service DataStore {
     };
 
     rpc DeleteDefinition(DeleteDefinitionRequest) returns (DeleteDefinitionResponse) {
-        option (google.api.http).delete = "/data/def/{id}";
+        option (google.api.http).delete = "/data/def";
     };
 };
 
@@ -76,7 +72,8 @@ message SetDataRequest {
 message SetDataResponse {}
 
 message GetDataRequest {
-    string id = 1;
+    string context = 1;
+    string name = 2;
 }
 message GetDataResponse {
     Definition definition = 1;
@@ -84,7 +81,9 @@ message GetDataResponse {
 }
 
 message DeleteDataRequest {
-    Query query = 1;
+    string subject = 1;
+    string context = 2;
+    string name = 3;
 }
 message DeleteDataResponse {}
 
@@ -94,13 +93,15 @@ message SetDefinitionRequest {
 message SetDefinitionResponse {}
 
 message GetDefinitionRequest {
-    string id = 1;
+    string context = 1;
+    string name = 2;
 }
 message GetDefinitionResponse {
     Definition definition = 1;
 }
 
 message DeleteDefinitionRequest {
-    string id = 1;
+    string context = 1;
+    string name = 2;
 }
 message DeleteDefinitionResponse {}

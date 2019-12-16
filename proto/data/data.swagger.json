@@ -16,32 +16,6 @@
   ],
   "paths": {
     "/data/def": {
-      "post": {
-        "operationId": "SetDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbSetDefinitionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/datapbSetDefinitionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DataStore"
-        ]
-      }
-    },
-    "/data/def/{id}": {
       "get": {
         "operationId": "GetDefinition",
         "responses": {
@@ -54,9 +28,15 @@
         },
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
             "type": "string"
           }
         ],
@@ -76,10 +56,40 @@
         },
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "name": "context",
+            "in": "query",
+            "required": false,
             "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      },
+      "post": {
+        "operationId": "SetDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbSetDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/datapbSetDefinitionRequest"
+            }
           }
         ],
         "tags": [
@@ -170,10 +180,10 @@
     "datapbData": {
       "type": "object",
       "properties": {
-        "id": {
+        "context": {
           "type": "string"
         },
-        "context": {
+        "name": {
           "type": "string"
         },
         "uri": {
@@ -184,7 +194,7 @@
     "datapbDefinition": {
       "type": "object",
       "properties": {
-        "id": {
+        "name": {
           "type": "string"
         },
         "label": {
@@ -207,14 +217,24 @@
           "items": {
             "type": "string"
           }
+        },
+        "editable_out_of_context": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },
     "datapbDeleteDataRequest": {
       "type": "object",
       "properties": {
-        "query": {
-          "$ref": "#/definitions/datapbQuery"
+        "subject": {
+          "type": "string"
+        },
+        "context": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -227,7 +247,10 @@
     "datapbGetDataRequest": {
       "type": "object",
       "properties": {
-        "id": {
+        "context": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         }
       }
@@ -248,20 +271,6 @@
       "properties": {
         "definition": {
           "$ref": "#/definitions/datapbDefinition"
-        }
-      }
-    },
-    "datapbQuery": {
-      "type": "object",
-      "properties": {
-        "subject": {
-          "type": "string"
-        },
-        "keys": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
