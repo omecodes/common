@@ -22,8 +22,7 @@ message Definition {
 
 message Data {
     string id = 1;
-    string context = 2;
-    string uri = 3;
+    string uri = 2;
 }
 
 message Query {

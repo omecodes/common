@@ -312,17 +312,17 @@ func RegisterDataStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 }
 
 var (
-	pattern_DataStore_SetData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "set"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_SetData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "set"}, ""))
 
-	pattern_DataStore_GetData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "get"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_GetData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "get"}, ""))
 
-	pattern_DataStore_DeleteData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_DeleteData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "delete"}, ""))
 
-	pattern_DataStore_GetDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"data", "def", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_GetDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"data", "def", "id"}, ""))
 
-	pattern_DataStore_SetDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "def"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_SetDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"data", "def"}, ""))
 
-	pattern_DataStore_DeleteDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"data", "def", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_DataStore_DeleteDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"data", "def", "id"}, ""))
 )
 
 var (
