@@ -24,7 +24,7 @@ message Definition {
 message Data {
     string context = 1;
     string name = 2;
-    string uri = 3;
+    bytes uri = 3;
 }
 
 service DataStore {

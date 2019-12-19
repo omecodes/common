@@ -10,4 +10,7 @@ const (
 
 	MetaServiceCertificate = "service-certificate"
 	MetaTokenVerifyingKey  = "token-verify-key"
+
+	MetaApiAccessKey    = "api-access-key"
+	MetaApiAccessSecret = "api-access-secret"
 )

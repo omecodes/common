@@ -32,7 +32,7 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 
 	a.cmd = &cobra.Command{
 		Use:   filepath.Base(os.Args[0]),
-		Short: "Configure and run instances",
+		Short: fmt.Sprintf("Configure and run instances of %s", label),
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := cmd.Help(); err != nil {
 				log.Fatalln(err)
@@ -42,7 +42,7 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 
 	a.configureCMD = &cobra.Command{
 		Use:   "configure",
-		Short: "Configures an instance",
+		Short: fmt.Sprintf("Configure an instance of %s", label),
 		Run: func(cmd *cobra.Command, args []string) {
 			if a.name == "" {
 				if err := cmd.Help(); err != nil {
@@ -50,13 +50,17 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 				}
 				log.Fatalln("missing --name flag")
 			}
+
+			fmt.Printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
+			fmt.Printf("%s configs\n", label)
+			fmt.Printf("\n\n")
 			configure()
 		},
 	}
 
 	a.startCMD = &cobra.Command{
 		Use:   "start",
-		Short: "Starts an instance",
+		Short: fmt.Sprintf("Start an instance of %s", label),
 		Run: func(cmd *cobra.Command, args []string) {
 			if a.name == "" {
 				if err := cmd.Help(); err != nil {
@@ -77,6 +81,7 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 	}
 
 	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as application data folder base name")
+	_ = cobra.MarkFlagRequired(a.cmd.PersistentFlags(), "name")
 
 	a.cmd.AddCommand(a.configureCMD)
 	a.cmd.AddCommand(a.startCMD)

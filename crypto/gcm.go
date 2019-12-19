@@ -54,3 +54,17 @@ func AESGCMDecrypt(key, data []byte) ([]byte, error) {
 
 	return gcm.Open(nil, data[:12], data[12:], nil)
 }
+
+func AESGCMDecryptWithNonce(key, nonce, data []byte) ([]byte, error) {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	return gcm.Open(nil, nonce, data, nil)
+}
