@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package apppb;
+
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+enum Scope {
+    Public = 0;
+    Personal = 1;
+    ContextRestricted = 2;
+}
+
+message ApplicationCredentials {
+    string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string secret = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+
+message ApplicationInfo {
+    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string created_by = 2;
+    int64 created_at = 3 [(validator.field) = {msg_exists: true, int_gt: 0}];
+    string label = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string logo_url = 5;
+    string description = 6;
+    string website = 7;
+}
+
+message Application {
+    string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    bool activated = 2;
+    string host = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string oauth_callback_url = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    ApplicationCredentials credentials = 5 [(validator.field) = {msg_exists: true}];
+    ApplicationInfo info = 6 [(validator.field) = {msg_exists: true}];
+}
+
+message AttributeDefinition {
+    string name = 1 [(validator.field) = {msg_exists: true}];
+    string label = 2 [(validator.field) = {msg_exists: true}];
+    string description = 3 [(validator.field) = {msg_exists: true}];
+    string mime = 4 [(validator.field) = {msg_exists: true}];
+    string context = 5 [(validator.field) = {msg_exists: true}];
+    Scope scope = 6 [(validator.field) = {msg_exists: true}];
+    repeated string categories = 7 [(validator.field) = {msg_exists: true}];
+    bool editable_out_of_context = 8 [(validator.field) = {msg_exists: true}];
+}
+
+message RegisterApplicationRequest {
+    Application application = 1 [(validator.field) = {msg_exists: true}];
+}
+message RegisterApplicationResponse{
+    bool id_exists = 1;
+}
+
+message DeRegisterApplicationRequest{
+    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message DeRegisterApplicationResponse{}
+
+message ListApplicationsRequest{}
+message ListApplicationsResponse{
+    repeated Application applications = 1;
+}
+
+message GetApplicationRequest{
+    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message GetApplicationResponse{
+    Application application = 1 [(validator.field) = {msg_exists: true}];
+}
+
+message GetAttributeDefinitionRequest{
+    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message GetAttributeDefinitionResponse{
+    AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+}
+
+message SaveAttributeDefinitionRequest{
+    AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+}
+message SaveAttributeDefinitionResponse{}
+
+message DeleteAttributeDefinitionRequest {
+    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message DeleteAttributeDefinitionResponse {}
+
+message VerifyAuthenticationChallengeRequest {
+    string subject = 1;
+    string challenge = 2;
+    string nonce = 3;
+}
+message VerifyAuthenticationChallengeResponse {
+    bool verified = 1;
+}
+
+service Applications {
+    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse);
+    rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse);
+    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse);
+    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse);
+    rpc SaveAttributeDefinition(SaveAttributeDefinitionRequest) returns (SaveAttributeDefinitionResponse);
+    rpc GetAttributeDefinition(GetAttributeDefinitionRequest) returns (GetAttributeDefinitionResponse);
+    rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse);
+    rpc VerifyAuthenticationChallenge(VerifyAuthenticationChallengeRequest) returns (VerifyAuthenticationChallengeResponse);
+}

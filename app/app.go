@@ -74,13 +74,13 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 
 	a.versionCMD = &cobra.Command{
 		Use:   "version",
-		Short: "Displays application name and version",
+		Short: "Displays app name and version",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(a.version)
 		},
 	}
 
-	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as application data folder base name")
+	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as app data folder base name")
 	_ = cobra.MarkFlagRequired(a.cmd.PersistentFlags(), "name")
 
 	a.cmd.AddCommand(a.configureCMD)

@@ -10,17 +10,6 @@ enum Scope {
     ContextRestricted = 2;
 }
 
-message Definition {
-    string name = 1;
-    string label = 2;
-    string description = 3;
-    string mime = 4;
-    string context = 5;
-    Scope scope = 6;
-    repeated string categories = 7;
-    bool editable_out_of_context = 8;
-}
-
 message Data {
     string context = 1;
     string name = 2;
@@ -48,21 +37,6 @@ service DataStore {
             body: "*";
         };
     };
-
-    rpc GetDefinition(GetDefinitionRequest) returns (GetDefinitionResponse) {
-        option(google.api.http).get = "/data/def";
-    };
-
-    rpc SetDefinition(SetDefinitionRequest) returns (SetDefinitionResponse) {
-        option (google.api.http) = {
-            post: "/data/def";
-            body: "*";
-        };
-    };
-
-    rpc DeleteDefinition(DeleteDefinitionRequest) returns (DeleteDefinitionResponse) {
-        option (google.api.http).delete = "/data/def";
-    };
 };
 
 message SetDataRequest {
@@ -76,8 +50,7 @@ message GetDataRequest {
     string name = 2;
 }
 message GetDataResponse {
-    Definition definition = 1;
-    Data value = 2;
+    Data data = 2;
 }
 
 message DeleteDataRequest {
@@ -86,22 +59,3 @@ message DeleteDataRequest {
     string name = 3;
 }
 message DeleteDataResponse {}
-
-message SetDefinitionRequest {
-    Definition definition = 1;
-}
-message SetDefinitionResponse {}
-
-message GetDefinitionRequest {
-    string context = 1;
-    string name = 2;
-}
-message GetDefinitionResponse {
-    Definition definition = 1;
-}
-
-message DeleteDefinitionRequest {
-    string context = 1;
-    string name = 2;
-}
-message DeleteDefinitionResponse {}

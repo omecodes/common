@@ -1,20 +1,15 @@
 package xhttp
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/types"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
-
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/types"
 )
 
 const (
@@ -64,57 +59,6 @@ type (
 	HttpMiddleware func(handler http.HandlerFunc) http.HandlerFunc
 )
 
-func logger(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		h(w, r)
-		log.Printf(
-			"%s %s %s",
-			r.Method,
-			r.RequestURI,
-			time.Since(start),
-		)
-	}
-}
-
-func final(ctx context.Context, next http.HandlerFunc, cookieStore *sessions.CookieStore, middlewareList ...HttpMiddleware) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler := next
-		for _, m := range middlewareList {
-			handler = m(handler)
-		}
-
-		muxVars := mux.Vars(r)
-		httpCtx := ctx
-		//can add middleware stack here to enrich context before calling the handler
-		httpCtx = context.WithValue(httpCtx, CtxResponseWriter, w)
-		httpCtx = context.WithValue(httpCtx, CtxCCookiesStore, cookieStore)
-		httpCtx = context.WithValue(httpCtx, HttpVars, muxVars)
-
-		r = r.WithContext(httpCtx)
-		handler(w, r)
-	}
-}
-
-func ApiAccessMiddleware(key, secret string, next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user, password, ok := r.BasicAuth()
-		if !ok || key != user && secret != password {
-			WriteResponse(w, 401, &RequireAuth{
-				Realm: "onfs-ds",
-				Type:  "Basic",
-			})
-		}
-		next(w, r)
-	}
-}
-
-func HttpBasicMiddlewareStack(ctx context.Context, h http.HandlerFunc, cookieStore *sessions.CookieStore, middlewareList ...HttpMiddleware) http.HandlerFunc {
-	handler := final(ctx, h.ServeHTTP, cookieStore)
-	handler = logger(handler)
-	return handler
-}
-
 func WriteError(w http.ResponseWriter, err error) {
 	status := errors.HttpStatus(err)
 	w.WriteHeader(status)
@@ -158,11 +102,12 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 		return
 	}
 
-	if resuireAuth, ok := data.(*RequireAuth); ok {
-		writeRequireAuth(resuireAuth, w)
+	if requireAuth, ok := data.(*RequireAuth); ok {
+		writeRequireAuth(requireAuth, w)
 		return
 	}
 
+	w.Header().Set("Content-Type", "app/json")
 	w.WriteHeader(status)
 	bytes, _ := json.Marshal(data)
 	_, err := w.Write(bytes)

@@ -77,7 +77,7 @@ func (bam *BasicAuthenticationMiddleware) Handle(next http.HandlerFunc) http.Han
 		}
 
 		c := bam.provider(user)
-		if c == nil || (c.Username != user && c.Email != user) || c.Password != password {
+		if c == nil || (c.Subject != user && c.Email != user) || c.Password != password {
 			WriteResponse(w, 401, reqAuth)
 			return
 		}

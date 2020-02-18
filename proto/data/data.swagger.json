@@ -4,10 +4,6 @@
     "title": "data.proto",
     "version": "version not set"
   },
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -15,88 +11,6 @@
     "application/json"
   ],
   "paths": {
-    "/data/def": {
-      "get": {
-        "operationId": "GetDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbGetDefinitionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "context",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "DataStore"
-        ]
-      },
-      "delete": {
-        "operationId": "DeleteDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbDeleteDefinitionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "context",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "DataStore"
-        ]
-      },
-      "post": {
-        "operationId": "SetDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbSetDefinitionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/datapbSetDefinitionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DataStore"
-        ]
-      }
-    },
     "/data/delete": {
       "post": {
         "operationId": "DeleteData",
@@ -192,39 +106,6 @@
         }
       }
     },
-    "datapbDefinition": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "label": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "mime": {
-          "type": "string"
-        },
-        "context": {
-          "type": "string"
-        },
-        "scope": {
-          "$ref": "#/definitions/datapbScope"
-        },
-        "categories": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "editable_out_of_context": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      }
-    },
     "datapbDeleteDataRequest": {
       "type": "object",
       "properties": {
@@ -242,9 +123,6 @@
     "datapbDeleteDataResponse": {
       "type": "object"
     },
-    "datapbDeleteDefinitionResponse": {
-      "type": "object"
-    },
     "datapbGetDataRequest": {
       "type": "object",
       "properties": {
@@ -259,30 +137,10 @@
     "datapbGetDataResponse": {
       "type": "object",
       "properties": {
-        "definition": {
-          "$ref": "#/definitions/datapbDefinition"
-        },
-        "value": {
+        "data": {
           "$ref": "#/definitions/datapbData"
         }
       }
-    },
-    "datapbGetDefinitionResponse": {
-      "type": "object",
-      "properties": {
-        "definition": {
-          "$ref": "#/definitions/datapbDefinition"
-        }
-      }
-    },
-    "datapbScope": {
-      "type": "string",
-      "enum": [
-        "Public",
-        "Personal",
-        "ContextRestricted"
-      ],
-      "default": "Public"
     },
     "datapbSetDataRequest": {
       "type": "object",
@@ -296,17 +154,6 @@
       }
     },
     "datapbSetDataResponse": {
-      "type": "object"
-    },
-    "datapbSetDefinitionRequest": {
-      "type": "object",
-      "properties": {
-        "definition": {
-          "$ref": "#/definitions/datapbDefinition"
-        }
-      }
-    },
-    "datapbSetDefinitionResponse": {
       "type": "object"
     }
   }

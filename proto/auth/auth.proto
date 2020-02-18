@@ -48,7 +48,7 @@ message JWT {
 }
 
 message Credentials {
-    string username = 1;
+    string subject = 1;
     string email = 2;
     string password = 3;
 }
@@ -150,6 +150,7 @@ message CreateTokenRequest {
     string audience = 2;
     repeated string scope = 3;
     map<string, string> scope_values = 4;
+    map<string, string> data = 5;
 }
 message CreateTokenResponse {
     JWT jwt = 1;

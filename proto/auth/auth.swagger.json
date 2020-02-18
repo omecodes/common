@@ -4,10 +4,6 @@
     "title": "auth.proto",
     "version": "version not set"
   },
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -129,7 +125,7 @@
     "authpbCredentials": {
       "type": "object",
       "properties": {
-        "username": {
+        "subject": {
           "type": "string"
         },
         "email": {
@@ -290,32 +286,6 @@
           }
         }
       }
-    }
-  },
-  "x-stream-definitions": {
-    "authpbFeedResponse": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/authpbFeedResponse"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of authpbFeedResponse"
-    },
-    "authpbJwtEvent": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/authpbJwtEvent"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of authpbJwtEvent"
     }
   }
 }

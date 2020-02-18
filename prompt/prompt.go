@@ -181,7 +181,7 @@ func PublicIP(label, defaultValue string) (string, error) {
 
 func NetworkDomain(label, defaultValue string) (string, error) {
 	if label == "" {
-		label = "Set the application domain name"
+		label = "Set the app domain name"
 	}
 	return text(label, defaultValue, false, false)
 }

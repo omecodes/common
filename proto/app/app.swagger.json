@@ -1,0 +1,174 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "app.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "apppbApplication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "activated": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "host": {
+          "type": "string"
+        },
+        "oauth_callback_url": {
+          "type": "string"
+        },
+        "credentials": {
+          "$ref": "#/definitions/apppbApplicationCredentials"
+        },
+        "info": {
+          "$ref": "#/definitions/apppbApplicationInfo"
+        }
+      }
+    },
+    "apppbApplicationCredentials": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        }
+      }
+    },
+    "apppbApplicationInfo": {
+      "type": "object",
+      "properties": {
+        "application_id": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "apppbAttributeDefinition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "mime": {
+          "type": "string"
+        },
+        "context": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/definitions/apppbScope"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "editable_out_of_context": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "apppbDeRegisterApplicationResponse": {
+      "type": "object"
+    },
+    "apppbDeleteAttributeDefinitionResponse": {
+      "type": "object"
+    },
+    "apppbGetApplicationResponse": {
+      "type": "object",
+      "properties": {
+        "application": {
+          "$ref": "#/definitions/apppbApplication"
+        }
+      }
+    },
+    "apppbGetAttributeDefinitionResponse": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/definitions/apppbAttributeDefinition"
+        }
+      }
+    },
+    "apppbListApplicationsResponse": {
+      "type": "object",
+      "properties": {
+        "applications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apppbApplication"
+          }
+        }
+      }
+    },
+    "apppbRegisterApplicationResponse": {
+      "type": "object",
+      "properties": {
+        "id_exists": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "apppbSaveAttributeDefinitionResponse": {
+      "type": "object"
+    },
+    "apppbScope": {
+      "type": "string",
+      "enum": [
+        "Public",
+        "Personal",
+        "ContextRestricted"
+      ],
+      "default": "Public"
+    },
+    "apppbVerifyAuthenticationChallengeResponse": {
+      "type": "object",
+      "properties": {
+        "verified": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    }
+  }
+}
