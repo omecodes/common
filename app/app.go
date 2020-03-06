@@ -7,27 +7,42 @@ import (
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"github.com/zoenion/common/app/web"
+	"github.com/zoenion/common/conf"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-type CmdRunFunc func()
+type RunCommandFunc func()
 
-func New(vendor, name, version, label string) *App {
-	return &App{
-		vendor:  vendor,
-		name:    name,
-		version: version,
-		label:   label,
-	}
-}
-
-func WithDefaultCommands(vendor, version, label string, configure, start CmdRunFunc) *App {
+func New(vendor, version, label string, name string) *App {
 	a := &App{
 		vendor:  vendor,
 		version: version,
 		label:   label,
+		name:    name,
+		configs: conf.Map{},
+	}
+
+	err := a.init(false)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return a
+}
+
+func WithDefaultCommands(vendor, version, label string, runFunc RunCommandFunc, opts ...Option) *App {
+	a := &App{
+		vendor:  vendor,
+		version: version,
+		label:   label,
+		configs: conf.Map{},
+	}
+
+	var options options
+	for _, opt := range opts {
+		opt(&options)
 	}
 
 	a.cmd = &cobra.Command{
@@ -51,13 +66,21 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 				log.Fatalln("missing --name flag")
 			}
 
-			fmt.Printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n")
-			fmt.Printf("%s configs\n", label)
-			fmt.Printf("\n\n")
-			configure()
+			err := a.init(options.withResources)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			configFilename := filepath.Join(a.dataDir, "configs.json")
+			oldConf := conf.Map{}
+			err = conf.Load(configFilename, &oldConf)
+
+			err = a.configure(configFilename, os.ModePerm, options.configItems...)
+			if err != nil {
+				log.Fatalln(err)
+			}
 		},
 	}
-
 	a.startCMD = &cobra.Command{
 		Use:   "start",
 		Short: fmt.Sprintf("Start an instance of %s", label),
@@ -68,10 +91,21 @@ func WithDefaultCommands(vendor, version, label string, configure, start CmdRunF
 				}
 				log.Fatalln("missing --name flag")
 			}
-			start()
+
+			err := a.init(options.withResources)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			cfgFilename := filepath.Join(a.dataDir, "configs.json")
+			err = conf.Load(cfgFilename, &a.configs)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			runFunc()
 		},
 	}
-
 	a.versionCMD = &cobra.Command{
 		Use:   "version",
 		Short: "Displays app name and version",
@@ -107,6 +141,30 @@ type App struct {
 	cacheDir        string
 	//homeDir 		string
 	Resources *Resources
+
+	configs conf.Map
+}
+
+func (a *App) configure(outputFilename string, mode os.FileMode, items ...configItem) error {
+	oldValues := conf.Map{}
+	_ = conf.Load(outputFilename, &oldValues)
+
+	newValues := conf.Map{}
+	for _, item := range items {
+		key := item.configType.String()
+		itemOldValues := oldValues.GetConf(key)
+
+		values, err := item.configType.create(item.description, itemOldValues)
+		if err != nil {
+			return err
+		}
+		newValues.Set(key, values)
+	}
+	return newValues.Save(outputFilename, mode)
+}
+
+func (a *App) GetConfig(item ConfigType) conf.Map {
+	return a.configs.GetConf(item.String())
 }
 
 func (a *App) SetName(name string) {
@@ -138,18 +196,13 @@ func (a *App) CreateDirs() error {
 	return nil
 }
 
-func (a *App) Init(opts ...Option) error {
-	appOptions := new(options)
-	for _, opt := range opts {
-		opt(appOptions)
-	}
-
+func (a *App) init(withResources bool) error {
 	err := a.CreateDirs()
 	if err != nil {
 		return err
 	}
 
-	if appOptions.withResources {
+	if withResources {
 		a.Resources = new(Resources)
 
 		webDir := filepath.Join(a.dataDir, "res", "www")

@@ -12,15 +12,16 @@ var Errorf = fmt.Errorf
 type Error uint32
 
 const (
-	Internal       = Error(1)
-	NotFound       = Error(2)
-	Unavailable    = Error(3)
-	Forbidden      = Error(4)
-	Unauthorized   = Error(5)
-	Duplicate      = Error(6)
-	BadInput       = Error(7)
-	NotSupported   = Error(8)
-	NotImplemented = Error(9)
+	Internal            = Error(1)
+	NotFound            = Error(2)
+	Unavailable         = Error(3)
+	Forbidden           = Error(4)
+	Unauthorized        = Error(5)
+	Duplicate           = Error(6)
+	BadInput            = Error(7)
+	NotSupported        = Error(8)
+	NotImplemented      = Error(9)
+	ServiceNotAvailable = Error(10)
 )
 
 func (e Error) Error() string {
@@ -48,6 +49,9 @@ func (e Error) Error() string {
 
 	case NotImplemented:
 		return "not implemented"
+
+	case ServiceNotAvailable:
+		return "service not available"
 
 	default:
 		return "internal"
@@ -77,6 +81,8 @@ func HttpStatus(e error) int {
 		return http.StatusHTTPVersionNotSupported
 	case "not implemented":
 		return http.StatusNotImplemented
+	case "service not available":
+		return http.StatusServiceUnavailable
 	default:
 		return http.StatusInternalServerError
 	}

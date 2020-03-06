@@ -3,6 +3,7 @@ syntax = "proto3";
 package authpb;
 
 import "google/api/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 enum JWTPurpose {
     AUTHENTICATION = 0;
@@ -18,7 +19,6 @@ enum JWTState {
     NOT_SIGNED = 4;
     NOT_EFFECTIVE = 5;
 }
-
 
 message JWTHeader {
     string typ = 1;
@@ -58,7 +58,8 @@ enum EventAction {
     Save = 1;
 }
 
-service JWTStore {
+// TokenStoreService token database service
+service TokenStoreService {
     rpc Feed (stream JwtEvent) returns (stream FeedResponse);
     rpc Listen (ListenRequest) returns (stream JwtEvent);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
@@ -100,8 +101,7 @@ message DeleteJWTResponse {
 message ListenRequest {
 }
 
-
-service IDMService {
+service AuthenticationService {
     rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse);
     rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
     rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
@@ -110,7 +110,7 @@ service IDMService {
 }
 
 message CreateCredentialsRequest {
-    Credentials credentials = 1;
+    Credentials credentials = 1 [(validator.field) = {msg_exists: true}];
 }
 message CreateCredentialsResponse {
     bool user_taken = 1;
@@ -119,11 +119,11 @@ message CreateCredentialsResponse {
 }
 
 message AuthenticateRequest {
-    string subject = 1;
-    string password = 2;
-    string audience = 3;
-    repeated string scope = 4;
-    map<string, string> scope_values = 5;
+    string subject = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string password = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string audience = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    repeated string scope = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    map<string, string> scope_values = 5 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 message GetTokenResponse {
     string jwt = 1;
@@ -136,21 +136,21 @@ message RevokeTokenResponse {
 }
 
 message SetPasswordRequest {
-    string user = 1;
-    string email = 2;
-    string old_password = 3;
-    string new_password = 4;
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string email = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string old_password = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string new_password = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 message SetPasswordResponse {
     bool already_used = 1;
 }
 
 message CreateTokenRequest {
-    string sub = 1;
-    string audience = 2;
-    repeated string scope = 3;
-    map<string, string> scope_values = 4;
-    map<string, string> data = 5;
+    string sub = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string audience = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    repeated string scope = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    map<string, string> scope_values = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    map<string, string> data = 5 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 message CreateTokenResponse {
     JWT jwt = 1;

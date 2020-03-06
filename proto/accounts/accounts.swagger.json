@@ -1,0 +1,388 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "accounts.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/account/confirmation": {
+      "get": {
+        "operationId": "ConfirmAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbConfirmAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "data",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/existing/{identifier}": {
+      "get": {
+        "operationId": "FindAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbFindAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/login": {
+      "post": {
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbLoginResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/registration": {
+      "post": {
+        "operationId": "CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbCreateAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbCreateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/logout": {
+      "get": {
+        "operationId": "Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbLogoutResponse"
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/session/{session_id}": {
+      "delete": {
+        "operationId": "CloseSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbCloseSessionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/sessions": {
+      "get": {
+        "operationId": "ListsSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbListSessionsResponse"
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/authorize": {
+      "get": {
+        "operationId": "Authorize",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbAuthorizeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "response_type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/token": {
+      "get": {
+        "operationId": "GetToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbGetTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "grant_type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "code_verifier",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "refresh_token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "accountspbAuthorizeResponse": {
+      "type": "object"
+    },
+    "accountspbCloseSessionResponse": {
+      "type": "object"
+    },
+    "accountspbConfirmAccountResponse": {
+      "type": "object"
+    },
+    "accountspbCreateAccountRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbCreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "email_taken": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "username_taken": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "accountspbFindAccountResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "accountspbGetTokenResponse": {
+      "type": "object",
+      "properties": {
+        "jwt": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbListSessionsResponse": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/accountspbSession"
+          }
+        }
+      }
+    },
+    "accountspbLoginRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbLoginResponse": {
+      "type": "object",
+      "properties": {
+        "redirectURL": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbLogoutResponse": {
+      "type": "object"
+    },
+    "accountspbSession": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user_agent": {
+          "type": "string"
+        },
+        "jwt": {
+          "type": "string"
+        },
+        "openedAt": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}

@@ -116,6 +116,10 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 	}
 }
 
+func WriteJSON(w http.ResponseWriter, status int, data interface{}) {
+	WriteResponse(w, status, data, HttpHeader{Name: "Content-Type", Value: "application/json; charset=UTF-8"})
+}
+
 func Redirect(w http.ResponseWriter, url *RedirectURL) {
 	writeRedirect(w, url)
 }

@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package accountspb;
+
+import "google/api/annotations.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+message OauthCodeExchangeData {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string client_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string scope = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string state = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+
+message UserEmailValidationData {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string email = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    int64 expiry = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+
+message Authorization {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string application_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    repeated string scope = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    int64 duration = 4 [(validator.field) = {msg_exists: true, int_gt: 0}];
+}
+
+message Session {
+    string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string user_agent = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string jwt = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    int64 openedAt = 4;
+}
+
+message AccountValidationData {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string email = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    int64 expiry = 3;
+}
+
+message AccountInfo {
+    string username = 1;
+    string email = 2;
+    bool email_confirmed = 3;
+    string phone = 4;
+    bool phone_confirmed = 5;
+    int64 created_at = 6;
+}
+
+service Accounts {
+    rpc FindAccount(FindAccountRequest) returns (FindAccountResponse) {
+        option(google.api.http).get = "/api/account/existing/{identifier}";
+    };
+
+    rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {
+        option(google.api.http) = {
+            post: "/api/account/registration";
+            body: "*";
+        };
+    };
+
+    rpc ConfirmAccount(ConfirmAccountRequest) returns (ConfirmAccountResponse) {
+        option(google.api.http).get = "/api/account/confirmation";
+    };
+
+    rpc Login (LoginRequest) returns (LoginResponse) {
+        option (google.api.http) = {
+            post: "/api/account/login";
+            body: "*";
+        };
+    };
+
+    rpc Logout (LogoutRequest) returns (LogoutResponse) {
+        option (google.api.http).get = "/api/logout";
+    };
+
+    rpc ListsSession(ListSessionsRequest) returns (ListSessionsResponse) {
+        option(google.api.http).get = "/api/sessions";
+    };
+
+    rpc CloseSession(CloseSessionRequest) returns (CloseSessionResponse) {
+        option(google.api.http).delete = "/api/session/{session_id}";
+    };
+
+    rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {
+        option (google.api.http).get = "/authorize";
+    };
+
+    rpc GetToken(GetTokenRequest) returns (GetTokenResponse) {
+        option (google.api.http).get = "/token";
+    };
+};
+
+message FindAccountRequest {
+    string identifier = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message FindAccountResponse {
+    bool exists = 1;
+}
+
+message CreateAccountRequest {
+    string username = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string email = 2 [(validator.field) = {msg_exists : true, length_gt: 0}];
+    string password = 3 [(validator.field) = {msg_exists : true, length_gt: 0}];
+    string phone  = 4  [(validator.field) = {msg_exists : true, length_gt: 0}];
+}
+message CreateAccountResponse {
+    bool email_taken = 1;
+    bool username_taken = 2;
+}
+
+message ConfirmAccountRequest {
+    string data = 1;
+}
+message ConfirmAccountResponse {}
+
+message LoginRequest {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string password = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message LoginResponse {
+    string redirectURL = 1;
+}
+
+message LogoutRequest {}
+message LogoutResponse {}
+
+message ListSessionsRequest {}
+message ListSessionsResponse {
+    repeated Session sessions = 1;
+}
+
+message CloseSessionRequest {
+    string session_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message CloseSessionResponse {}
+
+message AuthorizeRequest {
+    string response_type = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string client_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string scope = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string state = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string redirect_uri = 5;
+}
+message AuthorizeResponse {
+}
+
+message GetTokenRequest {
+    string grant_type = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string code = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string redirect_uri = 3;
+    string code_verifier = 4;
+    string username = 5;
+    string password = 6;
+    string refresh_token = 7;
+}
+message GetTokenResponse {
+    string jwt = 1;
+}

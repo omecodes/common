@@ -32,10 +32,10 @@ var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 
 var (
-	filter_JWTStore_FindToken_0 = &utilities.DoubleArray{Encoding: map[string]int{"jti": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_TokenStoreService_FindToken_0 = &utilities.DoubleArray{Encoding: map[string]int{"jti": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, client JWTStoreClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_TokenStoreService_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, client TokenStoreServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq FindJWTRequest
 	var metadata runtime.ServerMetadata
 
@@ -60,7 +60,7 @@ func request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.Marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_JWTStore_FindToken_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TokenStoreService_FindToken_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -69,7 +69,7 @@ func request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-func local_request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, server JWTStoreServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_TokenStoreService_FindToken_0(ctx context.Context, marshaler runtime.Marshaler, server TokenStoreServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq FindJWTRequest
 	var metadata runtime.ServerMetadata
 
@@ -91,7 +91,7 @@ func local_request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "jti", err)
 	}
 
-	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_JWTStore_FindToken_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_TokenStoreService_FindToken_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -100,12 +100,12 @@ func local_request_JWTStore_FindToken_0(ctx context.Context, marshaler runtime.M
 
 }
 
-// RegisterJWTStoreHandlerServer registers the http handlers for service JWTStore to "mux".
-// UnaryRPC     :call JWTStoreServer directly.
+// RegisterTokenStoreServiceHandlerServer registers the http handlers for service TokenStoreService to "mux".
+// UnaryRPC     :call TokenStoreServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-func RegisterJWTStoreHandlerServer(ctx context.Context, mux *runtime.ServeMux, server JWTStoreServer) error {
+func RegisterTokenStoreServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server TokenStoreServiceServer) error {
 
-	mux.Handle("GET", pattern_JWTStore_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_TokenStoreService_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -114,23 +114,23 @@ func RegisterJWTStoreHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_JWTStore_FindToken_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TokenStoreService_FindToken_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_JWTStore_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TokenStoreService_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterJWTStoreHandlerFromEndpoint is same as RegisterJWTStoreHandler but
+// RegisterTokenStoreServiceHandlerFromEndpoint is same as RegisterTokenStoreServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterJWTStoreHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterTokenStoreServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -150,23 +150,23 @@ func RegisterJWTStoreHandlerFromEndpoint(ctx context.Context, mux *runtime.Serve
 		}()
 	}()
 
-	return RegisterJWTStoreHandler(ctx, mux, conn)
+	return RegisterTokenStoreServiceHandler(ctx, mux, conn)
 }
 
-// RegisterJWTStoreHandler registers the http handlers for service JWTStore to "mux".
+// RegisterTokenStoreServiceHandler registers the http handlers for service TokenStoreService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterJWTStoreHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterJWTStoreHandlerClient(ctx, mux, NewJWTStoreClient(conn))
+func RegisterTokenStoreServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterTokenStoreServiceHandlerClient(ctx, mux, NewTokenStoreServiceClient(conn))
 }
 
-// RegisterJWTStoreHandlerClient registers the http handlers for service JWTStore
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "JWTStoreClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "JWTStoreClient"
+// RegisterTokenStoreServiceHandlerClient registers the http handlers for service TokenStoreService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "TokenStoreServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "TokenStoreServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "JWTStoreClient" to call the correct interceptors.
-func RegisterJWTStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, client JWTStoreClient) error {
+// "TokenStoreServiceClient" to call the correct interceptors.
+func RegisterTokenStoreServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TokenStoreServiceClient) error {
 
-	mux.Handle("GET", pattern_JWTStore_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_TokenStoreService_FindToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -175,14 +175,14 @@ func RegisterJWTStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_JWTStore_FindToken_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TokenStoreService_FindToken_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_JWTStore_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TokenStoreService_FindToken_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -190,9 +190,9 @@ func RegisterJWTStoreHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 }
 
 var (
-	pattern_JWTStore_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"jwt", "find", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_TokenStoreService_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"jwt", "find", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
-	forward_JWTStore_FindToken_0 = runtime.ForwardResponseMessage
+	forward_TokenStoreService_FindToken_0 = runtime.ForwardResponseMessage
 )

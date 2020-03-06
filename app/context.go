@@ -1,6 +1,9 @@
 package app
 
-import "context"
+import (
+	"context"
+	"github.com/zoenion/common/conf"
+)
 
 type contextKey string
 
@@ -8,11 +11,11 @@ const (
 	ctxApp contextKey = "app"
 )
 
-func WithContext(parent context.Context, a *App) context.Context {
+func ContextWithApp(parent context.Context, a *App) context.Context {
 	return context.WithValue(parent, ctxApp, a)
 }
 
-func GetApp(ctx context.Context) *App {
+func FromContext(ctx context.Context) *App {
 	val := ctx.Value(ctxApp)
 	if val == nil {
 		return nil
@@ -24,4 +27,10 @@ func GetApp(ctx context.Context) *App {
 	}
 
 	return a
+}
+
+func ConfigFromContext(ctx context.Context, item ConfigType) conf.Map {
+	app := FromContext(ctx)
+	cfg := app.configs.GetConf(item.String())
+	return cfg
 }
