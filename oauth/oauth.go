@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -14,14 +15,6 @@ import (
 	"net/url"
 	"strings"
 )
-
-type Provider interface {
-	AuthorizeURL() string
-	AccessTokenURL() string
-	EncodedCertificate() string
-	SignatureAlg() string
-	JWK() string
-}
 
 const (
 	ParamClientID          = "client_id"
@@ -54,98 +47,68 @@ const (
 	GrantTypeAuthorizationCode = "authorization_code"
 )
 
-type urlBuilder struct {
-	state        string
-	scope        string
-	redirectURI  string
-	clientID     string
-	clientSecret string
+type Provider interface {
+	AuthorizeURL() string
+	AccessTokenURL() string
+	EncodedCertificate() string
+	SignatureAlg() string
+	JWK() string
 }
 
-func (rb *urlBuilder) setAccess(clientID, secret string) *urlBuilder {
-	rb.clientID = clientID
-	rb.clientSecret = secret
-	return rb
-}
-
-func (rb *urlBuilder) SetState(state string) *urlBuilder {
-	rb.state = state
-	return rb
-}
-
-func (rb *urlBuilder) SetScope(scope string) *urlBuilder {
-	rb.scope = scope
-	return rb
-}
-
-func (rb *urlBuilder) SetRedirectURI(uri string) *urlBuilder {
-	rb.redirectURI = uri
-	return rb
-}
-
-func (rb *urlBuilder) URL(providerURL string) (string, error) {
-
-	authMessage, nonce, err := CreateAuth(rb.clientSecret)
-	if err != nil {
-		return "", err
-	}
-
-	params := url.Values{}
-	params.Add(ParamClientID, rb.clientID)
-	params.Add(ParamState, rb.state)
-	params.Add(ParamScope, rb.scope)
-	params.Add(ParamNonce, nonce)
-	params.Add(ParamClientAuthMessage, authMessage)
-	params.Add(ParamRedirectURI, rb.redirectURI)
-	return fmt.Sprintf("%s?%s", providerURL, params.Encode()), nil
+type Config struct {
+	ClientID              string
+	Secret                string
+	Scope                 []string
+	State                 string
+	CallbackURL           string
+	AuthorizationEndpoint string
+	TokenEndpoint         string
 }
 
 // Client
 type Client struct {
-	state    string
-	provider Provider
+	cfg *Config
 }
 
-func (c *Client) GetURL(clientID, clientSecret, scope, redirectURI string) (string, error) {
-	state := make([]byte, 16)
-	_, err := rand.Read(state)
-	if err != nil {
-		return "", err
-	}
-	c.state = hex.EncodeToString(state)
-	return new(urlBuilder).setAccess(clientID, clientSecret).SetRedirectURI(redirectURI).SetScope(scope).SetState(c.state).URL(c.provider.AuthorizeURL())
+func NewClient(cfg *Config) *Client {
+	return &Client{cfg: cfg}
 }
 
-func (c *Client) GetAccessToken(challenge string, clientID, clientSecret string) (string, error) {
-	key, err := hex.DecodeString(clientSecret)
+func (c *Client) GetURLAuthorizationURL() (string, error) {
+	authURL := fmt.Sprintf("%s?%s=%s&%s=%s&%s=%s&%s=%s",
+		c.cfg.AuthorizationEndpoint,
+		ParamState,
+		c.cfg.State,
+		ParamScope,
+		strings.Join(c.cfg.Scope, " "),
+		ParamClientID,
+		c.cfg.ClientID,
+		ParamResponseType,
+		ResponseTypeCode)
+
+	if c.cfg.CallbackURL != "" {
+		authURL = fmt.Sprintf("%s&%s=%s", authURL, ParamRedirectURI, url.QueryEscape(c.cfg.CallbackURL))
+	}
+	return authURL, nil
+}
+
+func (c *Client) GetAccessToken(code string) (string, error) {
+	client := &http.Client{}
+
+	form := url.Values{}
+	form.Add(ParamCode, code)
+	form.Add(ParamGrantType, GrantTypeAuthorizationCode)
+
+	req, err := http.NewRequest(http.MethodPost, c.cfg.TokenEndpoint, strings.NewReader(form.Encode()))
 	if err != nil {
 		return "", err
 	}
 
-	challengeBytes, err := hex.DecodeString(challenge)
-	if err != nil {
-		return "", err
-	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	auth := c.cfg.ClientID + ":" + c.cfg.Secret
+	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 
-	decrypted, err := crypto2.AESGCMDecrypt(key, challengeBytes)
-	if err != nil {
-		return "", err
-	}
-
-	salt := decrypted[:12]
-	code := decrypted[12:]
-	encryptedCode, err := crypto2.AESGCMEncryptWithSalt(key, salt, code)
-	if err != nil {
-		return "", err
-	}
-	encodedCode := hex.EncodeToString(encryptedCode)
-
-	params := url.Values{}
-	params.Add(ParamCode, encodedCode)
-	params.Add(ParamClientID, clientID)
-	u := fmt.Sprintf("%s?%s", c.provider.AccessTokenURL(), params.Encode())
-
-	rsp, err := http.Get(u)
+	rsp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -157,19 +120,7 @@ func (c *Client) GetAccessToken(challenge string, clientID, clientSecret string)
 		}
 		return string(bodyBytes), nil
 	}
-
 	return "", errors.New("failed to get jwt")
-}
-
-func (c *Client) GetState() string {
-	return c.state
-}
-
-// NewClient
-func NewClient(provider Provider) *Client {
-	c := new(Client)
-	c.provider = provider
-	return c
 }
 
 // Params
@@ -389,7 +340,7 @@ type RedirectURIHandler struct {
 	redirectURI string
 	tlsConfigs  *tls.Config
 	errorChan   chan error
-	jwtChan     chan string
+	code        chan string
 }
 
 func (h *RedirectURIHandler) listen() {
@@ -411,15 +362,19 @@ func (h *RedirectURIHandler) handle(w http.ResponseWriter, r *http.Request) {
 	if len(query) == 0 {
 		h.errorChan <- errors.New("no token provided")
 	}
+
+	code := query.Get("code")
+	h.code <- code
 }
 
-func (h *RedirectURIHandler) GetToken() (string, error) {
+func (h *RedirectURIHandler) GetCode() (string, error) {
 	go h.listen()
 
 	select {
 	case e := <-h.errorChan:
 		return "", e
-	case jwt := <-h.jwtChan:
+
+	case jwt := <-h.code:
 		return jwt, nil
 	}
 }
@@ -429,6 +384,6 @@ func NewRedirectURIHandler(redirectURI string, tc *tls.Config) *RedirectURIHandl
 		redirectURI: redirectURI,
 		tlsConfigs:  tc,
 		errorChan:   make(chan error, 1),
-		jwtChan:     make(chan string, 1),
+		code:        make(chan string, 1),
 	}
 }

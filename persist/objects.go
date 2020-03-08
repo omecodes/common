@@ -23,7 +23,11 @@ func (s *sqlObjects) Save(key string, o interface{}) error {
 	if err != nil {
 		return err
 	}
-	return s.Exec("insert", key, string(data)).Error
+	err = s.Exec("insert", key, string(data)).Error
+	if err != nil {
+		err = s.Exec("update", string(data), key).Error
+	}
+	return err
 }
 
 func (s *sqlObjects) Read(key string, object interface{}) error {

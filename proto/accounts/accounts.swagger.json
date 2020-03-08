@@ -85,6 +85,22 @@
         ]
       }
     },
+    "/api/account/logout": {
+      "get": {
+        "operationId": "Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbLogoutResponse"
+            }
+          }
+        },
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
     "/api/account/registration": {
       "post": {
         "operationId": "CreateAccount",
@@ -106,22 +122,6 @@
             }
           }
         ],
-        "tags": [
-          "Accounts"
-        ]
-      }
-    },
-    "/api/logout": {
-      "get": {
-        "operationId": "Logout",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/accountspbLogoutResponse"
-            }
-          }
-        },
         "tags": [
           "Accounts"
         ]
@@ -216,7 +216,7 @@
       }
     },
     "/token": {
-      "get": {
+      "post": {
         "operationId": "GetToken",
         "responses": {
           "200": {
@@ -228,46 +228,12 @@
         },
         "parameters": [
           {
-            "name": "grant_type",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "code",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "redirect_uri",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "code_verifier",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "username",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "refresh_token",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbGetTokenRequest"
+            }
           }
         ],
         "tags": [
@@ -322,6 +288,32 @@
         "exists": {
           "type": "boolean",
           "format": "boolean"
+        }
+      }
+    },
+    "accountspbGetTokenRequest": {
+      "type": "object",
+      "properties": {
+        "grant_type": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "redirect_uri": {
+          "type": "string"
+        },
+        "code_verifier": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "refresh_token": {
+          "type": "string"
         }
       }
     },

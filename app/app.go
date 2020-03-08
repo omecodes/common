@@ -175,7 +175,7 @@ func (a *App) GetCommand() *cobra.Command {
 	return a.cmd
 }
 
-func (a *App) CreateDirs() error {
+func (a *App) InitDirs() error {
 	dirs := configdir.New(a.vendor, a.name)
 	globalFolder := dirs.QueryFolders(configdir.Global)[0]
 	cacheFolder := dirs.QueryFolders(configdir.Cache)[0]
@@ -196,8 +196,13 @@ func (a *App) CreateDirs() error {
 	return nil
 }
 
+func (a *App) LoadConfigs() error {
+	cfgFilename := filepath.Join(a.dataDir, "configs.json")
+	return conf.Load(cfgFilename, &a.configs)
+}
+
 func (a *App) init(withResources bool) error {
-	err := a.CreateDirs()
+	err := a.InitDirs()
 	if err != nil {
 		return err
 	}

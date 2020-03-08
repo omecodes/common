@@ -18,7 +18,7 @@ type Route struct {
 	HandlerFunc  http.HandlerFunc
 }
 
-func NewRouter(contextWrapper ContextWrapper, routes ...Route) *mux.Router {
+func NewRouter(routes ...Route) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
 		var handler http.Handler
@@ -27,8 +27,6 @@ func NewRouter(contextWrapper ContextWrapper, routes ...Route) *mux.Router {
 		if route.PathIsPrefix {
 			sr := router.PathPrefix(route.Pattern).Subrouter()
 			sr.Name(route.Name).Methods(route.Method...).Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				ctx := r.Context()
-				r = r.WithContext(contextWrapper(ctx))
 				handlers.LoggingHandler(os.Stdout, handler).ServeHTTP(w, r)
 			}))
 		} else {
@@ -37,8 +35,6 @@ func NewRouter(contextWrapper ContextWrapper, routes ...Route) *mux.Router {
 				Path(route.Pattern).
 				Name(route.Name).
 				Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					ctx := r.Context()
-					r = r.WithContext(contextWrapper(ctx))
 					handlers.LoggingHandler(os.Stdout, handler).ServeHTTP(w, r)
 				}))
 		}

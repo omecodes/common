@@ -71,7 +71,7 @@ service Accounts {
     };
 
     rpc Logout (LogoutRequest) returns (LogoutResponse) {
-        option (google.api.http).get = "/api/logout";
+        option (google.api.http).get = "/api/account/logout";
     };
 
     rpc ListsSession(ListSessionsRequest) returns (ListSessionsResponse) {
@@ -87,7 +87,10 @@ service Accounts {
     };
 
     rpc GetToken(GetTokenRequest) returns (GetTokenResponse) {
-        option (google.api.http).get = "/token";
+        option (google.api.http) = {
+            post: "/token";
+            body: "*";
+        };
     };
 };
 

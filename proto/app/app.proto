@@ -10,12 +10,12 @@ enum Scope {
     ContextRestricted = 2;
 }
 
-message ApplicationCredentials {
-    string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+message Credentials {
+    string key = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
     string secret = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 
-message ApplicationInfo {
+message Info {
     string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
     string created_by = 2;
     int64 created_at = 3 [(validator.field) = {msg_exists: true, int_gt: 0}];
@@ -27,11 +27,11 @@ message ApplicationInfo {
 
 message Application {
     string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    bool activated = 2;
-    string host = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string namespace = 2;
+    bool activated = 3;
     string oauth_callback_url = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    ApplicationCredentials credentials = 5 [(validator.field) = {msg_exists: true}];
-    ApplicationInfo info = 6 [(validator.field) = {msg_exists: true}];
+    Credentials credentials = 5 [(validator.field) = {msg_exists: true}];
+    Info info = 6 [(validator.field) = {msg_exists: true}];
 }
 
 message AttributeDefinition {
@@ -89,17 +89,24 @@ message DeleteAttributeDefinitionRequest {
 message DeleteAttributeDefinitionResponse {}
 
 message VerifyAuthenticationChallengeRequest {
-    string subject = 1;
-    string challenge = 2;
-    string nonce = 3;
+    string application_id = 1;
+    string secret = 2;
 }
 message VerifyAuthenticationChallengeResponse {
     bool verified = 1;
 }
 
+message CheckIfExistsRequest {
+    string application_id = 1;
+}
+message CheckIfExistsResponse {
+    bool exists = 1;
+}
+
 service Applications {
     rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse);
     rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse);
+    rpc CheckIfExists(CheckIfExistsRequest) returns (CheckIfExistsResponse);
     rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse);
     rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse);
     rpc SaveAttributeDefinition(SaveAttributeDefinitionRequest) returns (SaveAttributeDefinitionResponse);
