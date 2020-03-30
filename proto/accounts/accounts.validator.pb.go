@@ -41,6 +41,12 @@ func (this *UserEmailValidationData) Validate() error {
 	}
 	return nil
 }
+func (this *ResetPasswordEmailData) Validate() error {
+	if !(len(this.User) > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.User))
+	}
+	return nil
+}
 func (this *Authorization) Validate() error {
 	if !(len(this.User) > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.User))
@@ -83,9 +89,6 @@ func (this *AccountInfo) Validate() error {
 	return nil
 }
 func (this *FindAccountRequest) Validate() error {
-	if !(len(this.Identifier) > 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Identifier", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Identifier))
-	}
 	return nil
 }
 func (this *FindAccountResponse) Validate() error {
@@ -113,6 +116,18 @@ func (this *ConfirmAccountRequest) Validate() error {
 	return nil
 }
 func (this *ConfirmAccountResponse) Validate() error {
+	return nil
+}
+func (this *RequestPasswordResetRequest) Validate() error {
+	return nil
+}
+func (this *RequestPasswordResetResponse) Validate() error {
+	return nil
+}
+func (this *UpdatePasswordRequest) Validate() error {
+	return nil
+}
+func (this *UpdatePasswordResponse) Validate() error {
 	return nil
 }
 func (this *LoginRequest) Validate() error {

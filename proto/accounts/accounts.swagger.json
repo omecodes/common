@@ -35,30 +35,6 @@
         ]
       }
     },
-    "/api/account/existing/{identifier}": {
-      "get": {
-        "operationId": "FindAccount",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/accountspbFindAccountResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "identifier",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Accounts"
-        ]
-      }
-    },
     "/api/account/login": {
       "post": {
         "operationId": "Login",
@@ -101,7 +77,33 @@
         ]
       }
     },
-    "/api/account/registration": {
+    "/api/account/match": {
+      "post": {
+        "operationId": "FindAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbFindAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbFindAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/new": {
       "post": {
         "operationId": "CreateAccount",
         "responses": {
@@ -127,7 +129,57 @@
         ]
       }
     },
-    "/api/session/{session_id}": {
+    "/api/account/password/request-reset": {
+      "get": {
+        "operationId": "RequestPasswordReset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbRequestPasswordResetResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/password/update": {
+      "post": {
+        "operationId": "UpdatePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbUpdatePasswordResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbUpdatePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/session/{session_id}": {
       "delete": {
         "operationId": "CloseSession",
         "responses": {
@@ -151,7 +203,7 @@
         ]
       }
     },
-    "/api/sessions": {
+    "/api/account/sessions": {
       "get": {
         "operationId": "ListsSession",
         "responses": {
@@ -272,20 +324,46 @@
     "accountspbCreateAccountResponse": {
       "type": "object",
       "properties": {
-        "email_taken": {
+        "username_exists": {
           "type": "boolean",
           "format": "boolean"
         },
-        "username_taken": {
+        "email_exists": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "phone_exists": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "accountspbFindAccountRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
         }
       }
     },
     "accountspbFindAccountResponse": {
       "type": "object",
       "properties": {
-        "exists": {
+        "username_exists": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "email_exists": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "phone_exists": {
           "type": "boolean",
           "format": "boolean"
         }
@@ -358,6 +436,14 @@
     "accountspbLogoutResponse": {
       "type": "object"
     },
+    "accountspbRequestPasswordResetResponse": {
+      "type": "object",
+      "properties": {
+        "redirectURL": {
+          "type": "string"
+        }
+      }
+    },
     "accountspbSession": {
       "type": "object",
       "properties": {
@@ -375,6 +461,20 @@
           "format": "int64"
         }
       }
+    },
+    "accountspbUpdatePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "new_password": {
+          "type": "string"
+        },
+        "password_confirm": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbUpdatePasswordResponse": {
+      "type": "object"
     }
   }
 }

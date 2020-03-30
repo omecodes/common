@@ -18,6 +18,11 @@ message UserEmailValidationData {
     int64 expiry = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 
+message ResetPasswordEmailData {
+    string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    int64 expiry = 2;
+}
+
 message Authorization {
     string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
     string application_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
@@ -49,18 +54,32 @@ message AccountInfo {
 
 service Accounts {
     rpc FindAccount(FindAccountRequest) returns (FindAccountResponse) {
-        option(google.api.http).get = "/api/account/existing/{identifier}";
+        option (google.api.http) = {
+            post: "/api/account/match";
+            body: "*";
+        };
     };
 
     rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {
-        option(google.api.http) = {
-            post: "/api/account/registration";
+        option (google.api.http) = {
+            post: "/api/account/new";
             body: "*";
         };
     };
 
     rpc ConfirmAccount(ConfirmAccountRequest) returns (ConfirmAccountResponse) {
         option(google.api.http).get = "/api/account/confirmation";
+    };
+
+    rpc RequestPasswordReset(RequestPasswordResetRequest) returns (RequestPasswordResetResponse) {
+        option(google.api.http).get = "/api/account/password/request-reset";
+    };
+
+    rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {
+        option(google.api.http) = {
+            post: "/api/account/password/update";
+            body: "*";
+        };
     };
 
     rpc Login (LoginRequest) returns (LoginResponse) {
@@ -75,11 +94,11 @@ service Accounts {
     };
 
     rpc ListsSession(ListSessionsRequest) returns (ListSessionsResponse) {
-        option(google.api.http).get = "/api/sessions";
+        option(google.api.http).get = "/api/account/sessions";
     };
 
     rpc CloseSession(CloseSessionRequest) returns (CloseSessionResponse) {
-        option(google.api.http).delete = "/api/session/{session_id}";
+        option(google.api.http).delete = "/api/account/session/{session_id}";
     };
 
     rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse) {
@@ -95,10 +114,14 @@ service Accounts {
 };
 
 message FindAccountRequest {
-    string identifier = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    string username = 1;
+    string email = 2;
+    string phone = 3;
 }
 message FindAccountResponse {
-    bool exists = 1;
+    bool username_exists = 1;
+    bool email_exists = 2;
+    bool phone_exists = 3;
 }
 
 message CreateAccountRequest {
@@ -108,14 +131,28 @@ message CreateAccountRequest {
     string phone  = 4  [(validator.field) = {msg_exists : true, length_gt: 0}];
 }
 message CreateAccountResponse {
-    bool email_taken = 1;
-    bool username_taken = 2;
+    bool username_exists = 1;
+    bool email_exists = 2;
+    bool phone_exists = 3;
 }
 
 message ConfirmAccountRequest {
     string data = 1;
 }
 message ConfirmAccountResponse {}
+
+message RequestPasswordResetRequest {
+    string email = 1;
+}
+message RequestPasswordResetResponse {
+    string redirectURL = 1;
+}
+
+message UpdatePasswordRequest {
+    string new_password = 1;
+    string password_confirm = 2;
+}
+message UpdatePasswordResponse {}
 
 message LoginRequest {
     string user = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];

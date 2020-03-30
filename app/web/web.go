@@ -13,6 +13,7 @@ var mimes = map[string]string{
 	".html": "text/html",
 	".csh":  "text/x-script.csh",
 	".css":  "text/css",
+	".svg":  "image/svg+xml",
 }
 
 func New(dir string) *Server {
@@ -45,6 +46,10 @@ func (s *Server) Serve(locale string, filename string) (string, io.ReadCloser, i
 	if extension == "" {
 		resPath = filepath.Join(resPath, "index.html")
 		extension = "html"
+	}
+
+	if !futils.FileExists(resPath) {
+		return "", nil, 0, errors.NotFound
 	}
 
 	f, err := os.Open(resPath)

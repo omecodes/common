@@ -65,6 +65,7 @@ func WriteError(w http.ResponseWriter, err error) {
 }
 
 func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers ...HttpHeader) {
+
 	for _, h := range headers {
 		w.Header().Set(h.Name, h.Value)
 	}
@@ -107,8 +108,9 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 		return
 	}
 
-	w.Header().Set("Content-Type", "app/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+
 	bytes, _ := json.Marshal(data)
 	_, err := w.Write(bytes)
 	if err != nil {
@@ -117,7 +119,7 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}, headers 
 }
 
 func WriteJSON(w http.ResponseWriter, status int, data interface{}) {
-	WriteResponse(w, status, data, HttpHeader{Name: "Content-Type", Value: "application/json; charset=UTF-8"})
+	WriteResponse(w, status, data, HttpHeader{Name: "Content-Type", Value: "application/json"})
 }
 
 func Redirect(w http.ResponseWriter, url *RedirectURL) {
