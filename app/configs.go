@@ -12,6 +12,8 @@ import (
 type configItem struct {
 	description string
 	configType  ConfigType
+	entries     []string
+	values      []string
 }
 
 type ConfigType int
@@ -74,6 +76,9 @@ func (ci ConfigType) String() string {
 func (ci ConfigType) create(description string, defaults conf.Map) (conf.Map, error) {
 	switch ci {
 
+	case ConfigAccess:
+		return configureAccess(description, defaults)
+
 	case ConfigMailer:
 		return configureMailer(description, defaults)
 
@@ -107,6 +112,24 @@ func (ci ConfigType) create(description string, defaults conf.Map) (conf.Map, er
 	default:
 		return nil, errors.NotSupported
 	}
+}
+
+func configureAccess(description string, defaults conf.Map) (conf.Map, error) {
+	cfg := conf.Map{}
+
+	name, err := prompt.Text("Key", false)
+	if err != nil {
+		return nil, err
+	}
+
+	secret, err := prompt.Password("Secret")
+	if err != nil {
+		return nil, err
+	}
+
+	cfg["key"] = name
+	cfg["secret"] = secret
+	return cfg, nil
 }
 
 func configureSecrets(description string, defaults conf.Map) (conf.Map, error) {
