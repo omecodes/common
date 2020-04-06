@@ -10,6 +10,8 @@ type Objects interface {
 	Save(key string, o interface{}) error
 	Read(key string, o interface{}) error
 	Delete(key string) error
+	List() (dao.Cursor, error)
+	DecoderFunc() func(data []byte, o interface{}) error
 	Clear() error
 	Close() error
 }
@@ -42,6 +44,14 @@ func (s *sqlObjects) Delete(key string) error {
 	return s.Exec("delete", key).Error
 }
 
+func (s *sqlObjects) List() (dao.Cursor, error) {
+	return s.Query("select_all", "scanner")
+}
+
+func (s *sqlObjects) DecoderFunc() func(data []byte, o interface{}) error {
+	return codec.GSONDecode
+}
+
 func (s *sqlObjects) Clear() error {
 	return s.Exec("clear").Error
 }
@@ -57,6 +67,7 @@ func NewSQLObjectsDB(cfg conf.Map, tablePrefix string) (Objects, error) {
 		AddStatement("insert", "insert into $prefix$_mapping values (?, ?);").
 		AddStatement("update", "update $prefix$_mapping set val=? where name=?;").
 		AddStatement("select", "select val from $prefix$_mapping where name=?;").
+		AddStatement("select_all", "select val from $prefix$_mapping;").
 		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
 		AddStatement("clear", "delete from $prefix$_mapping;").
 		RegisterScanner("scanner", dao.NewScannerFunc(scanData)).
