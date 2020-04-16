@@ -29,3 +29,8 @@ func scanTriplet(row dao.Row) (interface{}, error) {
 	t := new(Triplet)
 	return t, row.Scan(&t.First, &t.Second, &t.Third)
 }
+
+func scanInt(row dao.Row) (interface{}, error) {
+	var val int64
+	return val, row.Scan(&val)
+}

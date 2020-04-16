@@ -18,3 +18,9 @@ func WithConfig(description string, confType ConfigType) Option {
 		o.configItems = append(o.configItems, configItem{description: description, configType: confType})
 	}
 }
+
+func WithDirConfigs(description string, names ...string) Option {
+	return func(o *options) {
+		o.configItems = append(o.configItems, configItem{description: description, configType: ConfigDirs, entries: names})
+	}
+}

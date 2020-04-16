@@ -6,11 +6,27 @@ import (
 	"github.com/zoenion/common/dao"
 )
 
+var DefaultCodec = &gsonCodec{}
+
+type ObjectEncoder interface {
+	Encode(interface{}) ([]byte, error)
+}
+
+type ObjectDecoder interface {
+	Decode(data []byte, o interface{}) error
+}
+
+type Codec interface {
+	ObjectEncoder
+	ObjectDecoder
+}
+
 type Objects interface {
 	Save(key string, o interface{}) error
 	Read(key string, o interface{}) error
 	Delete(key string) error
 	List() (dao.Cursor, error)
+	SetCodec(objectCodec Codec)
 	DecoderFunc() func(data []byte, o interface{}) error
 	Clear() error
 	Close() error
@@ -18,10 +34,11 @@ type Objects interface {
 
 type sqlObjects struct {
 	dao.SQL
+	objectCodec Codec
 }
 
 func (s *sqlObjects) Save(key string, o interface{}) error {
-	data, err := codec.GSONEncode(o)
+	data, err := s.objectCodec.Encode(o)
 	if err != nil {
 		return err
 	}
@@ -37,7 +54,7 @@ func (s *sqlObjects) Read(key string, object interface{}) error {
 	if err != nil {
 		return err
 	}
-	return codec.GSONDecode([]byte(o.(string)), object)
+	return s.objectCodec.Decode([]byte(o.(string)), object)
 }
 
 func (s *sqlObjects) Delete(key string) error {
@@ -48,8 +65,12 @@ func (s *sqlObjects) List() (dao.Cursor, error) {
 	return s.Query("select_all", "scanner")
 }
 
+func (s *sqlObjects) SetCodec(objectCodec Codec) {
+	s.objectCodec = objectCodec
+}
+
 func (s *sqlObjects) DecoderFunc() func(data []byte, o interface{}) error {
-	return codec.GSONDecode
+	return s.objectCodec.Decode
 }
 
 func (s *sqlObjects) Clear() error {
@@ -74,5 +95,16 @@ func NewSQLObjectsDB(cfg conf.Map, tablePrefix string) (Objects, error) {
 		RegisterScanner("pair_scanner", dao.NewScannerFunc(scanPair)).
 		RegisterScanner("data_scanner", dao.NewScannerFunc(scanData))
 	err := d.Init(cfg)
+	d.objectCodec = DefaultCodec
 	return d, err
+}
+
+type gsonCodec struct{}
+
+func (g *gsonCodec) Encode(o interface{}) ([]byte, error) {
+	return codec.GSONEncode(o)
+}
+
+func (g *gsonCodec) Decode(data []byte, o interface{}) error {
+	return codec.GSONDecode(data, o)
 }

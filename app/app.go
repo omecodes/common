@@ -28,7 +28,6 @@ func New(vendor, version, label string, name string) *App {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	return a
 }
 
@@ -154,7 +153,7 @@ func (a *App) configure(outputFilename string, mode os.FileMode, items ...config
 		key := item.configType.String()
 		itemOldValues := oldValues.GetConf(key)
 
-		values, err := item.configType.create(item.description, itemOldValues)
+		values, err := item.create(item.description, itemOldValues)
 		if err != nil {
 			return err
 		}
@@ -173,6 +172,14 @@ func (a *App) SetName(name string) {
 
 func (a *App) GetCommand() *cobra.Command {
 	return a.cmd
+}
+
+func (a *App) StartCommand() *cobra.Command {
+	return a.startCMD
+}
+
+func (a *App) ConfigureCommand() *cobra.Command {
+	return a.configureCMD
 }
 
 func (a *App) InitDirs() error {

@@ -73,8 +73,8 @@ func (ci ConfigType) String() string {
 	}
 }
 
-func (ci ConfigType) create(description string, defaults conf.Map) (conf.Map, error) {
-	switch ci {
+func (ci configItem) create(description string, defaults conf.Map) (conf.Map, error) {
+	switch ci.configType {
 
 	case ConfigAccess:
 		return configureAccess(description, defaults)
@@ -86,7 +86,7 @@ func (ci ConfigType) create(description string, defaults conf.Map) (conf.Map, er
 		return configureAdminsCredentials(description, defaults)
 
 	case ConfigDirs:
-		return configureDirs(description, defaults)
+		return configureDirs(description, defaults, ci.entries...)
 
 	case ConfigCredentialsTable:
 		return configureCredentialsTable(description, defaults)
@@ -115,6 +115,8 @@ func (ci ConfigType) create(description string, defaults conf.Map) (conf.Map, er
 }
 
 func configureAccess(description string, defaults conf.Map) (conf.Map, error) {
+	header("Access", description)
+
 	cfg := conf.Map{}
 
 	name, err := prompt.Text("Key", false)
@@ -270,45 +272,32 @@ func configureAdminsCredentials(description string, defaults conf.Map) (conf.Map
 	return cfg, err
 }
 
-func configureDirs(description string, defaults conf.Map) (conf.Map, error) {
+func configureDirs(description string, defaults conf.Map, names ...string) (conf.Map, error) {
 	if defaults == nil {
 		defaults = conf.Map{}
 	}
+
 	header("Directories", description)
 	var err error
 	count := 0
 	cfg := conf.Map{}
 
-	for {
-		if count > 0 {
-			selection, err := prompt.Selection("add another credentials?", "yes", "no")
-			if err != nil {
-				return nil, err
-			}
-
-			if selection != "yes" {
-				break
-			}
-		}
+	for _, name := range names {
 		count++
 
-		label, err := prompt.Text("label", false)
-		if err != nil {
-			return nil, err
-		}
-
-		dirPath, _ := defaults.GetString(label)
+		dirPath, _ := defaults.GetString(name)
 		if dirPath == "" {
-			dirPath, err = prompt.Text("path", false)
+			dirPath, err = prompt.Text(name, false)
 		} else {
-			dirPath, err = prompt.TextWithDefault("path", dirPath, false)
+			dirPath, err = prompt.TextWithDefault(name, dirPath, false)
 		}
 
 		if err != nil {
 			return nil, err
 		}
-		cfg[label] = dirPath
+		cfg[name] = dirPath
 	}
+
 	return cfg, err
 }
 
