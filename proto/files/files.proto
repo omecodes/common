@@ -16,11 +16,13 @@ enum Action {
     Create = 1;
     Delete = 2;
     Move = 3;
-    Rename = 4;
-    Edit = 5;
-    Read = 6;
-    Share = 7;
-    UnShare = 8;
+    MoveEdit = 4;
+    Rename = 5;
+    RenameEdit = 6;
+    Edit = 7;
+    Read = 8;
+    Share = 9;
+    UnShare = 10;
 }
 
 enum Type {
@@ -64,9 +66,17 @@ message Stats {
 }
 
 message Event {
-    Action action = 1;
-    string path = 2;
-    Stats stats = 3;
+    int64 seq = 1;
+    Action action = 2;
+    string path = 3;
+    Stats stats = 4;
+}
+
+message SyncEvent {
+    int64 seq = 1;
+    string from = 2;
+    string to = 3;
+    Event event = 4;
 }
 
 message SyncMessage {

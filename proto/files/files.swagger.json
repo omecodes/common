@@ -4,10 +4,6 @@
     "title": "files.proto",
     "version": "version not set"
   },
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -314,7 +310,9 @@
         "Create",
         "Delete",
         "Move",
+        "MoveEdit",
         "Rename",
+        "RenameEdit",
         "Edit",
         "Read",
         "Share",
@@ -356,6 +354,10 @@
     "filespbEvent": {
       "type": "object",
       "properties": {
+        "seq": {
+          "type": "string",
+          "format": "int64"
+        },
         "action": {
           "$ref": "#/definitions/filespbAction"
         },
@@ -550,32 +552,6 @@
           }
         }
       }
-    }
-  },
-  "x-stream-definitions": {
-    "filespbEvent": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/filespbEvent"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of filespbEvent"
-    },
-    "filespbStats": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/filespbStats"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of filespbStats"
     }
   }
 }
