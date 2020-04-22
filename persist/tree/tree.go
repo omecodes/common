@@ -1,4 +1,4 @@
-package persist
+package tree
 
 import (
 	"github.com/zoenion/common/conf"
@@ -22,7 +22,7 @@ type sqlTree struct {
 	dao.SQL
 }
 
-func NewSQLTree(dbCfg conf.Map, prefix string) (*sqlTree, error) {
+func NewSQL(dbCfg conf.Map, prefix string) (*sqlTree, error) {
 	db := new(sqlTree)
 
 	db.SetTablePrefix(prefix).
