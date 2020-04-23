@@ -171,7 +171,14 @@
             "type": "string"
           },
           {
-            "name": "page",
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "count",
             "in": "query",
             "required": false,
             "type": "integer",

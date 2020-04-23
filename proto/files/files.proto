@@ -167,7 +167,8 @@ message ContentPart {
 
 message ListRequest {
     string dir = 1;
-    uint32 page = 2;
+    int32 offset = 2;
+    uint32 count = 3;
 }
 message ListResponse {
     repeated Stats list = 1;
