@@ -129,7 +129,7 @@ func (dao *SQL) Init(cfg conf.Map) error {
 
 func (dao *SQL) Migrate() error {
 	if !dao.initDone {
-		return errors.New("Init method must be called once before calling TableHasIndex method")
+		return errors.New("initWithBox method must be called once before calling TableHasIndex method")
 	}
 	for _, ms := range dao.migrationScripts {
 		for name, value := range dao.vars {
@@ -171,7 +171,7 @@ func (dao *SQL) AddMigrationScript(s string) *SQL {
 
 func (dao *SQL) AddUniqueIndex(index SQLIndex, forceUpdate bool) error {
 	if !dao.initDone {
-		return errors.New("Init method must be called once before calling TableHasIndex method")
+		return errors.New("initWithBox method must be called once before calling TableHasIndex method")
 	}
 
 	for varName, value := range dao.vars {
@@ -256,7 +256,7 @@ func (dao *SQL) RegisterScanner(name string, scanner RowScannerV2) *SQL {
 
 func (dao *SQL) TableHasIndex(index SQLIndex) (bool, error) {
 	if !dao.initDone {
-		return false, errors.New("Init method must be called once before calling TableHasIndex method")
+		return false, errors.New("initWithBox method must be called once before calling TableHasIndex method")
 	}
 
 	var (

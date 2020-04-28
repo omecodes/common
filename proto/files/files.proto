@@ -23,6 +23,7 @@ enum Action {
     Read = 8;
     Share = 9;
     UnShare = 10;
+    UpdateMeta = 11;
 }
 
 enum Type {
@@ -51,6 +52,18 @@ enum MetaType {
     Stars = 2;
     Comments = 3;
     LastEditedBy = 4;
+}
+
+message ClusterNode {
+    string id = 1;
+    string certificate = 2;
+    uint64 capacity = 3;
+    uint64 usage = 4;
+    string service_address = 5;
+    string gateway_address = 6;
+    bool syncing = 7;
+    string access_key = 8;
+    string secret = 9;
 }
 
 message Stats {
@@ -84,7 +97,7 @@ message SyncMessage {
     string dir = 2;
 }
 
-message Access {
+message Permission {
     string uuid = 1;
     filespb.ShareType type = 2;
     string user = 3;
@@ -100,7 +113,8 @@ message ListResult {
 }
 
 message ListOptions {
-    uint32 page_number = 1;
+    int32 offset = 1;
+    uint32 count = 2;
 }
 
 message EncryptOption {

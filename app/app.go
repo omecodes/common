@@ -113,12 +113,14 @@ func WithDefaultCommands(vendor, version, label string, runFunc RunCommandFunc, 
 		},
 	}
 
-	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as app data folder base name")
-	_ = cobra.MarkFlagRequired(a.cmd.PersistentFlags(), "name")
-
 	a.cmd.AddCommand(a.configureCMD)
 	a.cmd.AddCommand(a.startCMD)
 	a.cmd.AddCommand(a.versionCMD)
+
+	a.cmd.PersistentFlags().StringVar(&a.name, "name", "", "Instance name. Used as app data folder base name")
+
+	_ = cobra.MarkFlagRequired(a.configureCMD.PersistentFlags(), "name")
+	_ = cobra.MarkFlagRequired(a.startCMD.PersistentFlags(), "name")
 
 	return a
 }

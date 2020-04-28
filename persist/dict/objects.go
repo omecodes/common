@@ -4,11 +4,13 @@ import (
 	"github.com/zoenion/common/codec"
 	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/dao"
+	"github.com/zoenion/common/errors"
 )
 
 type Dict interface {
 	Save(key string, o interface{}) error
 	Read(key string, o interface{}) error
+	Contains(key string) (bool, error)
 	Delete(key string) error
 	List() (Cursor, error)
 	Clear() error
@@ -42,6 +44,17 @@ func (s *sqlObjects) Read(key string, object interface{}) error {
 	return s.objectCodec.Decode([]byte(r.encoded), object)
 }
 
+func (s *sqlObjects) Contains(key string) (bool, error) {
+	res, err := s.QueryOne("contains", "", key)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return res.(bool), nil
+}
+
 func (s *sqlObjects) Delete(key string) error {
 	return s.Exec("delete", key).Error
 }
@@ -52,14 +65,6 @@ func (s *sqlObjects) List() (Cursor, error) {
 		return nil, err
 	}
 	return newCursor(c, s.objectCodec), nil
-}
-
-func (s *sqlObjects) SetCodec(objectCodec codec.Codec) {
-	s.objectCodec = objectCodec
-}
-
-func (s *sqlObjects) DecoderFunc() func(data []byte, o interface{}) error {
-	return s.objectCodec.Decode
 }
 
 func (s *sqlObjects) Clear() error {
@@ -78,9 +83,12 @@ func NewSQL(cfg conf.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
 		AddStatement("update", "update $prefix$_mapping set val=? where name=?;").
 		AddStatement("select", "select * from $prefix$_mapping where name=?;").
 		AddStatement("select_all", "select * from $prefix$_mapping;").
+		AddStatement("contains", "select 1 from $prefix$_mapping where name=?;").
 		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
 		AddStatement("clear", "delete from $prefix$_mapping;").
-		RegisterScanner("scanner", dao.NewScannerFunc(scanRow))
+		RegisterScanner("scanner", dao.NewScannerFunc(scanRow)).
+		RegisterScanner("bool", dao.NewScannerFunc(scanBool))
+
 	err := d.Init(cfg)
 	d.objectCodec = codec
 	return d, err

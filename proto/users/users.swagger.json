@@ -4,10 +4,6 @@
     "title": "users.proto",
     "version": "version not set"
   },
-  "schemes": [
-    "http",
-    "https"
-  ],
   "consumes": [
     "application/json"
   ],
@@ -375,9 +371,6 @@
         "uuid": {
           "type": "string"
         },
-        "node_path": {
-          "type": "string"
-        },
         "label": {
           "type": "string"
         },
@@ -455,32 +448,6 @@
           "type": "string"
         }
       }
-    }
-  },
-  "x-stream-definitions": {
-    "userspbGroup": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/userspbGroup"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of userspbGroup"
-    },
-    "userspbUser": {
-      "type": "object",
-      "properties": {
-        "result": {
-          "$ref": "#/definitions/userspbUser"
-        },
-        "error": {
-          "$ref": "#/definitions/runtimeStreamError"
-        }
-      },
-      "title": "Stream result of userspbUser"
     }
   }
 }

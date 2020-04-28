@@ -25,23 +25,21 @@ message User {
 
 message Group {
     string uuid = 1;
-    string node_path = 2;
-    string label = 3;
-    string description = 4;
-    int64 created_at = 5;
-    string created_by = 6;
+    string label = 2;
+    string description = 3;
+    int64 created_at = 4;
+    string created_by = 5;
 }
 
 message GroupInfo {
     string uuid = 1;
-    string node_path = 2;
     string label = 3;
     string description = 4;
     int64 created_at = 5;
-    string created_by = 6;
-    string parent = 7;
-    uint32 user_count = 8;
-    uint32 sub_count = 9;
+    int64 created_by = 6;
+    int64 edited_at = 7;
+    repeated string users = 8;
+    map <string, string> meta = 9;
 }
 
 service UsersService {

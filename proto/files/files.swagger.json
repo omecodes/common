@@ -323,7 +323,8 @@
         "Edit",
         "Read",
         "Share",
-        "UnShare"
+        "UnShare",
+        "UpdateMeta"
       ],
       "default": "NoAction"
     },
