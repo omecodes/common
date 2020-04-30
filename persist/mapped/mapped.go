@@ -7,7 +7,7 @@ import (
 )
 
 type Doubled interface {
-	Set(firstKey, secondKey string, val string) error
+	Set(firstKey, secondKey string, o interface{}) error
 	Get(firstKey, secondKey string, o interface{}) error
 	GetForFirst(firstKey string) (MapCursor, error)
 	GetAll() (Cursor, error)
@@ -22,9 +22,14 @@ type sqlPairMap struct {
 	codec codec.Codec
 }
 
-func (s *sqlPairMap) Set(firstKey, secondKey string, val string) error {
-	if s.Exec("insert", firstKey, secondKey, val).Error != nil {
-		return s.Exec("update", val, firstKey, secondKey).Error
+func (s *sqlPairMap) Set(firstKey, secondKey string, o interface{}) error {
+	val, err := s.codec.Encode(o)
+	if err != nil {
+		return err
+	}
+
+	if s.Exec("insert", firstKey, secondKey, string(val)).Error != nil {
+		return s.Exec("update", string(val), firstKey, secondKey).Error
 	}
 	return nil
 }

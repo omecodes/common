@@ -52,7 +52,7 @@ func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		AddStatement("delete_tree_path", `DELETE FROM $prefix$_trees WHERE path LIKE ?;`).
 		AddStatement("delete_encoded", `DELETE FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_tree_path", `SELECT * FROM $prefix$_trees WHERE path LIKE ?;`).
-		AddStatement("select_tree_path_id", `SELECT id FROM $prefix$_trees WHERE path=?;`).
+		AddStatement("select_tree_path_id", `SELECT * FROM $prefix$_trees WHERE path=?;`).
 		AddStatement("select_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
 		RegisterScanner("tree", dao.NewScannerFunc(scanTreeRow)).

@@ -110,7 +110,7 @@ func (l *listDB) scanEventFromEncoded(row dao.Row) (interface{}, error) {
 	}
 
 	var me filespb.SyncEvent
-	err = codec.GSONDecode([]byte(encoded), &me)
+	err = codec.GobDecode([]byte(encoded), &me)
 
 	return &me, err
 }

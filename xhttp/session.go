@@ -3,6 +3,7 @@ package xhttp
 import (
 	"context"
 	"github.com/gorilla/sessions"
+	"github.com/zoenion/common/codec"
 	"net/http"
 )
 
@@ -17,6 +18,7 @@ type Session interface {
 	GetBool(name string) bool
 	Delete(name string)
 	Save() error
+	Encoded() ([]byte, error)
 }
 
 func SetCookie(ctx context.Context, cookie *Cookie) {
@@ -90,4 +92,8 @@ func (s *session) Delete(key string) {
 
 func (s *session) Save() error {
 	return s.httpSession.Save(s.r, s.w)
+}
+
+func (s *session) Encoded() ([]byte, error) {
+	return codec.Default.Encode(s.httpSession.Values)
 }
