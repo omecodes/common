@@ -421,13 +421,13 @@
     "filespbMetaType": {
       "type": "string",
       "enum": [
-        "None",
+        "All",
         "Downloads",
         "Stars",
         "Comments",
         "LastEditedBy"
       ],
-      "default": "None"
+      "default": "All"
     },
     "filespbMoveRequest": {
       "type": "object",

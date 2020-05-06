@@ -47,7 +47,7 @@ enum ShareType {
 }
 
 enum MetaType {
-    None = 0;
+    All = 0;
     Downloads = 1;
     Stars = 2;
     Comments = 3;
@@ -97,7 +97,7 @@ message SyncMessage {
     string dir = 2;
 }
 
-message Permission {
+message Access {
     string uuid = 1;
     filespb.ShareType type = 2;
     string user = 3;
