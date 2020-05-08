@@ -55,6 +55,13 @@ func SessionFromContext(ctx context.Context, store *sessions.CookieStore, name s
 	}
 
 	setCookieValues := md.Get(gRPCHeaderCookie)
+	if len(setCookieValues) == 0 {
+		return &Session{
+			Values: map[interface{}]interface{}{},
+			Name:   name,
+			Store:  store,
+		}, nil
+	}
 	hr := &http.Request{
 		Header: http.Header{},
 	}

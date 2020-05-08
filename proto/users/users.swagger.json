@@ -11,81 +11,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/group/user/move": {
-      "post": {
-        "operationId": "MoveUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userspbMoveUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/userspbMoveUserRequest"
-            }
-          }
-        ],
-        "tags": [
-          "UsersService"
-        ]
-      }
-    },
-    "/api/group/{group_uuid}": {
-      "get": {
-        "operationId": "GetGroup",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userspbGetGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "group_uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UsersService"
-        ]
-      }
-    },
-    "/api/group/{group_uuid}/delete": {
-      "delete": {
-        "operationId": "DeleteGroup",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userspbDeleteGroupResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "group_uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UsersService"
-        ]
-      }
-    },
-    "/api/group/{group_uuid}/subgroups": {
+    "/api/group/subs/{group_path}": {
       "get": {
         "operationId": "ListSubGroup",
         "responses": {
@@ -98,7 +24,7 @@
         },
         "parameters": [
           {
-            "name": "group_uuid",
+            "name": "group_path",
             "in": "path",
             "required": true,
             "type": "string"
@@ -116,91 +42,22 @@
         ]
       }
     },
-    "/api/group/{group_uuid}/users/list": {
+    "/api/groups/info/{group_path}": {
       "get": {
-        "operationId": "ListUsers",
+        "operationId": "GetGroup",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userspbListUsersResponse"
+              "$ref": "#/definitions/userspbGetGroupResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "group_uuid",
+            "name": "group_path",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "UsersService"
-        ]
-      }
-    },
-    "/api/group/{user.group_uuid}/user": {
-      "post": {
-        "operationId": "AddUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userspbAddUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "user.group_uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/userspbAddUserRequest"
-            }
-          }
-        ],
-        "tags": [
-          "UsersService"
-        ]
-      }
-    },
-    "/api/group/{user.group_uuid}/users/delete": {
-      "delete": {
-        "operationId": "DeleteUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userspbDeleteUserResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "user.group_uuid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "user.name",
-            "in": "query",
-            "required": false,
             "type": "string"
           }
         ],
@@ -209,7 +66,7 @@
         ]
       }
     },
-    "/api/groups/create": {
+    "/api/groups/new": {
       "post": {
         "operationId": "CreateGroup",
         "responses": {
@@ -235,6 +92,30 @@
         ]
       }
     },
+    "/api/groups/{group_path}": {
+      "delete": {
+        "operationId": "DeleteGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userspbDeleteGroupResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "group_path",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UsersService"
+        ]
+      }
+    },
     "/api/resources/access/policy": {
       "post": {
         "operationId": "GetUserResourcesAccessPolicyInfo",
@@ -253,6 +134,160 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/userspbGetUserResourcesAccessPolicyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UsersService"
+        ]
+      }
+    },
+    "/api/users/list": {
+      "get": {
+        "operationId": "ListUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userspbListUsersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "group_path",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "UsersService"
+        ]
+      }
+    },
+    "/api/users/new": {
+      "post": {
+        "operationId": "AddUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userspbAddUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userspbAddUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UsersService"
+        ]
+      }
+    },
+    "/api/users/{user.name}": {
+      "delete": {
+        "operationId": "DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userspbDeleteUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user.group_path",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.role",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "user.capabilities",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "None",
+              "CanManageResourcesAccess",
+              "CanCreateGroup"
+            ],
+            "default": "None"
+          },
+          {
+            "name": "user.resources_access",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Denied",
+              "Read",
+              "Update",
+              "Delete",
+              "Share",
+              "Default",
+              "Admin"
+            ],
+            "default": "Denied"
+          }
+        ],
+        "tags": [
+          "UsersService"
+        ]
+      }
+    },
+    "/api/users/{user.name}/move": {
+      "post": {
+        "operationId": "MoveUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userspbMoveUserResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userspbMoveUserRequest"
             }
           }
         ],
@@ -307,21 +342,12 @@
           "$ref": "#/definitions/userspbUser"
         },
         "capabilities": {
-          "$ref": "#/definitions/userspbCapabilities"
+          "$ref": "#/definitions/userspbGroupAbilities"
         }
       }
     },
     "userspbAddUserResponse": {
       "type": "object"
-    },
-    "userspbCapabilities": {
-      "type": "string",
-      "enum": [
-        "Default",
-        "CanManageResourcesAccess",
-        "CanCreateGroup"
-      ],
-      "default": "Default"
     },
     "userspbCreateGroupRequest": {
       "type": "object",
@@ -368,7 +394,7 @@
     "userspbGroup": {
       "type": "object",
       "properties": {
-        "uuid": {
+        "path": {
           "type": "string"
         },
         "label": {
@@ -385,6 +411,15 @@
           "type": "string"
         }
       }
+    },
+    "userspbGroupAbilities": {
+      "type": "string",
+      "enum": [
+        "None",
+        "CanManageResourcesAccess",
+        "CanCreateGroup"
+      ],
+      "default": "None"
     },
     "userspbListSubGroupResponse": {
       "type": "object",
@@ -430,7 +465,7 @@
         "user": {
           "$ref": "#/definitions/userspbUser"
         },
-        "group_uuid": {
+        "group_path": {
           "type": "string"
         }
       }
@@ -438,14 +473,37 @@
     "userspbMoveUserResponse": {
       "type": "object"
     },
+    "userspbResourceAccess": {
+      "type": "string",
+      "enum": [
+        "Denied",
+        "Read",
+        "Update",
+        "Delete",
+        "Share",
+        "Default",
+        "Admin"
+      ],
+      "default": "Denied"
+    },
     "userspbUser": {
       "type": "object",
       "properties": {
-        "group_uuid": {
+        "group_path": {
           "type": "string"
         },
         "name": {
           "type": "string"
+        },
+        "role": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "capabilities": {
+          "$ref": "#/definitions/userspbGroupAbilities"
+        },
+        "resources_access": {
+          "$ref": "#/definitions/userspbResourceAccess"
         }
       }
     }

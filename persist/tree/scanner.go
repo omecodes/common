@@ -10,6 +10,7 @@ func scanTreeRow(row dao.Row) (interface{}, error) {
 
 func scanEncodedRow(row dao.Row) (interface{}, error) {
 	var er EncodedRow
-	err := row.Scan(&er.parent, &er.nodeName, &er.encoded)
+
+	err := row.Scan(&er.parent, &er.nodeName, &er.encoded, &er.isLeaf)
 	return &er, err
 }

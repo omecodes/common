@@ -16,6 +16,8 @@ type Tree interface {
 	UpdateNode(nodePath string, o interface{}) error
 	ReadNode(nodePath string, o interface{}) error
 	Children(nodePath string) (Cursor, error)
+	Leaves(nodePath string) (Cursor, error)
+	SubTrees(nodePath string) (Cursor, error)
 	Clear() error
 }
 
@@ -38,11 +40,12 @@ func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 				parent INT NOT NULL,
 				node_name VARCHAR(255) NOT NULL,
 				encoded longblob NOT NULL,
+				is_leaf int(1),
 				foreign key (parent) references $prefix$_trees(id) on delete cascade
 			);`).
 		AddStatement("clear", `DELETE FROM $prefix$_trees;`).
 		AddStatement("insert_tree_path", `INSERT INTO $prefix$_trees (path) VALUES(?);`).
-		AddStatement("insert_encoded", `INSERT INTO $prefix$_encoded VALUES(?, ?, ?);`).
+		AddStatement("insert_encoded", `INSERT INTO $prefix$_encoded VALUES(?, ?, ?, ?);`).
 		AddStatement("update_encoded", `UPDATE $prefix$_encoded SET encoded=? WHERE parent=? and node_name=?;`).
 		AddStatement("update_tree_path", `UPDATE $prefix$_trees SET path=replace(path, ?, ?) WHERE path LIKE ?;`).
 		//AddStatement("update_parent", `UPDATE $prefix$_encoded SET parent=? WHERE parent=?;`).
@@ -53,8 +56,10 @@ func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		AddStatement("delete_encoded", `DELETE FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_tree_path", `SELECT * FROM $prefix$_trees WHERE path LIKE ?;`).
 		AddStatement("select_tree_path_id", `SELECT * FROM $prefix$_trees WHERE path=?;`).
-		AddStatement("select_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
-		AddStatement("select_all_encoded", `SELECT encoded FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
+		AddStatement("select_encoded", `SELECT * FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
+		AddStatement("select_all_encoded", `SELECT * FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
+		AddStatement("select_sub_trees", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=0 ORDER BY node_name;`).
+		AddStatement("select_leaves", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=1  ORDER BY node_name;`).
 		RegisterScanner("tree", dao.NewScannerFunc(scanTreeRow)).
 		RegisterScanner("encoded", dao.NewScannerFunc(scanEncodedRow))
 
@@ -93,7 +98,9 @@ func (t *sqlTree) getTreeByPath(p string) (*TreeRow, error) {
 }
 
 func (t *sqlTree) CreateNode(nodePath string, o interface{}, isLeaf bool) error {
-	parent, name := path.Split(nodePath)
+	parent := path.Dir(nodePath)
+	name := path.Base(nodePath)
+
 	var e error
 	parentRow, e := t.getTreeByPath(parent)
 	if e != nil {
@@ -105,7 +112,12 @@ func (t *sqlTree) CreateNode(nodePath string, o interface{}, isLeaf bool) error 
 		return err
 	}
 
-	err = t.Exec("insert_encoded", parentRow.id, name, encoded).Error
+	isLeafIntValue := 0
+	if isLeaf {
+		isLeafIntValue = 1
+	}
+
+	err = t.Exec("insert_encoded", parentRow.id, name, encoded, isLeafIntValue).Error
 	if err != nil {
 		return err
 	}
@@ -211,17 +223,45 @@ func (t *sqlTree) ReadNode(nodePath string, o interface{}) error {
 		return err
 	}
 
-	data := []byte(item.(string))
-	return t.codec.Decode(data, o)
+	encoded := item.(*EncodedRow)
+	return t.codec.Decode([]byte(encoded.encoded), o)
 }
 
-func (t *sqlTree) Children(dir string) (Cursor, error) {
-	dirInfo, e := t.getTreeByPath(dir)
+func (t *sqlTree) Children(nodePath string) (Cursor, error) {
+	dirInfo, e := t.getTreeByPath(nodePath)
 	if e != nil {
 		return nil, e
 	}
 
 	c, err := t.Query("select_all_encoded", "encoded", dirInfo.id)
+	if err != nil {
+		return nil, err
+	}
+
+	return newCursor(c, t.codec), nil
+}
+
+func (t *sqlTree) Leaves(nodePath string) (Cursor, error) {
+	dirInfo, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return nil, e
+	}
+
+	c, err := t.Query("select_leaves", "encoded", dirInfo.id)
+	if err != nil {
+		return nil, err
+	}
+
+	return newCursor(c, t.codec), nil
+}
+
+func (t *sqlTree) SubTrees(nodePath string) (Cursor, error) {
+	dirInfo, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return nil, e
+	}
+
+	c, err := t.Query("select_sub_trees", "encoded", dirInfo.id)
 	if err != nil {
 		return nil, err
 	}

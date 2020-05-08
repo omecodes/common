@@ -1,6 +1,8 @@
 package app
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/database"
@@ -163,6 +165,7 @@ func configureSecrets(description string, defaults conf.Map) (conf.Map, error) {
 			return nil, err
 		}
 		cfg[name] = secret
+		fmt.Println()
 	}
 	return cfg, err
 }
@@ -267,7 +270,9 @@ func configureAdminsCredentials(description string, defaults conf.Map) (conf.Map
 			return nil, err
 		}
 
-		cfg[user] = password
+		data := sha256.Sum256([]byte(password))
+		cfg[user] = base64.StdEncoding.EncodeToString(data[:])
+		fmt.Println()
 	}
 	return cfg, err
 }
@@ -296,6 +301,7 @@ func configureDirs(description string, defaults conf.Map, names ...string) (conf
 			return nil, err
 		}
 		cfg[name] = dirPath
+		fmt.Println()
 	}
 
 	return cfg, err

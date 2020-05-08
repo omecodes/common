@@ -76,15 +76,15 @@ func request_UsersService_GetGroup_0(ctx context.Context, marshaler runtime.Mars
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	msg, err := client.GetGroup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -103,15 +103,15 @@ func local_request_UsersService_GetGroup_0(ctx context.Context, marshaler runtim
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	msg, err := server.GetGroup(ctx, &protoReq)
@@ -120,7 +120,7 @@ func local_request_UsersService_GetGroup_0(ctx context.Context, marshaler runtim
 }
 
 var (
-	filter_UsersService_ListSubGroup_0 = &utilities.DoubleArray{Encoding: map[string]int{"group_uuid": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_UsersService_ListSubGroup_0 = &utilities.DoubleArray{Encoding: map[string]int{"group_path": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_UsersService_ListSubGroup_0(ctx context.Context, marshaler runtime.Marshaler, client UsersServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -134,15 +134,15 @@ func request_UsersService_ListSubGroup_0(ctx context.Context, marshaler runtime.
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -168,15 +168,15 @@ func local_request_UsersService_ListSubGroup_0(ctx context.Context, marshaler ru
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_UsersService_ListSubGroup_0); err != nil {
@@ -199,15 +199,15 @@ func request_UsersService_DeleteGroup_0(ctx context.Context, marshaler runtime.M
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	msg, err := client.DeleteGroup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -226,15 +226,15 @@ func local_request_UsersService_DeleteGroup_0(ctx context.Context, marshaler run
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["group_path"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_path")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	protoReq.GroupPath, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_path", err)
 	}
 
 	msg, err := server.DeleteGroup(ctx, &protoReq)
@@ -254,24 +254,6 @@ func request_UsersService_AddUser_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["user.group_uuid"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.group_uuid")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "user.group_uuid", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.group_uuid", err)
-	}
-
 	msg, err := client.AddUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -287,24 +269,6 @@ func local_request_UsersService_AddUser_0(ctx context.Context, marshaler runtime
 	}
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["user.group_uuid"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.group_uuid")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "user.group_uuid", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.group_uuid", err)
 	}
 
 	msg, err := server.AddUser(ctx, &protoReq)
@@ -324,6 +288,24 @@ func request_UsersService_MoveUser_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["user.name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.name")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.name", val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.name", err)
+	}
+
 	msg, err := client.MoveUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -341,19 +323,6 @@ func local_request_UsersService_MoveUser_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.MoveUser(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-var (
-	filter_UsersService_ListUsers_0 = &utilities.DoubleArray{Encoding: map[string]int{"group_uuid": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
-)
-
-func request_UsersService_ListUsers_0(ctx context.Context, marshaler runtime.Marshaler, client UsersServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListUsersRequest
-	var metadata runtime.ServerMetadata
-
 	var (
 		val string
 		ok  bool
@@ -361,16 +330,29 @@ func request_UsersService_ListUsers_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["group_uuid"]
+	val, ok = pathParams["user.name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.name")
 	}
 
-	protoReq.GroupUuid, err = runtime.String(val)
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.name", val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.name", err)
 	}
+
+	msg, err := server.MoveUser(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+var (
+	filter_UsersService_ListUsers_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
+func request_UsersService_ListUsers_0(ctx context.Context, marshaler runtime.Marshaler, client UsersServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListUsersRequest
+	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -388,24 +370,6 @@ func local_request_UsersService_ListUsers_0(ctx context.Context, marshaler runti
 	var protoReq ListUsersRequest
 	var metadata runtime.ServerMetadata
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["group_uuid"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "group_uuid")
-	}
-
-	protoReq.GroupUuid, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_uuid", err)
-	}
-
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_UsersService_ListUsers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
@@ -416,7 +380,7 @@ func local_request_UsersService_ListUsers_0(ctx context.Context, marshaler runti
 }
 
 var (
-	filter_UsersService_DeleteUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "group_uuid": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
+	filter_UsersService_DeleteUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "name": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
 )
 
 func request_UsersService_DeleteUser_0(ctx context.Context, marshaler runtime.Marshaler, client UsersServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -430,15 +394,15 @@ func request_UsersService_DeleteUser_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["user.group_uuid"]
+	val, ok = pathParams["user.name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.name")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "user.group_uuid", val)
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.name", val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.name", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -464,15 +428,15 @@ func local_request_UsersService_DeleteUser_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["user.group_uuid"]
+	val, ok = pathParams["user.name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.group_uuid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.name")
 	}
 
-	err = runtime.PopulateFieldFromPath(&protoReq, "user.group_uuid", val)
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.name", val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.group_uuid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.name", err)
 	}
 
 	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_UsersService_DeleteUser_0); err != nil {
@@ -928,21 +892,21 @@ func RegisterUsersServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_UsersService_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "groups", "create"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_CreateGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "groups", "new"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "group", "group_uuid"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_GetGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "groups", "info", "group_path"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_ListSubGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "group_uuid", "subgroups"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_ListSubGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "group", "subs", "group_path"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_DeleteGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "group_uuid", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_DeleteGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "groups", "group_path"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_AddUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "group", "user.group_uuid", "user"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_AddUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "users", "new"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_MoveUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "group", "user", "move"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_MoveUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "users", "user.name", "move"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "group", "group_uuid", "users", "list"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_ListUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "users", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_UsersService_DeleteUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "group", "user.group_uuid", "users", "delete"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_UsersService_DeleteUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "users", "user.name"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_UsersService_GetUserResourcesAccessPolicyInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "resources", "access", "policy"}, "", runtime.AssumeColonVerbOpt(true)))
 )

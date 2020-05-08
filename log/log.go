@@ -191,7 +191,7 @@ func (ul *defaultLogger) faf(from string, err error, format string, args ...inte
 	log.Print(items...)
 }
 
-// Stats displays informative message
+// Info displays informative message
 func S(from string, msg string, args ...interface{}) {
 	getLogger().su(from, msg, args...)
 }
@@ -215,7 +215,7 @@ func F(from string, err error, args ...interface{}) {
 	getLogger().fa(from, err, args...)
 }
 
-// Stats displays informative message
+// Info displays informative message
 func Suf(from string, format string, args ...interface{}) {
 	getLogger().suf(from, format, args...)
 }

@@ -38,6 +38,7 @@ enum Rights {
     AccessUpdate = 2;
     AccessDelete = 4;
     AccessShare = 8;
+    FullAccess = 15;
 }
 
 enum ShareType {

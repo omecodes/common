@@ -9,4 +9,5 @@ type EncodedRow struct {
 	parent   int64
 	nodeName string
 	encoded  string
+	isLeaf   int
 }
