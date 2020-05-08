@@ -37,7 +37,7 @@ func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		AddTableDefinition("encoded", `CREATE TABLE IF NOT EXISTS $prefix$_encoded (
 				parent INT NOT NULL,
 				node_name VARCHAR(255) NOT NULL,
-				encoded TEXT NOT NULL,
+				encoded longblob NOT NULL,
 				foreign key (parent) references $prefix$_trees(id) on delete cascade
 			);`).
 		AddStatement("clear", `DELETE FROM $prefix$_trees;`).
