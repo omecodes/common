@@ -410,24 +410,13 @@
     "filespbMeta": {
       "type": "object",
       "properties": {
-        "type": {
-          "$ref": "#/definitions/filespbMetaType"
+        "name": {
+          "type": "string"
         },
-        "json_encoded_value": {
+        "value": {
           "type": "string"
         }
       }
-    },
-    "filespbMetaType": {
-      "type": "string",
-      "enum": [
-        "All",
-        "Downloads",
-        "Stars",
-        "Comments",
-        "LastEditedBy"
-      ],
-      "default": "All"
     },
     "filespbMoveRequest": {
       "type": "object",

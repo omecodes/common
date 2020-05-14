@@ -4,7 +4,6 @@ package filespb;
 
 import "google/api/annotations.proto";
 
-
 enum DuplicateAction {
     Fail = 0;
     AutoRename = 1;
@@ -45,14 +44,6 @@ enum ShareType {
     Restricted = 0;
     PublicLink = 1;
     Internal = 2;
-}
-
-enum MetaType {
-    All = 0;
-    Downloads = 1;
-    Stars = 2;
-    Comments = 3;
-    LastEditedBy = 4;
 }
 
 message ClusterNode {
@@ -171,8 +162,8 @@ message MoveOptions {
 }
 
 message Meta {
-    MetaType type = 1;
-    string json_encoded_value = 2;
+    string name = 1;
+    string value = 2;
 }
 
 message ContentPart {

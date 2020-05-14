@@ -18,6 +18,7 @@ type Tree interface {
 	Children(nodePath string) (Cursor, error)
 	Leaves(nodePath string) (Cursor, error)
 	SubTrees(nodePath string) (Cursor, error)
+	CountChildren(nodePath string) (int64, error)
 	Clear() error
 }
 
@@ -60,7 +61,12 @@ func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		AddStatement("select_all_encoded", `SELECT * FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
 		AddStatement("select_sub_trees", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=0 ORDER BY node_name;`).
 		AddStatement("select_leaves", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=1  ORDER BY node_name;`).
+		AddStatement("children_count", `SELECT count(*) FROM $prefix$_encoded WHERE parent=?;`).
 		RegisterScanner("tree", dao.NewScannerFunc(scanTreeRow)).
+		RegisterScanner("count", dao.NewScannerFunc(func(row dao.Row) (interface{}, error) {
+			var count int64
+			return count, row.Scan(&count)
+		})).
 		RegisterScanner("encoded", dao.NewScannerFunc(scanEncodedRow))
 
 	err := db.Init(dbCfg)
@@ -267,6 +273,21 @@ func (t *sqlTree) SubTrees(nodePath string) (Cursor, error) {
 	}
 
 	return newCursor(c, t.codec), nil
+}
+
+func (t *sqlTree) CountChildren(nodePath string) (int64, error) {
+	var e error
+	parentRow, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return 0, e
+	}
+
+	o, err := t.QueryOne("children_count", "count", parentRow.id)
+	if err != nil {
+		return 0, err
+	}
+
+	return o.(int64), nil
 }
 
 func (t *sqlTree) deleteEncoded(nodePath string) error {
