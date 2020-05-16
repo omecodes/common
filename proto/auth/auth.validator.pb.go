@@ -20,8 +20,13 @@ var _ = math.Inf
 func (this *JWTHeader) Validate() error {
 	return nil
 }
+func (this *Profile) Validate() error {
+	return nil
+}
+func (this *Email) Validate() error {
+	return nil
+}
 func (this *Claims) Validate() error {
-	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
 func (this *JWT) Validate() error {
@@ -66,6 +71,17 @@ func (this *DeleteJWTRequest) Validate() error {
 func (this *DeleteJWTResponse) Validate() error {
 	return nil
 }
+func (this *RevokeTokenRequest) Validate() error {
+	if this.Jwt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Jwt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Jwt", err)
+		}
+	}
+	return nil
+}
+func (this *RevokeTokenResponse) Validate() error {
+	return nil
+}
 func (this *ListenRequest) Validate() error {
 	return nil
 }
@@ -83,6 +99,12 @@ func (this *CreateCredentialsRequest) Validate() error {
 func (this *CreateCredentialsResponse) Validate() error {
 	return nil
 }
+func (this *UpdateEmailRequest) Validate() error {
+	return nil
+}
+func (this *UpdateEmailResponse) Validate() error {
+	return nil
+}
 func (this *AuthenticateRequest) Validate() error {
 	if !(len(this.Subject) > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Subject", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Subject))
@@ -90,29 +112,9 @@ func (this *AuthenticateRequest) Validate() error {
 	if !(len(this.Password) > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Password", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Password))
 	}
-	if !(len(this.Audience) > 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Audience", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Audience))
-	}
-	for _, item := range this.Scope {
-		if !(len(item) > 0) {
-			return github_com_mwitkow_go_proto_validators.FieldError("Scope", fmt.Errorf(`value '%v' must have a length greater than '0'`, item))
-		}
-	}
-	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *GetTokenResponse) Validate() error {
-	return nil
-}
-func (this *RevokeTokenRequest) Validate() error {
-	if this.Jwt != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Jwt); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Jwt", err)
-		}
-	}
-	return nil
-}
-func (this *RevokeTokenResponse) Validate() error {
+func (this *AuthenticateResponse) Validate() error {
 	return nil
 }
 func (this *SetPasswordRequest) Validate() error {

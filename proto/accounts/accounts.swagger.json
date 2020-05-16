@@ -35,6 +35,32 @@
         ]
       }
     },
+    "/api/account/info": {
+      "post": {
+        "operationId": "CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbCreateAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/accountspbCreateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
     "/api/account/login": {
       "post": {
         "operationId": "Login",
@@ -105,12 +131,12 @@
     },
     "/api/account/new": {
       "post": {
-        "operationId": "CreateAccount",
+        "operationId": "AccountInfo",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/accountspbCreateAccountResponse"
+              "$ref": "#/definitions/accountspbAccountInfoResponse"
             }
           }
         },
@@ -120,7 +146,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/accountspbCreateAccountRequest"
+              "$ref": "#/definitions/accountspbAccountInfoRequest"
             }
           }
         ],
@@ -295,6 +321,48 @@
     }
   },
   "definitions": {
+    "accountspbAccountInfo": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "email_confirmed": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "phone_confirmed": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "accountspbAccountInfoRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbAccountInfoResponse": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/accountspbAccountInfo"
+        }
+      }
+    },
     "accountspbAuthorizeResponse": {
       "type": "object"
     },

@@ -43,6 +43,15 @@
     }
   },
   "definitions": {
+    "authpbAuthenticateResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
     "authpbClaims": {
       "type": "object",
       "properties": {
@@ -70,31 +79,30 @@
         "jti": {
           "type": "string"
         },
-        "admin": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "scope": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "data": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "val": {
+        "name": {
           "type": "string"
         },
-        "jwk_cert": {
+        "picture": {
+          "type": "string"
+        },
+        "email": {
           "type": "string"
         },
         "email_verified": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "api_access": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jwt_store": {
+          "type": "string"
+        },
+        "jwk_cert": {
+          "type": "string"
         }
       }
     },
@@ -111,14 +119,6 @@
         },
         "code": {
           "type": "string"
-        }
-      }
-    },
-    "authpbCreateTokenResponse": {
-      "type": "object",
-      "properties": {
-        "jwt": {
-          "$ref": "#/definitions/authpbJWT"
         }
       }
     },
@@ -160,14 +160,6 @@
       "properties": {
         "state": {
           "$ref": "#/definitions/authpbJWTState"
-        }
-      }
-    },
-    "authpbGetTokenResponse": {
-      "type": "object",
-      "properties": {
-        "jwt": {
-          "type": "string"
         }
       }
     },
@@ -249,6 +241,9 @@
           "format": "boolean"
         }
       }
+    },
+    "authpbUpdateEmailResponse": {
+      "type": "object"
     },
     "protobufAny": {
       "type": "object",

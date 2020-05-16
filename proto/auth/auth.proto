@@ -25,6 +25,21 @@ message JWTHeader {
     string alg = 2;
 }
 
+message Profile {
+    string name = 1;
+    string family_name = 2;
+    string given_name = 3;
+    string middle_name = 4;
+    string nickname = 5;
+    string picture = 6;
+    int64 updated_at = 7;
+}
+
+message Email {
+    string email = 1;
+    bool email_verified = 2;
+}
+
 message Claims {
     string iss = 1;
     string sub = 2;
@@ -33,12 +48,15 @@ message Claims {
     int64 nbf = 5;
     int64 iat = 6;
     string jti = 7;
-    bool admin = 8;
-    repeated string scope = 9;
-    map<string, string> data = 10;
-    string val = 11;
-    string jwk_cert = 12;
-    bool email_verified = 13;
+
+    string name = 8;
+    string picture = 9;
+    string email = 10;
+    bool email_verified = 11;
+    repeated string api_access = 12;
+
+    string jwt_store = 13;
+    string jwk_cert = 14;
 }
 
 message JWT {
@@ -62,6 +80,7 @@ enum EventAction {
 service TokenStoreService {
     rpc Feed (stream JwtEvent) returns (stream FeedResponse);
     rpc Listen (ListenRequest) returns (stream JwtEvent);
+    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
         option (google.api.http).get = "/jwt/find/{jti}";
     };
@@ -98,15 +117,21 @@ message DeleteJWTResponse {
     uint32 count = 1;
 }
 
+message RevokeTokenRequest {
+    JWT jwt = 1;
+}
+message RevokeTokenResponse {
+}
+
 message ListenRequest {
 }
 
+// Authentication service
 service AuthenticationService {
     rpc CreateCredentials (CreateCredentialsRequest) returns (CreateCredentialsResponse);
-    rpc Authenticate (AuthenticateRequest) returns (GetTokenResponse);
-    rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
+    rpc UpdateEmail (UpdateEmailRequest) returns (UpdateEmailResponse);
+    rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse);
     rpc SetPassword (SetPasswordRequest) returns (SetPasswordResponse);
-    rpc CreateToken (CreateTokenRequest) returns (CreateTokenResponse);
 }
 
 message CreateCredentialsRequest {
@@ -118,21 +143,19 @@ message CreateCredentialsResponse {
     string code = 3;
 }
 
+message UpdateEmailRequest {
+    string username = 1;
+    string old_email = 2;
+    string new_email = 3;
+}
+message UpdateEmailResponse {}
+
 message AuthenticateRequest {
     string subject = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
     string password = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string audience = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    repeated string scope = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    map<string, string> scope_values = 5 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
-message GetTokenResponse {
-    string jwt = 1;
-}
-
-message RevokeTokenRequest {
-    JWT jwt = 1;
-}
-message RevokeTokenResponse {
+message AuthenticateResponse {
+    bool success = 1;
 }
 
 message SetPasswordRequest {

@@ -36,6 +36,12 @@ type Mapper func(context.Context, *runtime.ServeMux, string, []grpc.DialOption) 
 
 type MuxWrapper func(mux *runtime.ServeMux) http.Handler
 
+type GatewayConfigs struct {
+	Port       int        `json:"port"`
+	Mapper     Mapper     `json:"mapper"`
+	MuxWrapper MuxWrapper `json:"mux_wrapper"`
+}
+
 type Configs struct {
 	Name                string
 	CertificateFilename string
@@ -43,10 +49,8 @@ type Configs struct {
 	SelfSigned          bool
 	Ip                  string
 	Domain              string
-	GRPCPort            int
-	HTTPPort            int
-	Mapper              Mapper
-	MuxWrapper          MuxWrapper
+	Port                int
+	Gateway             *GatewayConfigs
 }
 
 type Server struct {
@@ -65,34 +69,32 @@ type Server struct {
 }
 
 func (s *Server) listenHttp() error {
-	tc := &tls.Config{
-		Certificates: []tls.Certificate{
-			{
-				Certificate: [][]byte{s.certificate.Raw},
-				PrivateKey:  s.key,
+	if s.configs.Gateway != nil {
+		tc := &tls.Config{
+			Certificates: []tls.Certificate{
+				{
+					Certificate: [][]byte{s.certificate.Raw},
+					PrivateKey:  s.key,
+				},
 			},
-		},
+		}
+		if s.configs.SelfSigned {
+			pool := x509.NewCertPool()
+			pool.AddCert(s.certificate)
+			tc.ClientCAs = pool
+		}
+		address := fmt.Sprintf("%s:", s.configs.Domain)
+		if s.configs.Port > 0 {
+			address = fmt.Sprintf("%s%d", address, s.configs.Gateway.Port)
+		}
+		l, err := tls.Listen("tcp", address, tc)
+		if err != nil {
+			return err
+		}
+		s.httpListener = l
+		s.httpAddress = l.Addr().String()
+		log.Printf("[%s-server] listening to HTTP traffic at %s", s.configs.Name, s.httpAddress)
 	}
-
-	if s.configs.SelfSigned {
-		pool := x509.NewCertPool()
-		pool.AddCert(s.certificate)
-		tc.ClientCAs = pool
-	}
-
-	address := fmt.Sprintf("%s:", s.configs.Domain)
-	if s.configs.HTTPPort > 0 {
-		address = fmt.Sprintf("%s%d", address, s.configs.HTTPPort)
-	}
-	l, err := tls.Listen("tcp", address, tc)
-	if err != nil {
-		return err
-	}
-
-	s.httpListener = l
-	s.httpAddress = l.Addr().String()
-
-	log.Printf("[%s-server] listening to HTTP traffic at %s", s.configs.Name, s.httpAddress)
 	return nil
 }
 
@@ -113,8 +115,8 @@ func (s *Server) listenGRPC() error {
 	}
 
 	address := fmt.Sprintf("%s:", s.configs.Domain)
-	if s.configs.GRPCPort > 0 {
-		address = fmt.Sprintf("%s%d", address, s.configs.GRPCPort)
+	if s.configs.Port > 0 {
+		address = fmt.Sprintf("%s%d", address, s.configs.Port)
 	}
 
 	l, err := tls.Listen("tcp", address, tc)
@@ -221,40 +223,41 @@ func (s *Server) startGRPC() {
 }
 
 func (s *Server) startHTTP() {
-	if !s.initialized {
-		s.errorChannel <- errors.New("Init method must me called at least once")
-		return
-	}
+	if s.configs.Gateway != nil {
+		if !s.initialized {
+			s.errorChannel <- errors.New("Init method must me called at least once")
+			return
+		}
+		s.mux = runtime.NewServeMux(
+			runtime.WithForwardResponseOption(gs.SetCookieFromGRPCMetadata),
+		)
 
-	s.mux = runtime.NewServeMux(
-		runtime.WithForwardResponseOption(gs.SetCookieFromGRPCMetadata),
-	)
-
-	var opts []grpc.DialOption
-	c, err := credentials.NewClientTLSFromFile(s.configs.CertificateFilename, "")
-	if err != nil {
-		s.errorChannel <- err
-		return
-	}
-	opts = append(opts, grpc.WithTransportCredentials(c))
-
-	err = s.configs.Mapper(context.Background(), s.mux, s.grpcAddress, opts)
-	if err != nil {
-		s.errorChannel <- err
-		return
-	}
-
-	var handler http.Handler
-	if s.configs.MuxWrapper != nil {
-		handler = s.configs.MuxWrapper(s.mux)
-	} else {
-		handler = s.mux
-	}
-
-	err = http.Serve(s.httpListener, handler)
-	if err != nil {
-		if !s.stopped {
+		var opts []grpc.DialOption
+		c, err := credentials.NewClientTLSFromFile(s.configs.CertificateFilename, "")
+		if err != nil {
 			s.errorChannel <- err
+			return
+		}
+		opts = append(opts, grpc.WithTransportCredentials(c))
+
+		err = s.configs.Gateway.Mapper(context.Background(), s.mux, s.grpcAddress, opts)
+		if err != nil {
+			s.errorChannel <- err
+			return
+		}
+
+		var handler http.Handler
+		if s.configs.Gateway.MuxWrapper != nil {
+			handler = s.configs.Gateway.MuxWrapper(s.mux)
+		} else {
+			handler = s.mux
+		}
+
+		err = http.Serve(s.httpListener, handler)
+		if err != nil {
+			if !s.stopped {
+				s.errorChannel <- err
+			}
 		}
 	}
 }

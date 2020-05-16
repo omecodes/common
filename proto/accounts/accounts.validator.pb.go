@@ -112,6 +112,17 @@ func (this *CreateAccountRequest) Validate() error {
 func (this *CreateAccountResponse) Validate() error {
 	return nil
 }
+func (this *AccountInfoRequest) Validate() error {
+	return nil
+}
+func (this *AccountInfoResponse) Validate() error {
+	if this.Info != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Info); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Info", err)
+		}
+	}
+	return nil
+}
 func (this *ConfirmAccountRequest) Validate() error {
 	return nil
 }

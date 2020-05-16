@@ -62,6 +62,13 @@ service Accounts {
 
     rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {
         option (google.api.http) = {
+            post: "/api/account/info";
+            body: "*";
+        };
+    };
+
+    rpc AccountInfo (AccountInfoRequest) returns (AccountInfoResponse) {
+        option (google.api.http) = {
             post: "/api/account/new";
             body: "*";
         };
@@ -134,6 +141,13 @@ message CreateAccountResponse {
     bool username_exists = 1;
     bool email_exists = 2;
     bool phone_exists = 3;
+}
+
+message AccountInfoRequest {
+    string username = 1;
+}
+message AccountInfoResponse {
+    AccountInfo info = 1;
 }
 
 message ConfirmAccountRequest {

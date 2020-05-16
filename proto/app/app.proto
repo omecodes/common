@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package apppb;
 
+import "google/api/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 enum Scope {
@@ -77,6 +78,13 @@ message GetAttributeDefinitionResponse{
     AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
 }
 
+message ListAttributeDefinitionsRequest {
+    string application_id = 1;
+}
+message ListAttributeDefinitionsResponse {
+    repeated AttributeDefinition definitions = 1;
+}
+
 message SaveAttributeDefinitionRequest{
     AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
 }
@@ -104,13 +112,36 @@ message CheckIfExistsResponse {
 }
 
 service Applications {
-    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse);
-    rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse);
+    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
+        option(google.api.http) = {
+            post: "/app/register";
+            body: "*";
+        };
+    };
+    rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse) {
+        option(google.api.http).delete = "/app/{application_id}";
+    };
+    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
+        option(google.api.http).get = "/apps";
+    };
+    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
+        option(google.api.http).get = "/app/{application_id}";
+    };
+    rpc SaveAttributeDefinition(SaveAttributeDefinitionRequest) returns (SaveAttributeDefinitionResponse){
+        option(google.api.http) = {
+            post: "/app/{definition.context}/attribute";
+            body: "*";
+        };
+    };
+    rpc GetAttributeDefinition(GetAttributeDefinitionRequest) returns (GetAttributeDefinitionResponse){
+        option(google.api.http).get = "/app/{application_id}/attribute/{attribute_id}";
+    };
+    rpc ListAttributeDefinitions(ListAttributeDefinitionsRequest) returns (ListAttributeDefinitionsResponse) {
+        option(google.api.http).get = "/app/{application_id}/attributes";
+    };
+    rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse) {
+        option(google.api.http).delete = "/app/{application_id}/attribute/{attribute_id}";
+    };
     rpc CheckIfExists(CheckIfExistsRequest) returns (CheckIfExistsResponse);
-    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse);
-    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse);
-    rpc SaveAttributeDefinition(SaveAttributeDefinitionRequest) returns (SaveAttributeDefinitionResponse);
-    rpc GetAttributeDefinition(GetAttributeDefinitionRequest) returns (GetAttributeDefinitionResponse);
-    rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse);
     rpc VerifyAuthenticationChallenge(VerifyAuthenticationChallengeRequest) returns (VerifyAuthenticationChallengeResponse);
 }

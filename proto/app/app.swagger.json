@@ -10,7 +10,210 @@
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/app/register": {
+      "post": {
+        "operationId": "RegisterApplication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apppbRegisterApplicationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
+    "/app/{application_id}": {
+      "get": {
+        "operationId": "GetApplication",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbGetApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      },
+      "delete": {
+        "operationId": "DeRegister",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbDeRegisterApplicationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
+    "/app/{application_id}/attribute/{attribute_id}": {
+      "get": {
+        "operationId": "GetAttributeDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbGetAttributeDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "attribute_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteAttributeDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbDeleteAttributeDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "attribute_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
+    "/app/{application_id}/attributes": {
+      "get": {
+        "operationId": "ListAttributeDefinitions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbListAttributeDefinitionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
+    "/app/{definition.context}/attribute": {
+      "post": {
+        "operationId": "SaveAttributeDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbSaveAttributeDefinitionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "definition.context",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apppbSaveAttributeDefinitionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
+    "/apps": {
+      "get": {
+        "operationId": "ListApplications",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbListApplicationsResponse"
+            }
+          }
+        },
+        "tags": [
+          "Applications"
+        ]
+      }
+    }
+  },
   "definitions": {
     "apppbApplication": {
       "type": "object",
@@ -149,12 +352,39 @@
         }
       }
     },
+    "apppbListAttributeDefinitionsResponse": {
+      "type": "object",
+      "properties": {
+        "definitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apppbAttributeDefinition"
+          }
+        }
+      }
+    },
+    "apppbRegisterApplicationRequest": {
+      "type": "object",
+      "properties": {
+        "application": {
+          "$ref": "#/definitions/apppbApplication"
+        }
+      }
+    },
     "apppbRegisterApplicationResponse": {
       "type": "object",
       "properties": {
         "id_exists": {
           "type": "boolean",
           "format": "boolean"
+        }
+      }
+    },
+    "apppbSaveAttributeDefinitionRequest": {
+      "type": "object",
+      "properties": {
+        "definition": {
+          "$ref": "#/definitions/apppbAttributeDefinition"
         }
       }
     },
