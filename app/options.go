@@ -1,11 +1,48 @@
 package app
 
+import "github.com/zoenion/common/conf"
+
 type options struct {
-	withResources bool
-	configItems   []configItem
+	startCMDFunc         func()
+	afterConfigure       func(cfg conf.Map, outputFilename string) error
+	version              string
+	instanceName         string
+	withResources        bool
+	configItems          []configItem
+	customAppDataDirPath string
 }
 
 type Option func(*options)
+
+func WithVersion(version string) Option {
+	return func(opts *options) {
+		opts.version = version
+	}
+}
+
+func WithRunCommandFunc(f func()) Option {
+	return func(opts *options) {
+		opts.startCMDFunc = f
+	}
+}
+
+func WithInstanceName(name string) Option {
+	return func(opts *options) {
+		opts.instanceName = name
+	}
+}
+
+func WithAfterConfigure(f func(cfg conf.Map, outputFilename string) error) Option {
+	return func(opts *options) {
+		opts.afterConfigure = f
+	}
+}
+
+func WithCustomAppData(dirname string) Option {
+	return func(opts *options) {
+		opts.customAppDataDirPath = dirname
+	}
+}
 
 func WithResourcesEnabled(enabled bool) Option {
 	return func(i *options) {
