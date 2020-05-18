@@ -6,7 +6,6 @@ type options struct {
 	startCMDFunc         func()
 	afterConfigure       func(cfg conf.Map, outputFilename string) error
 	version              string
-	instanceName         string
 	withResources        bool
 	configItems          []configItem
 	customAppDataDirPath string
@@ -23,12 +22,6 @@ func WithVersion(version string) Option {
 func WithRunCommandFunc(f func()) Option {
 	return func(opts *options) {
 		opts.startCMDFunc = f
-	}
-}
-
-func WithInstanceName(name string) Option {
-	return func(opts *options) {
-		opts.instanceName = name
 	}
 }
 

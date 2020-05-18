@@ -51,9 +51,7 @@ func (a *App) init() error {
 	defer a.Unlock()
 
 	execName := a.name
-	if a.options.instanceName != "" {
-		execName = a.options.instanceName
-	}
+
 	a.cmd = &cobra.Command{
 		Use:   filepath.Base(os.Args[0]),
 		Short: fmt.Sprintf("Run %s help command", execName),
@@ -165,11 +163,7 @@ func (a *App) initDirs() error {
 	globalFolder := dirs.QueryFolders(configdir.Global)[0]
 	cacheFolder := dirs.QueryFolders(configdir.Cache)[0]
 
-	if a.options.instanceName != "" {
-		a.dataDir = filepath.Join(globalFolder.Path, a.options.instanceName)
-	} else {
-		a.dataDir = globalFolder.Path
-	}
+	a.dataDir = globalFolder.Path
 
 	if a.options.version != "" {
 		a.dataDir = filepath.Join(a.dataDir, fmt.Sprintf("v%s", a.options.version))
@@ -249,10 +243,6 @@ func (a *App) configure(outputFilename string, mode os.FileMode, items ...config
 
 func (a *App) GetConfig(item ConfigType) conf.Map {
 	return a.configs.GetConf(item.String())
-}
-
-func (a *App) SetName(name string) {
-	a.name = name
 }
 
 func (a *App) GetCommand() *cobra.Command {
