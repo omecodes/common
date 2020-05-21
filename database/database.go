@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"github.com/zoenion/common/jcon"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -10,13 +11,12 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/errors"
 	"gopkg.in/mgo.v2"
 	"strings"
 )
 
-func Connect(c conf.Map) (string, interface{}, error) {
+func Connect(c jcon.Map) (string, interface{}, error) {
 	t, ok := c.GetString("type")
 	if !ok {
 		return "", nil, errors.NotFound
@@ -114,7 +114,7 @@ func Connect(c conf.Map) (string, interface{}, error) {
 	}
 }
 
-func GetMysql(c conf.Map) (*sql.DB, error) {
+func GetMysql(c jcon.Map) (*sql.DB, error) {
 	_, dbi, err := Connect(c)
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func GetMysql(c conf.Map) (*sql.DB, error) {
 	return db, nil
 }
 
-func Create(c conf.Map) error {
+func Create(c jcon.Map) error {
 	driver := c["driver"]
 	if driver == "mysql" {
 		dsn := fmt.Sprintf("%s:%s@tcp(%s)/?charset=%s&parseTime=True&loc=Local",
@@ -157,8 +157,8 @@ func Bolt(path string) (*bolt.DB, error) {
 	return bolt.Open(path, 0755, nil)
 }
 
-func SQLiteConfig(filename string) conf.Map {
-	return conf.Map{
+func SQLiteConfig(filename string) jcon.Map {
+	return jcon.Map{
 		"type":   "sqlite",
 		"driver": "sqlite3",
 		"path":   filename,

@@ -1,4 +1,4 @@
-package conf
+package jcon
 
 import (
 	"bytes"
@@ -227,6 +227,20 @@ func (item Map) String() string {
 		return string(buffer.Bytes())
 	} else {
 		return string(configsBytes)
+	}
+}
+
+func (item Map) Bytes() ([]byte, error) {
+	configsBytes, err := json.Marshal(item)
+	if err != nil {
+		return nil, err
+	}
+	buffer := bytes.NewBuffer([]byte{})
+	err = json.Indent(buffer, configsBytes, "", "\t")
+	if err == nil {
+		return buffer.Bytes(), nil
+	} else {
+		return configsBytes, nil
 	}
 }
 

@@ -104,12 +104,15 @@ func (this *CreateAccountRequest) Validate() error {
 	if !(len(this.Password) > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Password", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Password))
 	}
-	if !(len(this.Phone) > 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Phone", fmt.Errorf(`value '%v' must have a length greater than '0'`, this.Phone))
-	}
 	return nil
 }
 func (this *CreateAccountResponse) Validate() error {
+	return nil
+}
+func (this *ValidateAccountRequest) Validate() error {
+	return nil
+}
+func (this *ValidateAccountResponse) Validate() error {
 	return nil
 }
 func (this *AccountInfoRequest) Validate() error {
@@ -121,6 +124,12 @@ func (this *AccountInfoResponse) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Info", err)
 		}
 	}
+	return nil
+}
+func (this *SelectAccountRequest) Validate() error {
+	return nil
+}
+func (this *SelectAccountResponse) Validate() error {
 	return nil
 }
 func (this *ConfirmAccountRequest) Validate() error {

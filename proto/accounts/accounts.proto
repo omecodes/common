@@ -47,8 +47,6 @@ message AccountInfo {
     string username = 1;
     string email = 2;
     bool email_confirmed = 3;
-    string phone = 4;
-    bool phone_confirmed = 5;
     int64 created_at = 6;
 }
 
@@ -62,16 +60,21 @@ service Accounts {
 
     rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {
         option (google.api.http) = {
-            post: "/api/account/info";
+            post: "/api/account/new";
             body: "*";
         };
     };
 
+    rpc ValidateAccount(ValidateAccountRequest) returns (ValidateAccountResponse) {
+        option(google.api.http).get = "/api/account/validate/{email}";
+    };
+
     rpc AccountInfo (AccountInfoRequest) returns (AccountInfoResponse) {
-        option (google.api.http) = {
-            post: "/api/account/new";
-            body: "*";
-        };
+        option (google.api.http).get = "/api/account/info";
+    };
+
+    rpc SelectAccount (SelectAccountRequest) returns (SelectAccountResponse) {
+        option(google.api.http).get = "/api/account/select";
     };
 
     rpc ConfirmAccount(ConfirmAccountRequest) returns (ConfirmAccountResponse) {
@@ -123,31 +126,39 @@ service Accounts {
 message FindAccountRequest {
     string username = 1;
     string email = 2;
-    string phone = 3;
 }
 message FindAccountResponse {
     bool username_exists = 1;
     bool email_exists = 2;
-    bool phone_exists = 3;
 }
 
 message CreateAccountRequest {
     string username = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
     string email = 2 [(validator.field) = {msg_exists : true, length_gt: 0}];
     string password = 3 [(validator.field) = {msg_exists : true, length_gt: 0}];
-    string phone  = 4  [(validator.field) = {msg_exists : true, length_gt: 0}];
 }
 message CreateAccountResponse {
     bool username_exists = 1;
     bool email_exists = 2;
-    bool phone_exists = 3;
 }
+
+message ValidateAccountRequest {
+    string email = 1;
+}
+message ValidateAccountResponse {}
 
 message AccountInfoRequest {
     string username = 1;
 }
 message AccountInfoResponse {
     AccountInfo info = 1;
+}
+
+message SelectAccountRequest {
+    bool switch = 1;
+}
+message SelectAccountResponse {
+    string redirect_url = 1;
 }
 
 message ConfirmAccountRequest {
@@ -159,7 +170,7 @@ message RequestPasswordResetRequest {
     string email = 1;
 }
 message RequestPasswordResetResponse {
-    string redirectURL = 1;
+    string redirect_url = 1;
 }
 
 message UpdatePasswordRequest {

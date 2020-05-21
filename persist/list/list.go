@@ -2,8 +2,8 @@ package list
 
 import (
 	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/dao"
+	"github.com/zoenion/common/jcon"
 	filespb "github.com/zoenion/common/proto/files"
 )
 
@@ -120,7 +120,7 @@ func (l *listDB) scanInt(row dao.Row) (interface{}, error) {
 	return v, row.Scan(&v)
 }
 
-func NewSQL(dbConf conf.Map, prefix string, codec codec.Codec) (List, error) {
+func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (List, error) {
 	d := new(listDB)
 	d.SetTablePrefix(prefix).
 		AddTableDefinition("map", "create table if not exists $prefix$_list (ind int not null primary key $auto_increment$, encoded longblob not null);").

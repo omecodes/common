@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/jcon"
 )
 
 type contextKey string
@@ -29,7 +29,7 @@ func FromContext(ctx context.Context) *App {
 	return a
 }
 
-func ConfigFromContext(ctx context.Context, item ConfigType) conf.Map {
+func ConfigFromContext(ctx context.Context, item ConfigType) jcon.Map {
 	app := FromContext(ctx)
 	cfg := app.configs.GetConf(item.String())
 	return cfg

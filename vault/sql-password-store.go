@@ -4,8 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/jcon"
 	"github.com/zoenion/common/persist/dict"
 )
 
@@ -58,7 +58,7 @@ func (p *passwordStore) Verify(username, password string) (bool, error) {
 	return hexPassword == savedPassword, nil
 }
 
-func NewPasswordStore(cfg conf.Map, tableNamePrefix string) (*passwordStore, error) {
+func NewPasswordStore(cfg jcon.Map, tableNamePrefix string) (*passwordStore, error) {
 	db, err := dict.NewSQL(cfg, tableNamePrefix, codec.Default)
 	if err != nil {
 		return nil, err

@@ -4,9 +4,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/database"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/jcon"
 	"github.com/zoenion/common/network"
 	"github.com/zoenion/common/prompt"
 )
@@ -75,7 +75,7 @@ func (ci ConfigType) String() string {
 	}
 }
 
-func (ci configItem) create(description string, defaults conf.Map) (conf.Map, error) {
+func (ci configItem) create(description string, defaults jcon.Map) (jcon.Map, error) {
 	switch ci.configType {
 
 	case ConfigAccess:
@@ -116,10 +116,10 @@ func (ci configItem) create(description string, defaults conf.Map) (conf.Map, er
 	}
 }
 
-func configureAccess(description string, defaults conf.Map) (conf.Map, error) {
+func configureAccess(description string, defaults jcon.Map) (jcon.Map, error) {
 	header("Access", description)
 
-	cfg := conf.Map{}
+	cfg := jcon.Map{}
 
 	name, err := prompt.Text("Key", false)
 	if err != nil {
@@ -136,12 +136,12 @@ func configureAccess(description string, defaults conf.Map) (conf.Map, error) {
 	return cfg, nil
 }
 
-func configureSecrets(description string, defaults conf.Map) (conf.Map, error) {
+func configureSecrets(description string, defaults jcon.Map) (jcon.Map, error) {
 	header("Secrets", description)
 
 	var err error
 	count := 0
-	cfg := conf.Map{}
+	cfg := jcon.Map{}
 
 	for {
 		if count > 0 {
@@ -170,9 +170,9 @@ func configureSecrets(description string, defaults conf.Map) (conf.Map, error) {
 	return cfg, err
 }
 
-func configureCredentialsTable(description string, defaults conf.Map) (conf.Map, error) {
+func configureCredentialsTable(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Credentials", description)
 
@@ -189,15 +189,41 @@ func configureCredentialsTable(description string, defaults conf.Map) (conf.Map,
 	if err != nil {
 		return nil, err
 	}
-	return conf.Map{"subject": key, "password": secret}, nil
+	return jcon.Map{"subject": key, "password": secret}, nil
 }
 
-func configureMailer(description string, defaults conf.Map) (conf.Map, error) {
+func configureMailer(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Mailer", description)
+	selected, err := prompt.Selection("", "MailHog (for tests)", "SMTP client (default)", "sendGrid")
+	if err != nil {
+		return nil, err
+	}
+	switch selected {
+	case "SMTP client (default)":
+		return configureSMTP(defaults)
 
+	case "sendGrid":
+		return configureSendGridMailer(defaults)
+
+	default:
+		return configureHogMailer()
+	}
+}
+
+func configureHogMailer() (jcon.Map, error) {
+	return jcon.Map{
+		"type":     "hog",
+		"server":   "127.0.0.1",
+		"port":     1025,
+		"user":     "Ome",
+		"password": "Ome",
+	}, nil
+}
+
+func configureSMTP(defaults jcon.Map) (jcon.Map, error) {
 	var err error
 	server, _ := defaults.GetString("server")
 	port, _ := defaults.GetInt64("port")
@@ -207,7 +233,6 @@ func configureMailer(description string, defaults conf.Map) (conf.Map, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	if port > 0 {
 		port, err = prompt.IntegerWithDefaultValue("port", port)
 		if err != nil {
@@ -230,7 +255,8 @@ func configureMailer(description string, defaults conf.Map) (conf.Map, error) {
 	if err != nil {
 		return nil, err
 	}
-	return conf.Map{
+	return jcon.Map{
+		"type":     "smtp",
 		"server":   server,
 		"port":     port,
 		"user":     user,
@@ -238,14 +264,50 @@ func configureMailer(description string, defaults conf.Map) (conf.Map, error) {
 	}, nil
 }
 
-func configureAdminsCredentials(description string, defaults conf.Map) (conf.Map, error) {
+func configureSendGridMailer(defaults jcon.Map) (jcon.Map, error) {
+	var err error
+
+	server, _ := defaults.GetString("host")
+	if server == "" {
+		server = "https://api.sendgrid.com"
+	}
+	endpoint, _ := defaults.GetString("endpoints")
+	if endpoint == "" {
+		endpoint = "/v3/mail/send"
+	}
+	key, _ := defaults.GetString("key")
+
+	server, err = prompt.TextWithDefault("server", server, false)
+	if err != nil {
+		return nil, err
+	}
+
+	endpoint, err = prompt.TextWithDefault("endpoint", endpoint, false)
+	if err != nil {
+		return nil, err
+	}
+
+	key, err = prompt.TextWithDefault("key", key, false)
+	if err != nil {
+		return nil, err
+	}
+
+	return jcon.Map{
+		"type":     "sendgrid",
+		"host":     server,
+		"endpoint": endpoint,
+		"key":      key,
+	}, nil
+}
+
+func configureAdminsCredentials(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Admins credentials", description)
 	var err error
 	count := 0
-	cfg := conf.Map{}
+	cfg := jcon.Map{}
 
 	for {
 		if count > 0 {
@@ -277,15 +339,15 @@ func configureAdminsCredentials(description string, defaults conf.Map) (conf.Map
 	return cfg, err
 }
 
-func configureDirs(description string, defaults conf.Map, names ...string) (conf.Map, error) {
+func configureDirs(description string, defaults jcon.Map, names ...string) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 
 	header("Directories", description)
 	var err error
 	count := 0
-	cfg := conf.Map{}
+	cfg := jcon.Map{}
 
 	for _, name := range names {
 		count++
@@ -307,9 +369,9 @@ func configureDirs(description string, defaults conf.Map, names ...string) (conf
 	return cfg, err
 }
 
-func configureNetwork(description string, defaults conf.Map) (conf.Map, error) {
+func configureNetwork(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Network", description)
 
@@ -338,14 +400,14 @@ func configureNetwork(description string, defaults conf.Map) (conf.Map, error) {
 		externalIP, err = prompt.TextWithDefault("external IP", externalIP, false)
 	}
 
-	return conf.Map{
+	return jcon.Map{
 		"domain":      domain,
 		"internal_ip": internalIP,
 		"external_ip": externalIP,
 	}, err
 }
 
-func configureMySQLDatabase(description string, defaults conf.Map) (conf.Map, error) {
+func configureMySQLDatabase(description string, defaults jcon.Map) (jcon.Map, error) {
 	header("MySQL DB", description)
 	var (
 		oldHost, oldUser, oldName, oldCharset, oldWrapper string
@@ -390,7 +452,7 @@ func configureMySQLDatabase(description string, defaults conf.Map) (conf.Map, er
 
 	wrapper, _ := prompt.TextWithDefault("Wrapper", oldWrapper, true)
 
-	cfg := conf.Map{
+	cfg := jcon.Map{
 		"type":     "sql",
 		"driver":   "mysql",
 		"host":     host,
@@ -408,9 +470,9 @@ func configureMySQLDatabase(description string, defaults conf.Map) (conf.Map, er
 	return cfg, database.Create(cfg)
 }
 
-func configureSQLiteDatabase(description string, defaults conf.Map) (conf.Map, error) {
+func configureSQLiteDatabase(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("SQLite DB", description)
 
@@ -426,16 +488,16 @@ func configureSQLiteDatabase(description string, defaults conf.Map) (conf.Map, e
 		return nil, err
 	}
 
-	return conf.Map{
+	return jcon.Map{
 		"driver": "sqlite3",
 		"type":   "sqlite",
 		"path":   filename,
 	}, nil
 }
 
-func configureRedisDatabase(description string, defaults conf.Map) (conf.Map, error) {
+func configureRedisDatabase(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Redis DB", description)
 
@@ -449,15 +511,15 @@ func configureRedisDatabase(description string, defaults conf.Map) (conf.Map, er
 		return nil, err
 	}
 
-	return conf.Map{
+	return jcon.Map{
 		"host":     host,
 		"password": password,
 	}, nil
 }
 
-func configureMongoDatabase(description string, defaults conf.Map) (conf.Map, error) {
+func configureMongoDatabase(description string, defaults jcon.Map) (jcon.Map, error) {
 	if defaults == nil {
-		defaults = conf.Map{}
+		defaults = jcon.Map{}
 	}
 	header("Mongo DB", description)
 
@@ -480,7 +542,7 @@ func configureMongoDatabase(description string, defaults conf.Map) (conf.Map, er
 		return nil, err
 	}
 
-	return conf.Map{
+	return jcon.Map{
 		"host":     host,
 		"user":     user,
 		"password": password,

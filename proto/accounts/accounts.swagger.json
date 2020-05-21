@@ -36,24 +36,22 @@
       }
     },
     "/api/account/info": {
-      "post": {
-        "operationId": "CreateAccount",
+      "get": {
+        "operationId": "AccountInfo",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/accountspbCreateAccountResponse"
+              "$ref": "#/definitions/accountspbAccountInfoResponse"
             }
           }
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/accountspbCreateAccountRequest"
-            }
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -131,12 +129,12 @@
     },
     "/api/account/new": {
       "post": {
-        "operationId": "AccountInfo",
+        "operationId": "CreateAccount",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/accountspbAccountInfoResponse"
+              "$ref": "#/definitions/accountspbCreateAccountResponse"
             }
           }
         },
@@ -146,7 +144,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/accountspbAccountInfoRequest"
+              "$ref": "#/definitions/accountspbCreateAccountRequest"
             }
           }
         ],
@@ -205,6 +203,31 @@
         ]
       }
     },
+    "/api/account/select": {
+      "get": {
+        "operationId": "SelectAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbSelectAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "switch",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
     "/api/account/session/{session_id}": {
       "delete": {
         "operationId": "CloseSession",
@@ -240,6 +263,30 @@
             }
           }
         },
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/account/validate/{email}": {
+      "get": {
+        "operationId": "ValidateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbValidateAccountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
           "Accounts"
         ]
@@ -334,24 +381,9 @@
           "type": "boolean",
           "format": "boolean"
         },
-        "phone": {
-          "type": "string"
-        },
-        "phone_confirmed": {
-          "type": "boolean",
-          "format": "boolean"
-        },
         "created_at": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "accountspbAccountInfoRequest": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
         }
       }
     },
@@ -383,9 +415,6 @@
         },
         "password": {
           "type": "string"
-        },
-        "phone": {
-          "type": "string"
         }
       }
     },
@@ -399,10 +428,6 @@
         "email_exists": {
           "type": "boolean",
           "format": "boolean"
-        },
-        "phone_exists": {
-          "type": "boolean",
-          "format": "boolean"
         }
       }
     },
@@ -413,9 +438,6 @@
           "type": "string"
         },
         "email": {
-          "type": "string"
-        },
-        "phone": {
           "type": "string"
         }
       }
@@ -428,10 +450,6 @@
           "format": "boolean"
         },
         "email_exists": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "phone_exists": {
           "type": "boolean",
           "format": "boolean"
         }
@@ -507,7 +525,15 @@
     "accountspbRequestPasswordResetResponse": {
       "type": "object",
       "properties": {
-        "redirectURL": {
+        "redirect_url": {
+          "type": "string"
+        }
+      }
+    },
+    "accountspbSelectAccountResponse": {
+      "type": "object",
+      "properties": {
+        "redirect_url": {
           "type": "string"
         }
       }
@@ -542,6 +568,9 @@
       }
     },
     "accountspbUpdatePasswordResponse": {
+      "type": "object"
+    },
+    "accountspbValidateAccountResponse": {
       "type": "object"
     }
   }

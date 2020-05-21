@@ -2,9 +2,9 @@ package dict
 
 import (
 	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/dao"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/jcon"
 )
 
 type Dict interface {
@@ -75,7 +75,7 @@ func (s *sqlObjects) Close() error {
 	return s.DB.Close()
 }
 
-func NewSQL(cfg conf.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
+func NewSQL(cfg jcon.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
 	d := new(sqlObjects)
 	d.SetTablePrefix(tablePrefix).
 		AddTableDefinition("map", "create table if not exists $prefix$_mapping (name varchar(255) not null primary key, val longblob not null);").

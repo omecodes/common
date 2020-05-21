@@ -1,10 +1,12 @@
 package app
 
-import "github.com/zoenion/common/conf"
+import (
+	"github.com/zoenion/common/jcon"
+)
 
 type options struct {
 	startCMDFunc         func()
-	afterConfigure       func(cfg conf.Map, outputFilename string) error
+	afterConfigure       func(cfg jcon.Map, outputFilename string) error
 	version              string
 	withResources        bool
 	configItems          []configItem
@@ -25,7 +27,7 @@ func WithRunCommandFunc(f func()) Option {
 	}
 }
 
-func WithAfterConfigure(f func(cfg conf.Map, outputFilename string) error) Option {
+func WithAfterConfigure(f func(cfg jcon.Map, outputFilename string) error) Option {
 	return func(opts *options) {
 		opts.afterConfigure = f
 	}

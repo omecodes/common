@@ -3,9 +3,9 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/database"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/jcon"
 	"github.com/zoenion/common/log"
 	"strings"
 	"sync"
@@ -50,7 +50,7 @@ type SQL struct {
 	initDone                   bool
 }
 
-func (dao *SQL) Init(cfg conf.Map) error {
+func (dao *SQL) Init(cfg jcon.Map) error {
 	d, dbi, err := database.Connect(cfg)
 	if err != nil {
 		return err

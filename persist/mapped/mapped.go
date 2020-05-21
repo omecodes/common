@@ -2,8 +2,8 @@ package mapped
 
 import (
 	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/dao"
+	"github.com/zoenion/common/jcon"
 )
 
 type Doubled interface {
@@ -76,7 +76,7 @@ func (s *sqlPairMap) Close() error {
 	return s.DB.Close()
 }
 
-func NewSQL(dbConf conf.Map, prefix string, codec codec.Codec) (Doubled, error) {
+func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (Doubled, error) {
 	d := new(sqlPairMap)
 	d.SetTablePrefix(prefix).
 		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_mapping (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").

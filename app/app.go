@@ -8,7 +8,7 @@ import (
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"github.com/zoenion/common/app/web"
-	"github.com/zoenion/common/conf"
+	"github.com/zoenion/common/jcon"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,7 +34,7 @@ type App struct {
 	cacheDir        string
 
 	Resources *Resources
-	configs   conf.Map
+	configs   jcon.Map
 }
 
 func (a *App) Initialize() error {
@@ -69,7 +69,7 @@ func (a *App) init() error {
 
 				if len(a.options.configItems) > 0 {
 					cfgFilename := filepath.Join(a.dataDir, "configs.json")
-					err = conf.Load(cfgFilename, &a.configs)
+					err = jcon.Load(cfgFilename, &a.configs)
 					if err != nil {
 						log.Fatalln(err)
 					}
@@ -96,8 +96,8 @@ func (a *App) init() error {
 				}
 
 				configFilename := filepath.Join(a.dataDir, "configs.json")
-				oldConf := conf.Map{}
-				err = conf.Load(configFilename, &oldConf)
+				oldConf := jcon.Map{}
+				err = jcon.Load(configFilename, &oldConf)
 
 				err = a.configure(configFilename, os.ModePerm, a.options.configItems...)
 				if err != nil {
@@ -132,7 +132,7 @@ func (a *App) init() error {
 				}
 
 				cfgFilename := filepath.Join(a.dataDir, "configs.json")
-				err = conf.Load(cfgFilename, &a.configs)
+				err = jcon.Load(cfgFilename, &a.configs)
 				if err != nil {
 					log.Fatalln(err)
 				}
@@ -224,10 +224,10 @@ func (a *App) initResources() error {
 }
 
 func (a *App) configure(outputFilename string, mode os.FileMode, items ...configItem) error {
-	oldValues := conf.Map{}
-	_ = conf.Load(outputFilename, &oldValues)
+	oldValues := jcon.Map{}
+	_ = jcon.Load(outputFilename, &oldValues)
 
-	newValues := conf.Map{}
+	newValues := jcon.Map{}
 	for _, item := range items {
 		key := item.configType.String()
 		itemOldValues := oldValues.GetConf(key)
@@ -241,7 +241,7 @@ func (a *App) configure(outputFilename string, mode os.FileMode, items ...config
 	return newValues.Save(outputFilename, mode)
 }
 
-func (a *App) GetConfig(item ConfigType) conf.Map {
+func (a *App) GetConfig(item ConfigType) jcon.Map {
 	return a.configs.GetConf(item.String())
 }
 
@@ -258,29 +258,12 @@ func (a *App) ConfigureCommand() *cobra.Command {
 }
 
 func (a *App) InitDirs() error {
-	dirs := configdir.New(a.vendor, a.name)
-	globalFolder := dirs.QueryFolders(configdir.Global)[0]
-	cacheFolder := dirs.QueryFolders(configdir.Cache)[0]
-
-	a.dataDir = globalFolder.Path
-	err := os.MkdirAll(a.dataDir, os.ModePerm)
-	if err != nil {
-		log.Println("could not create configs dir:", err)
-		return err
-	}
-
-	a.cacheDir = cacheFolder.Path
-	err = os.MkdirAll(a.cacheDir, os.ModePerm)
-	if err != nil {
-		log.Println("could not create cache dir:", err)
-		return err
-	}
-	return nil
+	return a.initDirs()
 }
 
 func (a *App) LoadConfigs() error {
 	cfgFilename := filepath.Join(a.dataDir, "configs.json")
-	return conf.Load(cfgFilename, &a.configs)
+	return jcon.Load(cfgFilename, &a.configs)
 }
 
 func (a *App) DataDir() string {
@@ -304,7 +287,7 @@ func New(vendor string, name string, opts ...Option) *App {
 		vendor:  vendor,
 		name:    name,
 		options: new(options),
-		configs: conf.Map{},
+		configs: jcon.Map{},
 	}
 	for _, opt := range opts {
 		opt(a.options)

@@ -2,9 +2,9 @@ package tree
 
 import (
 	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/conf"
 	"github.com/zoenion/common/dao"
 	"github.com/zoenion/common/errors"
+	"github.com/zoenion/common/jcon"
 	"path"
 )
 
@@ -27,7 +27,7 @@ type sqlTree struct {
 	codec codec.Codec
 }
 
-func NewSQL(dbCfg conf.Map, prefix string, codec codec.Codec) (*sqlTree, error) {
+func NewSQL(dbCfg jcon.Map, prefix string, codec codec.Codec) (*sqlTree, error) {
 	db := new(sqlTree)
 	db.codec = codec
 
