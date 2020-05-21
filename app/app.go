@@ -29,12 +29,12 @@ type App struct {
 	versionCMD   *cobra.Command
 
 	translationsDir string
-	templatesDir    string
 	dataDir         string
 	cacheDir        string
-
-	Resources *Resources
-	configs   jcon.Map
+	wwwDir          string
+	templatesDir    string
+	Resources       *Resources
+	configs         jcon.Map
 }
 
 func (a *App) Initialize() error {
@@ -83,6 +83,10 @@ func (a *App) init() error {
 			}
 		},
 	}
+
+	flags := a.cmd.PersistentFlags()
+	flags.StringVar(&a.wwwDir, "www", "", "Web resources dir")
+	flags.StringVar(&a.templatesDir, "tmpl", "", "Templates resources dir")
 
 	// add configure command
 	if len(a.options.configItems) > 0 {
@@ -190,28 +194,32 @@ func (a *App) initResources() error {
 	if a.options.withResources {
 		a.Resources = new(Resources)
 
-		webDir := filepath.Join(a.dataDir, "res", "www")
-		err := os.MkdirAll(webDir, os.ModePerm)
-		if err != nil {
-			log.Println("could not create www dir:", err)
-			return err
+		if a.wwwDir == "" {
+			a.wwwDir = filepath.Join(a.dataDir, "res", "www")
+			err := os.MkdirAll(a.wwwDir, os.ModePerm)
+			if err != nil {
+				log.Println("could not create www dir:", err)
+				return err
+			}
 		}
-		a.Resources.web = web.New(webDir)
+		a.Resources.web = web.New(a.wwwDir)
 
-		templatesDir := filepath.Join(a.dataDir, "res", "templates")
-		err = os.MkdirAll(templatesDir, os.ModePerm)
-		if err != nil {
-			log.Println("could not create templates dir:", err)
-			return err
+		if a.templatesDir == "" {
+			a.templatesDir = filepath.Join(a.dataDir, "res", "templates")
+			err := os.MkdirAll(a.templatesDir, os.ModePerm)
+			if err != nil {
+				log.Println("could not create templates dir:", err)
+				return err
+			}
 		}
 
 		i18nDir := filepath.Join(a.dataDir, "res", "i18n")
-		err = os.MkdirAll(i18nDir, os.ModePerm)
+		err := os.MkdirAll(i18nDir, os.ModePerm)
 		if err != nil {
 			log.Println("could not create i18n dir:", err)
 			return err
 		}
-		a.Resources.templates = templates.New(templatesDir)
+		a.Resources.templates = templates.New(a.templatesDir)
 
 		a.Resources.i18n = lang.NewManager(i18nDir)
 		err = a.Resources.i18n.Load()
