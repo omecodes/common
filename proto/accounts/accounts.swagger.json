@@ -11,30 +11,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/account/confirmation": {
-      "get": {
-        "operationId": "ConfirmAccount",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/accountspbConfirmAccountResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "data",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Accounts"
-        ]
-      }
-    },
     "/api/account/info": {
       "get": {
         "operationId": "AccountInfo",
@@ -268,22 +244,46 @@
         ]
       }
     },
-    "/api/account/validate/{email}": {
+    "/api/email/request-validation": {
       "get": {
-        "operationId": "ValidateAccount",
+        "operationId": "RequestEmailValidation",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/accountspbValidateAccountResponse"
+              "$ref": "#/definitions/accountspbRequestEmailValidationResponse"
             }
           }
         },
         "parameters": [
           {
             "name": "email",
-            "in": "path",
-            "required": true,
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Accounts"
+        ]
+      }
+    },
+    "/api/email/validate": {
+      "get": {
+        "operationId": "ValidateEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/accountspbValidateEmailResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
             "type": "string"
           }
         ],
@@ -399,9 +399,6 @@
       "type": "object"
     },
     "accountspbCloseSessionResponse": {
-      "type": "object"
-    },
-    "accountspbConfirmAccountResponse": {
       "type": "object"
     },
     "accountspbCreateAccountRequest": {
@@ -522,6 +519,9 @@
     "accountspbLogoutResponse": {
       "type": "object"
     },
+    "accountspbRequestEmailValidationResponse": {
+      "type": "object"
+    },
     "accountspbRequestPasswordResetResponse": {
       "type": "object",
       "properties": {
@@ -570,7 +570,7 @@
     "accountspbUpdatePasswordResponse": {
       "type": "object"
     },
-    "accountspbValidateAccountResponse": {
+    "accountspbValidateEmailResponse": {
       "type": "object"
     }
   }

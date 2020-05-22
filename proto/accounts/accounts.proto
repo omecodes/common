@@ -65,9 +65,13 @@ service Accounts {
         };
     };
 
-    rpc ValidateAccount(ValidateAccountRequest) returns (ValidateAccountResponse) {
-        option(google.api.http).get = "/api/account/validate/{email}";
+    rpc ValidateEmail(ValidateEmailRequest) returns (ValidateEmailResponse) {
+        option(google.api.http).get = "/api/email/validate";
     };
+
+    rpc RequestEmailValidation(RequestEmailValidationRequest) returns (RequestEmailValidationResponse) {
+        option(google.api.http).get = "/api/email/request-validation";
+    }
 
     rpc AccountInfo (AccountInfoRequest) returns (AccountInfoResponse) {
         option (google.api.http).get = "/api/account/info";
@@ -75,10 +79,6 @@ service Accounts {
 
     rpc SelectAccount (SelectAccountRequest) returns (SelectAccountResponse) {
         option(google.api.http).get = "/api/account/select";
-    };
-
-    rpc ConfirmAccount(ConfirmAccountRequest) returns (ConfirmAccountResponse) {
-        option(google.api.http).get = "/api/account/confirmation";
     };
 
     rpc RequestPasswordReset(RequestPasswordResetRequest) returns (RequestPasswordResetResponse) {
@@ -142,10 +142,15 @@ message CreateAccountResponse {
     bool email_exists = 2;
 }
 
-message ValidateAccountRequest {
+message ValidateEmailRequest {
+    string code = 1;
+}
+message ValidateEmailResponse {}
+
+message RequestEmailValidationRequest {
     string email = 1;
 }
-message ValidateAccountResponse {}
+message RequestEmailValidationResponse {}
 
 message AccountInfoRequest {
     string username = 1;
@@ -160,11 +165,6 @@ message SelectAccountRequest {
 message SelectAccountResponse {
     string redirect_url = 1;
 }
-
-message ConfirmAccountRequest {
-    string data = 1;
-}
-message ConfirmAccountResponse {}
 
 message RequestPasswordResetRequest {
     string email = 1;

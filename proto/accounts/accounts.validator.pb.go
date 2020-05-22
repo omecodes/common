@@ -5,11 +5,11 @@ package accountspb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -109,10 +109,16 @@ func (this *CreateAccountRequest) Validate() error {
 func (this *CreateAccountResponse) Validate() error {
 	return nil
 }
-func (this *ValidateAccountRequest) Validate() error {
+func (this *ValidateEmailRequest) Validate() error {
 	return nil
 }
-func (this *ValidateAccountResponse) Validate() error {
+func (this *ValidateEmailResponse) Validate() error {
+	return nil
+}
+func (this *RequestEmailValidationRequest) Validate() error {
+	return nil
+}
+func (this *RequestEmailValidationResponse) Validate() error {
 	return nil
 }
 func (this *AccountInfoRequest) Validate() error {
@@ -130,12 +136,6 @@ func (this *SelectAccountRequest) Validate() error {
 	return nil
 }
 func (this *SelectAccountResponse) Validate() error {
-	return nil
-}
-func (this *ConfirmAccountRequest) Validate() error {
-	return nil
-}
-func (this *ConfirmAccountResponse) Validate() error {
 	return nil
 }
 func (this *RequestPasswordResetRequest) Validate() error {
