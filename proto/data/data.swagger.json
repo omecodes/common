@@ -11,34 +11,8 @@
     "application/json"
   ],
   "paths": {
-    "/data/delete": {
-      "post": {
-        "operationId": "DeleteData",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/datapbDeleteDataResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/datapbDeleteDataRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DataStore"
-        ]
-      }
-    },
-    "/data/get": {
-      "post": {
+    "/data": {
+      "get": {
         "operationId": "GetData",
         "responses": {
           "200": {
@@ -50,21 +24,57 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/datapbGetDataRequest"
-            }
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
           "DataStore"
         ]
-      }
-    },
-    "/data/set": {
-      "post": {
+      },
+      "delete": {
+        "operationId": "DeleteData",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/datapbDeleteDataResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "context",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataStore"
+        ]
+      },
+      "put": {
         "operationId": "SetData",
         "responses": {
           "200": {
@@ -106,33 +116,8 @@
         }
       }
     },
-    "datapbDeleteDataRequest": {
-      "type": "object",
-      "properties": {
-        "subject": {
-          "type": "string"
-        },
-        "context": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
     "datapbDeleteDataResponse": {
       "type": "object"
-    },
-    "datapbGetDataRequest": {
-      "type": "object",
-      "properties": {
-        "context": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
     },
     "datapbGetDataResponse": {
       "type": "object",

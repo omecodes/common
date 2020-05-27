@@ -19,23 +19,17 @@ message Data {
 service DataStore {
     rpc SetData(SetDataRequest) returns (SetDataResponse) {
         option(google.api.http) = {
-            post: "/data/set";
+            put: "/data";
             body: "*";
         };
     };
 
     rpc GetData(GetDataRequest) returns (GetDataResponse) {
-        option(google.api.http) = {
-            post: "/data/get";
-            body: "*";
-        };
+        option(google.api.http).get = "/data";
     };
 
     rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse) {
-        option (google.api.http) = {
-            post: "/data/delete";
-            body: "*";
-        };
+        option (google.api.http).delete = "/data";
     };
 };
 
