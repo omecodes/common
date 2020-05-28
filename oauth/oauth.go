@@ -25,6 +25,7 @@ const (
 	ParamScope             = "scope"
 	ParamRedirectURI       = "redirect_uri"
 	ParamCode              = "code"
+	ParamProvider          = "provider"
 	ParamAlg               = "algorithm"
 	ParamError             = "error"
 	ParamErrorDescription  = "error_description"
