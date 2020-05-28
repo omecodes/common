@@ -8,6 +8,7 @@ import (
 	"github.com/zoenion/common/app/lang"
 	"github.com/zoenion/common/app/templates"
 	"github.com/zoenion/common/app/web"
+	"github.com/zoenion/common/futils"
 	"github.com/zoenion/common/jcon"
 	"log"
 	"os"
@@ -101,7 +102,7 @@ func (a *App) init() error {
 
 				configFilename := filepath.Join(a.dataDir, "configs.json")
 				oldConf := jcon.Map{}
-				err = jcon.Load(configFilename, &oldConf)
+				_ = jcon.Load(configFilename, &oldConf)
 
 				err = a.configure(configFilename, os.ModePerm, a.options.configItems...)
 				if err != nil {
@@ -136,10 +137,10 @@ func (a *App) init() error {
 				}
 
 				cfgFilename := filepath.Join(a.dataDir, "configs.json")
-				err = jcon.Load(cfgFilename, &a.configs)
-				if err != nil {
-					log.Fatalln(err)
+				if futils.FileExists(cfgFilename) {
+					_ = jcon.Load(cfgFilename, &a.configs)
 				}
+
 				a.options.startCMDFunc()
 			},
 		}

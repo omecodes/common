@@ -32,6 +32,7 @@ const (
 	ConfigSQLiteDatabase
 	ConfigRedisDatabase
 	ConfigMongoDatabase
+	ConfigOauth2Providers
 )
 
 func (ci ConfigType) String() string {
@@ -69,6 +70,9 @@ func (ci ConfigType) String() string {
 
 	case ConfigMongoDatabase:
 		return "databases/mongo"
+
+	case ConfigOauth2Providers:
+		return "oauth2-providers"
 
 	default:
 		return ""
@@ -110,6 +114,9 @@ func (ci configItem) create(description string, defaults jcon.Map) (jcon.Map, er
 
 	case ConfigSecrets:
 		return configureSecrets(description, defaults)
+
+	case ConfigOauth2Providers:
+		return configureOauth2Providers(description, defaults)
 
 	default:
 		return nil, errors.NotSupported
@@ -548,6 +555,74 @@ func configureMongoDatabase(description string, defaults jcon.Map) (jcon.Map, er
 		"password": password,
 		"name":     name,
 	}, nil
+}
+
+func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, error) {
+	if defaults == nil {
+		defaults = jcon.Map{}
+	}
+	header("OAUTH2 Providers", description)
+	var err error
+	count := 0
+	cfg := jcon.Map{}
+
+	for {
+		if count > 0 {
+			selection, err := prompt.Selection("add another provider?", "yes", "no")
+			if err != nil {
+				return nil, err
+			}
+
+			if selection != "yes" {
+				break
+			}
+		}
+		count++
+
+		name, err := prompt.Text("name", false)
+		if err != nil {
+			return nil, err
+		}
+
+		label, err := prompt.Text("display name", false)
+		if err != nil {
+			return nil, err
+		}
+
+		logoURL, err := prompt.Text("logo URL", false)
+		if err != nil {
+			return nil, err
+		}
+
+		serverURL, err := prompt.Text("serverURL", false)
+		if err != nil {
+			return nil, err
+		}
+
+		clientID, err := prompt.Text("client ID", false)
+		if err != nil {
+			return nil, err
+		}
+
+		clientSecret, err := prompt.Text("client secret", false)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg[name] = jcon.Map {
+			"config": jcon.Map{
+				"server_url": serverURL,
+				"client_id": clientID,
+				"secret": clientSecret,
+			},
+			"info": jcon.Map{
+				"label": label,
+				"logo_url": logoURL,
+			},
+		}
+		fmt.Println()
+	}
+	return cfg, err
 }
 
 func header(title, description string) {

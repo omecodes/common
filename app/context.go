@@ -34,3 +34,17 @@ func ConfigFromContext(ctx context.Context, item ConfigType) jcon.Map {
 	cfg := app.configs.GetConf(item.String())
 	return cfg
 }
+
+func Oauth2ProviderConfig(ctx context.Context, providerName string) jcon.Map {
+	app := FromContext(ctx)
+	if app == nil {
+		return nil
+	}
+
+	cfg := app.configs.GetConf(ConfigOauth2Providers.String())
+	if cfg == nil {
+		return nil
+	}
+
+	return cfg.GetConf(providerName)
+}
