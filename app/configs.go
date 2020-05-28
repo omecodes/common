@@ -584,27 +584,38 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 			return nil, err
 		}
 
-		label, err := prompt.Text("display name", false)
+		defaultsValues := defaults.GetConf(name)
+		if defaultsValues == nil {
+			defaultsValues = jcon.Map{}
+		}
+
+
+		oldLabel, _ := defaultsValues.GetString("info/label")
+		label, err := prompt.TextWithDefault("display name", oldLabel, false)
 		if err != nil {
 			return nil, err
 		}
 
-		logoURL, err := prompt.Text("logo URL", false)
+		oldLogoURL, _ := defaultsValues.GetString("info/label")
+		logoURL, err := prompt.TextWithDefault("logo URL", oldLogoURL, false)
 		if err != nil {
 			return nil, err
 		}
 
-		serverURL, err := prompt.Text("serverURL", false)
+		oldServerURL, _ := defaultsValues.GetString("config/server_url")
+		serverURL, err := prompt.TextWithDefault("serverURL", oldServerURL,false)
 		if err != nil {
 			return nil, err
 		}
 
-		clientID, err := prompt.Text("client ID", false)
+		oldClientID, _ := defaultsValues.GetString("config/client_id")
+		clientID, err := prompt.TextWithDefault("client ID", oldClientID,false)
 		if err != nil {
 			return nil, err
 		}
 
-		clientSecret, err := prompt.Text("client secret", false)
+		oldSecret, _ := defaultsValues.GetString("config/secret")
+		clientSecret, err := prompt.TextWithDefault("client secret", oldSecret, false)
 		if err != nil {
 			return nil, err
 		}
