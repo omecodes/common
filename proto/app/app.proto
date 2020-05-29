@@ -5,6 +5,12 @@ package apppb;
 import "google/api/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
+enum Type {
+    Master = 0;
+    Internal = 1;
+    External = 2;
+}
+
 enum Scope {
     Public = 0;
     Personal = 1;
@@ -31,19 +37,27 @@ message Application {
     string namespace = 2;
     bool activated = 3;
     string oauth_callback_url = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    Credentials credentials = 5 [(validator.field) = {msg_exists: true}];
-    Info info = 6 [(validator.field) = {msg_exists: true}];
+    Type type = 5;
+    Credentials credentials = 6 [(validator.field) = {msg_exists: true}];
+    Info info = 7 [(validator.field) = {msg_exists: true}];
 }
 
 message AttributeDefinition {
     string name = 1 [(validator.field) = {msg_exists: true}];
-    string label = 2 [(validator.field) = {msg_exists: true}];
-    string description = 3 [(validator.field) = {msg_exists: true}];
-    string mime = 4 [(validator.field) = {msg_exists: true}];
-    string context = 5 [(validator.field) = {msg_exists: true}];
-    Scope scope = 6 [(validator.field) = {msg_exists: true}];
-    repeated string categories = 7 [(validator.field) = {msg_exists: true}];
-    bool editable_out_of_context = 8 [(validator.field) = {msg_exists: true}];
+    string mime = 2 [(validator.field) = {msg_exists: true}];
+    string context = 3 [(validator.field) = {msg_exists: true}];
+    Scope scope = 4 [(validator.field) = {msg_exists: true}];
+    repeated string categories = 5 [(validator.field) = {msg_exists: true}];
+    bool editable_out_of_context = 6 [(validator.field) = {msg_exists: true}];
+    string label = 7;
+    string description = 8;
+}
+
+message Translation {
+    string attribute_id = 1;
+    string locale_name = 2;
+    string label = 3;
+    string description = 4;
 }
 
 message RegisterApplicationRequest {
@@ -76,6 +90,8 @@ message GetAttributeDefinitionRequest{
 }
 message GetAttributeDefinitionResponse{
     AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+    string label = 2;
+    string description = 3;
 }
 
 message ListAttributeDefinitionsRequest {
@@ -96,9 +112,15 @@ message DeleteAttributeDefinitionRequest {
 }
 message DeleteAttributeDefinitionResponse {}
 
+message AddAttributeTranslationRequest {
+    Translation translation = 1;
+}
+message AddAttributeTranslationResponse {}
+
 message VerifyAuthenticationChallengeRequest {
     string application_id = 1;
-    string secret = 2;
+    string nonce = 2;
+    string challenge = 3;
 }
 message VerifyAuthenticationChallengeResponse {
     bool verified = 1;
@@ -141,6 +163,12 @@ service Applications {
     };
     rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse) {
         option(google.api.http).delete = "/app/{application_id}/attribute/{attribute_id}";
+    };
+    rpc AddAttributeTranslations(AddAttributeTranslationRequest) returns (AddAttributeTranslationResponse) {
+        option(google.api.http) = {
+            post: "/app/attributes/translation";
+            body: "*";
+        };
     };
     rpc CheckIfExists(CheckIfExistsRequest) returns (CheckIfExistsResponse);
     rpc VerifyAuthenticationChallenge(VerifyAuthenticationChallengeRequest) returns (VerifyAuthenticationChallengeResponse);

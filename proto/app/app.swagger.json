@@ -11,6 +11,32 @@
     "application/json"
   ],
   "paths": {
+    "/app/attributes/translation": {
+      "post": {
+        "operationId": "AddAttributeTranslations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apppbAddAttributeTranslationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apppbAddAttributeTranslationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Applications"
+        ]
+      }
+    },
     "/app/register": {
       "post": {
         "operationId": "RegisterApplication",
@@ -215,6 +241,17 @@
     }
   },
   "definitions": {
+    "apppbAddAttributeTranslationRequest": {
+      "type": "object",
+      "properties": {
+        "translation": {
+          "$ref": "#/definitions/apppbTranslation"
+        }
+      }
+    },
+    "apppbAddAttributeTranslationResponse": {
+      "type": "object"
+    },
     "apppbApplication": {
       "type": "object",
       "properties": {
@@ -231,6 +268,9 @@
         "oauth_callback_url": {
           "type": "string"
         },
+        "type": {
+          "$ref": "#/definitions/apppbType"
+        },
         "credentials": {
           "$ref": "#/definitions/apppbCredentials"
         },
@@ -243,12 +283,6 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
-        },
-        "label": {
-          "type": "string"
-        },
-        "description": {
           "type": "string"
         },
         "mime": {
@@ -269,6 +303,12 @@
         "editable_out_of_context": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
@@ -311,6 +351,12 @@
       "properties": {
         "definition": {
           "$ref": "#/definitions/apppbAttributeDefinition"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
@@ -399,6 +445,32 @@
         "ContextRestricted"
       ],
       "default": "Public"
+    },
+    "apppbTranslation": {
+      "type": "object",
+      "properties": {
+        "attribute_id": {
+          "type": "string"
+        },
+        "locale_name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "apppbType": {
+      "type": "string",
+      "enum": [
+        "Master",
+        "Internal",
+        "External"
+      ],
+      "default": "Master"
     },
     "apppbVerifyAuthenticationChallengeResponse": {
       "type": "object",
