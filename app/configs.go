@@ -596,7 +596,7 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 			return nil, err
 		}
 
-		oldLogoURL, _ := defaultsValues.GetString("info/label")
+		oldLogoURL, _ := defaultsValues.GetString("info/log_url")
 		logoURL, err := prompt.TextWithDefault("logo URL", oldLogoURL, false)
 		if err != nil {
 			return nil, err
