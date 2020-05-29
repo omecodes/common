@@ -37,7 +37,7 @@ func newZap() *zap.Logger {
 	if File != "" {
 		w = zapcore.AddSync(&lumberjack.Logger{
 			Filename:   File,
-			MaxSize:    1024,
+			MaxSize:    100,
 			MaxBackups: 20,
 			MaxAge:     28,
 			Compress:   true,
@@ -45,23 +45,27 @@ func newZap() *zap.Logger {
 	}
 
 	cfgConsole := zapcore.EncoderConfig{
-		MessageKey:     "message",
-		LevelKey:       "severity",
+		MessageKey:     "msg",
+		LevelKey:       "level",
 		TimeKey:        "time",
-		CallerKey:      "caller",
+		CallerKey:      "source",
 		EncodeLevel:    CustomEncodeLevel,
 		EncodeTime:     SyslogTimeEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
+		EncodeDuration: zapcore.MillisDurationEncoder,
+		EncodeName:     zapcore.FullNameEncoder,
 	}
 
 	cfgFile := zapcore.EncoderConfig{
-		MessageKey:   "message",
-		LevelKey:     "severity",
-		EncodeLevel:  CustomLevelFileEncoder,
-		TimeKey:      "time",
-		EncodeTime:   SyslogTimeEncoder,
-		CallerKey:    "caller",
-		EncodeCaller: zapcore.ShortCallerEncoder,
+		MessageKey:     "msg",
+		LevelKey:       "level",
+		TimeKey:        "time",
+		CallerKey:      "source",
+		EncodeLevel:    CustomLevelFileEncoder,
+		EncodeTime:     SyslogTimeEncoder,
+		EncodeDuration: zapcore.MillisDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
+		EncodeName:     zapcore.FullNameEncoder,
 	}
 	consoleDebugging := zapcore.Lock(os.Stdout)
 
