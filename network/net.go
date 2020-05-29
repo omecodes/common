@@ -58,9 +58,7 @@ func addressPingTest(addr string) bool {
 		return false
 	}
 	defer func() {
-		if err := listener.Close(); err != nil {
-			log.E("net.ip.ping", err, "listener.close() caused error")
-		}
+		_ = listener.Close()
 	}()
 
 	listenAddr := listener.Addr().String()
@@ -71,9 +69,7 @@ func addressPingTest(addr string) bool {
 			return
 		}
 		defer func() {
-			if err := con.Close(); err != nil {
-				log.E("net.ip.ping", err, "con.close() caused error")
-			}
+			_ = con.Close()
 		}()
 
 		buffer := make([]byte, 1)
@@ -82,13 +78,13 @@ func addressPingTest(addr string) bool {
 			result <- false
 		}
 		if _, err := con.Write(buffer[:1]); err != nil {
-			log.E("network", err)
+			log.Error("network", err)
 		}
 	}()
 	go func() {
 		con, err := net.Dial("tcp", listenAddr)
 		if err != nil {
-			log.E("net.ip.ping", err)
+			log.Error("net.ip.ping", err)
 			result <- false
 			return
 		}
@@ -105,7 +101,7 @@ func addressPingTest(addr string) bool {
 
 		buffer[0] = 0
 		if _, err := con.Read(buffer); err != nil {
-			log.E("net.ip.ping", err)
+			log.Error("net.ip.ping", err)
 		}
 		result <- buffer[0] == 12
 	}()

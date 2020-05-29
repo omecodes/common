@@ -1,240 +1,128 @@
 package log
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"runtime"
-
-	"github.com/fatih/color"
-	"github.com/shiena/ansicolor"
+	"go.uber.org/zap"
 )
 
-var debug bool
+var (
+	File string
+	DevMode = true
+	DebugMode = false
+)
 
-func init() {
-	debug = os.Getenv("OE_DEBUG") == "1"
+func Field(key string, value interface{}) field {
+	return field{
+		Key:   key,
+		Value: value,
+	}
 }
 
-var logger Logger
+type field struct {
+	Key string
+	Value interface{}
+}
+
+var logger *zap.Logger
 
 var (
-	serv, erro, info, success, deb, txt func(txt string) string
+	//serv, erro, info, success, deb, txt func(txt string) string
 )
 
 func getLogger() Logger {
 	if logger == nil {
-		if runtime.GOOS == `windows` {
-			log.SetOutput(ansicolor.NewAnsiColorWriter(os.Stdout))
-			serv = func(txt string) string {
-				return fmt.Sprintf("%s%-35s%s", "\x1b[34m", txt, "\x1b[0m")
-			}
-			success = func(txt string) string {
-				return fmt.Sprintf("%s%-2s%s", "\x1b[32m", txt, "\x1b[0m")
-			}
-			info = func(txt string) string {
-				return fmt.Sprintf("%s%-2s%s", "\x1b[90;37m", txt, "\x1b[0m")
-			}
-			erro = func(txt string) string {
-				return fmt.Sprintf("%s%-2s%s", "\x1b[31m", txt, "\x1b[0m")
-			}
-			deb = func(txt string) string {
-				return fmt.Sprintf("%s%-2s%s", "\x1b[35m", txt, "\x1b[0m")
-			}
-			txt = func(txt string) string {
-				return fmt.Sprintf("%-50s", txt)
-			}
+		/*err := zap.RegisterSink("files", func(url *url.URL) (zap.Sink, error) {
+			filename := futils.UnNormalizePath(url.Path)
+			return os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModePerm)
+		})
+
+		var logConfig zap.Config
+		if DevMode {
+			logConfig = zap.NewDevelopmentConfig()
 		} else {
-
-			red := color.New(color.FgRed).SprintFunc()
-			green := color.New(color.FgGreen).SprintFunc()
-			blue := color.New(color.FgBlue).SprintFunc()
-			grey := color.New(color.FgHiCyan).SprintFunc()
-
-			serv = func(txt string) string {
-				return blue(fmt.Sprintf("%-35s", txt))
-			}
-			success = func(txt string) string {
-				return green(fmt.Sprintf("%-2s", txt))
-			}
-			info = func(txt string) string {
-				return grey(fmt.Sprintf("%-2s", txt))
-			}
-			erro = func(txt string) string {
-				return red(fmt.Sprintf("%-2s", txt))
-			}
-			deb = func(txt string) string {
-				return fmt.Sprintf("%-2s", txt)
-			}
-			txt = func(txt string) string {
-				return fmt.Sprintf("%-50s", txt)
+			logConfig = zap.NewProductionConfig()
+			logConfig.OutputPaths = append(logConfig.OutputPaths, "stdout")
+			if File != "" {
+				logConfig.OutputPaths = append(logConfig.OutputPaths, fmt.Sprintf("files://%s", futils.NormalizePath(File)))
 			}
 		}
-		logger = new(defaultLogger)
+
+		logger, err = logConfig.Build(zap.AddCaller(), zap.AddCallerSkip(2), zap.WrapCore(func(core zapcore.Core) zapcore.Core {
+
+			return core
+		}))
+		if err != nil {
+			logger = zap.L()
+		}
+
+		zap.ReplaceGlobals(logger)*/
+		logger = newZap()
+		defer logger.Sync()
+
+
+		return &defaultLogger{logger}
 	}
-	return logger
+	return &defaultLogger{logger}
 }
 
-// Logger is a conveniance for logging
+// Logger is a convenience for logging
 type Logger interface {
-	su(from string, msg string, args ...interface{})
-	in(from string, msg string, args ...interface{})
-	de(from string, msg string, args ...interface{})
-	er(from string, err error, args ...interface{})
-	fa(from string, err error, args ...interface{})
-	suf(from string, format string, args ...interface{})
-	inf(from string, format string, args ...interface{})
-	def(from string, format string, args ...interface{})
-	erf(from string, err error, format string, args ...interface{})
-	faf(from string, err error, format string, args ...interface{})
+	in(msg string, fields ...field)
+	de(msg string, fields ...field)
+	er(msg string, err error, fields ...field)
+	fa(msg string, err error, fields ...field)
 }
 
-type defaultLogger struct{}
+type defaultLogger struct{
+	zapper *zap.Logger
+}
 
-func (ul *defaultLogger) su(from string, msg string, args ...interface{}) {
-	items := []interface{}{
-		success("V"),
-		serv(from),
-		txt(msg),
+func (ul *defaultLogger) in(msg string, fields ...field) {
+	var items []zap.Field
+	for _, f := range fields {
+		items = append(items, zap.Any(f.Key, f.Value))
 	}
-	if len(args) > 0 {
-		items = append(items, args...)
-	}
-	log.Print(items...)
+	ul.zapper.Info(msg, items...)
 }
-func (ul *defaultLogger) in(from string, msg string, args ...interface{}) {
-	items := []interface{}{
-		info("I"),
-		serv(from),
-		txt(msg),
-	}
-	if len(args) > 0 {
-		items = append(items, args...)
-	}
-	log.Print(items...)
-}
-func (ul *defaultLogger) de(from string, msg string, args ...interface{}) {
-	if debug {
-		items := []interface{}{
-			deb("D"),
-			serv(from),
-			txt(msg),
+func (ul *defaultLogger) de(msg string, fields ...field) {
+	if DebugMode {
+		var items []zap.Field
+		for _, f := range fields {
+			items = append(items, zap.Any(f.Key, f.Value))
 		}
-		if len(args) > 0 {
-			items = append(items, args...)
-		}
-		log.Print(items...)
+		ul.zapper.Debug(msg, items...)
 	}
 }
-func (ul *defaultLogger) er(from string, err error, args ...interface{}) {
-	items := []interface{}{
-		erro(erro("!")),
-		serv(from),
-		err.Error(),
+func (ul *defaultLogger) er(msg string, err error, fields ...field) {
+	items := []zap.Field {zap.Error(err)}
+	for _, f := range fields {
+		items = append(items, zap.Any(f.Key, f.Value))
 	}
-	if len(args) > 0 {
-		items = append(items, args...)
-	}
-	log.Print(items...)
+	ul.zapper.Error(msg, items...)
 }
-func (ul *defaultLogger) fa(from string, err error, args ...interface{}) {
-	items := []interface{}{
-		erro("F"),
-		serv(from),
-		err.Error(),
+func (ul *defaultLogger) fa(msg string, err error, fields ...field) {
+	items := []zap.Field {zap.Error(err)}
+	for _, f := range fields {
+		items = append(items, zap.Any(f.Key, f.Value))
 	}
-	if len(args) > 0 {
-		items = append(items, args...)
-	}
-	log.Fatal(items...)
-}
-func (ul *defaultLogger) suf(from string, format string, args ...interface{}) {
-	items := []interface{}{
-		success("V"),
-		serv(from),
-		fmt.Sprintf(format, args...),
-	}
-	log.Print(items...)
-}
-func (ul *defaultLogger) inf(from string, format string, args ...interface{}) {
-	items := []interface{}{
-		info("I"),
-		serv(from),
-		fmt.Sprintf(format, args...),
-	}
-	log.Print(items...)
-}
-func (ul *defaultLogger) def(from string, format string, args ...interface{}) {
-	if debug {
-		items := []interface{}{
-			deb("D"),
-			serv(from),
-			fmt.Sprintf(format, args...),
-		}
-		log.Print(items...)
-	}
-}
-func (ul *defaultLogger) erf(from string, err error, format string, args ...interface{}) {
-	items := []interface{}{
-		erro("!"),
-		serv(from),
-		fmt.Sprintf(format, args...),
-	}
-	log.Print(items...)
-}
-func (ul *defaultLogger) faf(from string, err error, format string, args ...interface{}) {
-	items := []interface{}{
-		erro("F"),
-		serv(from),
-		fmt.Sprintf(format, args...),
-	}
-	log.Print(items...)
+	ul.zapper.Fatal(msg, items...)
 }
 
-// Info displays informative message
-func S(from string, msg string, args ...interface{}) {
-	getLogger().su(from, msg, args...)
-}
 
-func I(from string, msg string, args ...interface{}) {
-	getLogger().in(from, msg, args...)
+func Info(msg string, fields ...field) {
+	getLogger().in(msg, fields...)
 }
 
 // Debug used for showing more detailed activity
-func D(from string, msg string, args ...interface{}) {
-	getLogger().de(from, msg, args...)
+func Debug(msg string, fields ...field) {
+	getLogger().de(msg, fields...)
 }
 
 // Error displays more detailed error message
-func E(from string, err error, args ...interface{}) {
-	getLogger().er(from, err, args...)
+func Error(msg string, err error, fields ...field) {
+	getLogger().er(msg, err, fields...)
 }
 
 // Error displays more detailed error message
-func F(from string, err error, args ...interface{}) {
-	getLogger().fa(from, err, args...)
-}
-
-// Info displays informative message
-func Suf(from string, format string, args ...interface{}) {
-	getLogger().suf(from, format, args...)
-}
-
-func If(from string, format string, args ...interface{}) {
-	getLogger().inf(from, format, args...)
-}
-
-// Debug used for showing more detailed activity
-func Df(from string, format string, args ...interface{}) {
-	getLogger().def(from, format, args...)
-}
-
-// Error displays more detailed error message
-func Ef(from string, err error, format string, args ...interface{}) {
-	getLogger().erf(from, err, format, args...)
-}
-
-// Error displays more detailed error message
-func Ff(from string, err error, format string, args ...interface{}) {
-	getLogger().faf(from, err, format, args...)
+func Fatal(msg string, err error, fields ...field) {
+	getLogger().fa(msg, err, fields...)
 }

@@ -131,7 +131,7 @@ func GenerateCACertificate(t *CertificateTemplate) (*x509.Certificate, error) {
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
-		log.E("Certificate Generator", err, "failed to create CA certificate")
+		log.Error("failed to generate CA certificate", err)
 		return nil, errors.BadInput
 	}
 	return x509.ParseCertificate(certBytes)
@@ -199,19 +199,19 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 
 	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		log.E("Certificate Generator", err, "failed to decode the private key")
+		log.Error("failed to decide private key",  err)
 		return nil, errors.BadInput
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		log.E("Certificate Generator", err, "key type not supported")
+		log.Error("key type is not supported", err, log.Field("key type", block.Type))
 		return nil, errors.NotSupported
 	}
 
 	if password != nil && len(password) > 0 {
 		keyBytes, err = x509.DecryptPEMBlock(block, password)
 		if err != nil {
-			log.E("Certificate Generator", err, "Failed to decrypt CA key")
+			log.Error("failed to decrypt CA key", err)
 			return nil, errors.BadInput
 		}
 	} else {
@@ -241,7 +241,7 @@ func StorePrivateKey(key crypto.PrivateKey, password []byte, file string) error 
 		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: privateKeyBytes}
 
 	} else {
-		log.E("Certificate Generator", err, "key type is not supported")
+		log.Error("key type is not supported", err)
 		return errors.NotSupported
 	}
 

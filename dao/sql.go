@@ -68,7 +68,7 @@ func (dao *SQL) Init(cfg jcon.Map) error {
 			dao.SetVariable(VarLocate, "instr")
 			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
 			if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
-				log.E("dao.SQL", err, "failed to enable foreign_key feature")
+				log.Error("failed to enable foreign key feature", err)
 			}
 			dao.mux = new(sync.RWMutex)
 		}
@@ -116,7 +116,7 @@ func (dao *SQL) Init(cfg jcon.Map) error {
 
 			compiledStmt, err := dao.DB.Prepare(stmt)
 			if err != nil {
-				log.Ef("SQL", err, "failed to compile '%s' statement: %s", name, stmt)
+				log.Error("failed to compile statement", err, log.Field("name", name), log.Field("sql", stmt))
 				return err
 			}
 			dao.compiledStatements[name] = compiledStmt

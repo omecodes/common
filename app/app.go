@@ -10,6 +10,7 @@ import (
 	"github.com/zoenion/common/app/web"
 	"github.com/zoenion/common/futils"
 	"github.com/zoenion/common/jcon"
+	log2 "github.com/zoenion/common/log"
 	"log"
 	"os"
 	"path/filepath"
@@ -100,6 +101,8 @@ func (a *App) init() error {
 					log.Fatalln(err)
 				}
 
+				log2.File = filepath.Join(a.dataDir, "configure.log")
+
 				configFilename := filepath.Join(a.dataDir, "configs.json")
 				oldConf := jcon.Map{}
 				_ = jcon.Load(configFilename, &oldConf)
@@ -130,6 +133,7 @@ func (a *App) init() error {
 				if err != nil {
 					log.Fatalln(err)
 				}
+				log2.File = filepath.Join(a.dataDir, "run.log")
 
 				err = a.initResources()
 				if err != nil {
