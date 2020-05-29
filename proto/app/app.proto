@@ -134,6 +134,7 @@ message CheckIfExistsResponse {
 }
 
 service Applications {
+    rpc SaveDefinitions(stream AttributeDefinition) returns (SaveAttributeDefinitionResponse);
     rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
         option(google.api.http) = {
             post: "/app/register";
