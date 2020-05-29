@@ -39,13 +39,9 @@ type App struct {
 	configs         jcon.Map
 }
 
-func (a *App) Initialize() error {
-	return a.init()
-}
-
-func (a *App) init() error {
+func (a *App) init()  {
 	if a.initialized {
-		return nil
+		return
 	}
 	a.initialized = true
 
@@ -113,7 +109,12 @@ func (a *App) init() error {
 				}
 
 				if a.options.afterConfigure != nil {
-					err = a.options.afterConfigure(a.configs, configFilename)
+					err = a.options.afterConfigure(a.configs)
+					if err != nil {
+						log.Fatalln(err)
+					}
+
+					err = a.configs.Save(configFilename, os.ModePerm)
 					if err != nil {
 						log.Fatalln(err)
 					}
@@ -162,8 +163,6 @@ func (a *App) init() error {
 		}
 		a.cmd.AddCommand(a.versionCMD)
 	}
-
-	return nil
 }
 
 func (a *App) initDirs() error {
@@ -240,7 +239,7 @@ func (a *App) configure(outputFilename string, mode os.FileMode, items ...config
 	oldValues := jcon.Map{}
 	_ = jcon.Load(outputFilename, &oldValues)
 
-	newValues := jcon.Map{}
+	a.configs = jcon.Map{}
 	for _, item := range items {
 		key := item.configType.String()
 		itemOldValues := oldValues.GetConf(key)
@@ -249,9 +248,10 @@ func (a *App) configure(outputFilename string, mode os.FileMode, items ...config
 		if err != nil {
 			return err
 		}
-		newValues.Set(key, values)
+		a.configs.Set(key, values)
 	}
-	return newValues.Save(outputFilename, mode)
+
+	return a.configs.Save(outputFilename, mode)
 }
 
 func (a *App) GetConfig(item ConfigType) jcon.Map {
@@ -305,5 +305,6 @@ func New(vendor string, name string, opts ...Option) *App {
 	for _, opt := range opts {
 		opt(a.options)
 	}
+	a.init()
 	return a
 }
