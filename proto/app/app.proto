@@ -5,6 +5,19 @@ package apppb;
 import "google/api/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
+enum FieldType {
+    Other = 0;
+    String = 1;
+    StringList = 2;
+    StringMap = 3;
+    Text = 4;
+    Number = 5;
+    NumberMap = 6;
+    FloatingNumber = 7;
+    FloatingNumberMap = 8;
+    Timestamp = 9;
+}
+
 enum Type {
     Master = 0;
     Internal = 1;
@@ -15,6 +28,13 @@ enum Scope {
     Public = 0;
     Personal = 1;
     ContextRestricted = 2;
+}
+
+message Field {
+    string name = 1;
+    FieldType type = 2;
+    string label = 3;
+    string description = 4;
 }
 
 message Credentials {
@@ -51,13 +71,20 @@ message AttributeDefinition {
     bool editable_out_of_context = 6 [(validator.field) = {msg_exists: true}];
     string label = 7;
     string description = 8;
+    repeated Field fields = 9 [(validator.field) = {msg_exists: true}];
 }
 
-message Translation {
+message FieldTranslation {
+    string label = 1;
+    string description = 2;
+}
+
+message AttributeTranslation {
     string attribute_id = 1;
     string locale_name = 2;
     string label = 3;
     string description = 4;
+    FieldTranslation fields = 5;
 }
 
 message RegisterApplicationRequest {
@@ -113,7 +140,7 @@ message DeleteAttributeDefinitionRequest {
 message DeleteAttributeDefinitionResponse {}
 
 message AddAttributeTranslationRequest {
-    Translation translation = 1;
+    AttributeTranslation translation = 1;
 }
 message AddAttributeTranslationResponse {}
 

@@ -245,7 +245,7 @@
       "type": "object",
       "properties": {
         "translation": {
-          "$ref": "#/definitions/apppbTranslation"
+          "$ref": "#/definitions/apppbAttributeTranslation"
         }
       }
     },
@@ -309,6 +309,32 @@
         },
         "description": {
           "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apppbField"
+          }
+        }
+      }
+    },
+    "apppbAttributeTranslation": {
+      "type": "object",
+      "properties": {
+        "attribute_id": {
+          "type": "string"
+        },
+        "locale_name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "fields": {
+          "$ref": "#/definitions/apppbFieldTranslation"
         }
       }
     },
@@ -337,6 +363,50 @@
     },
     "apppbDeleteAttributeDefinitionResponse": {
       "type": "object"
+    },
+    "apppbField": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/apppbFieldType"
+        },
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "apppbFieldTranslation": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "apppbFieldType": {
+      "type": "string",
+      "enum": [
+        "Other",
+        "String",
+        "StringList",
+        "StringMap",
+        "Text",
+        "Number",
+        "NumberMap",
+        "FloatingNumber",
+        "FloatingNumberMap",
+        "Timestamp"
+      ],
+      "default": "Other"
     },
     "apppbGetApplicationResponse": {
       "type": "object",
@@ -445,23 +515,6 @@
         "ContextRestricted"
       ],
       "default": "Public"
-    },
-    "apppbTranslation": {
-      "type": "object",
-      "properties": {
-        "attribute_id": {
-          "type": "string"
-        },
-        "locale_name": {
-          "type": "string"
-        },
-        "label": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
-      }
     },
     "apppbType": {
       "type": "string",
