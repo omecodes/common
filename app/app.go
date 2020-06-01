@@ -60,23 +60,25 @@ func (a *App) init()  {
 					log.Fatalln(err)
 				}
 
+				log2.File = filepath.Join(a.dataDir, "configure.log")
+
 				err = a.initResources()
 				if err != nil {
-					log.Fatalln(err)
+					log2.Fatal("resources init", err)
 				}
 
 				if len(a.options.configItems) > 0 {
 					cfgFilename := filepath.Join(a.dataDir, "configs.json")
 					err = jcon.Load(cfgFilename, &a.configs)
 					if err != nil {
-						log.Fatalln(err)
+						log2.Error("configs loading", err)
 					}
 				}
 
 				a.options.startCMDFunc()
 			} else {
 				if err := cmd.Help(); err != nil {
-					log.Fatalln(err)
+					log2.Fatal("cmd", err)
 				}
 			}
 		},
@@ -105,18 +107,18 @@ func (a *App) init()  {
 
 				err = a.configure(configFilename, os.ModePerm, a.options.configItems...)
 				if err != nil {
-					log.Fatalln(err)
+					log2.Fatal("configure failed", err)
 				}
 
 				if a.options.afterConfigure != nil {
 					err = a.options.afterConfigure(a.configs)
 					if err != nil {
-						log.Fatalln(err)
+						log2.Fatal("post configure failed", err)
 					}
 
 					err = a.configs.Save(configFilename, os.ModePerm)
 					if err != nil {
-						log.Fatalln(err)
+						log2.Fatal("save configs file", err)
 					}
 				}
 			},
@@ -138,12 +140,13 @@ func (a *App) init()  {
 
 				err = a.initResources()
 				if err != nil {
-					log.Fatalln(err)
+					log2.Fatal("resources init", err)
 				}
 
 				cfgFilename := filepath.Join(a.dataDir, "configs.json")
 				if futils.FileExists(cfgFilename) {
-					_ = jcon.Load(cfgFilename, &a.configs)
+					err = jcon.Load(cfgFilename, &a.configs)
+					log2.Fatal("configs loading", err)
 				}
 
 				a.options.startCMDFunc()
@@ -179,14 +182,12 @@ func (a *App) initDirs() error {
 
 	err := os.MkdirAll(a.dataDir, os.ModePerm)
 	if err != nil {
-		log.Println("could not create configs dir:", err)
 		return err
 	}
 
 	a.cacheDir = cacheFolder.Path
 	err = os.MkdirAll(a.cacheDir, os.ModePerm)
 	if err != nil {
-		log.Println("could not create cache dir:", err)
 		return err
 	}
 
@@ -202,7 +203,6 @@ func (a *App) initResources() error {
 			a.wwwDir = filepath.Join(a.dataDir, "res", "www")
 			err := os.MkdirAll(a.wwwDir, os.ModePerm)
 			if err != nil {
-				log.Println("could not create www dir:", err)
 				return err
 			}
 		}
@@ -212,7 +212,6 @@ func (a *App) initResources() error {
 			a.templatesDir = filepath.Join(a.dataDir, "res", "templates")
 			err := os.MkdirAll(a.templatesDir, os.ModePerm)
 			if err != nil {
-				log.Println("could not create templates dir:", err)
 				return err
 			}
 		}
@@ -220,7 +219,6 @@ func (a *App) initResources() error {
 		i18nDir := filepath.Join(a.dataDir, "res", "i18n")
 		err := os.MkdirAll(i18nDir, os.ModePerm)
 		if err != nil {
-			log.Println("could not create i18n dir:", err)
 			return err
 		}
 		a.Resources.templates = templates.New(a.templatesDir)
@@ -228,7 +226,6 @@ func (a *App) initResources() error {
 		a.Resources.i18n = lang.NewManager(i18nDir)
 		err = a.Resources.i18n.Load()
 		if err != nil {
-			log.Println("could not laod translations")
 			return err
 		}
 	}
