@@ -172,9 +172,18 @@
         "operationId": "ListAttributeDefinitions",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/apppbListAttributeDefinitionsResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/apppbAttributeDefinition"
+                },
+                "error": {
+                  "$ref": "#/definitions/runtimeStreamError"
+                }
+              },
+              "title": "Stream result of apppbAttributeDefinition"
             }
           }
         },
@@ -228,9 +237,18 @@
         "operationId": "ListApplications",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "A successful response.(streaming responses)",
             "schema": {
-              "$ref": "#/definitions/apppbListApplicationsResponse"
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/apppbApplication"
+                },
+                "error": {
+                  "$ref": "#/definitions/runtimeStreamError"
+                }
+              },
+              "title": "Stream result of apppbApplication"
             }
           }
         },
@@ -258,9 +276,6 @@
         "id": {
           "type": "string"
         },
-        "namespace": {
-          "type": "string"
-        },
         "activated": {
           "type": "boolean",
           "format": "boolean"
@@ -270,6 +285,12 @@
         },
         "type": {
           "$ref": "#/definitions/apppbType"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apppbCategory"
+          }
         },
         "credentials": {
           "$ref": "#/definitions/apppbCredentials"
@@ -337,6 +358,38 @@
           "$ref": "#/definitions/apppbFieldTranslation"
         }
       }
+    },
+    "apppbCategory": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Education",
+        "School",
+        "Career",
+        "Social",
+        "Sports",
+        "Music",
+        "Photography",
+        "Productivity",
+        "Shopping",
+        "Government",
+        "News",
+        "Press",
+        "Books",
+        "Finance",
+        "Business",
+        "Beauty",
+        "Podcasts",
+        "Health",
+        "Medical",
+        "Dating",
+        "Communications",
+        "Entertainment",
+        "Food",
+        "Lifestyle",
+        "Video"
+      ],
+      "default": "None"
     },
     "apppbCheckIfExistsResponse": {
       "type": "object",
@@ -457,28 +510,6 @@
         }
       }
     },
-    "apppbListApplicationsResponse": {
-      "type": "object",
-      "properties": {
-        "applications": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apppbApplication"
-          }
-        }
-      }
-    },
-    "apppbListAttributeDefinitionsResponse": {
-      "type": "object",
-      "properties": {
-        "definitions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/apppbAttributeDefinition"
-          }
-        }
-      }
-    },
     "apppbRegisterApplicationRequest": {
       "type": "object",
       "properties": {
@@ -531,6 +562,43 @@
         "verified": {
           "type": "boolean",
           "format": "boolean"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
         }
       }
     }

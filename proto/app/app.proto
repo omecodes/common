@@ -30,6 +30,35 @@ enum Scope {
     ContextRestricted = 2;
 }
 
+enum Category {
+    None = 0;
+    Education = 1;
+    School = 2;
+    Career = 3;
+    Social = 4;
+    Sports = 6;
+    Music = 7;
+    Photography = 8;
+    Productivity = 9;
+    Shopping = 10;
+    Government = 11;
+    News = 12;
+    Press = 13;
+    Books = 14;
+    Finance = 15;
+    Business = 16;
+    Beauty = 17;
+    Podcasts = 18;
+    Health = 19;
+    Medical = 20;
+    Dating = 21;
+    Communications = 22;
+    Entertainment = 23;
+    Food = 24;
+    Lifestyle = 25;
+    Video = 26;
+}
+
 message Field {
     string name = 1;
     FieldType type = 2;
@@ -54,10 +83,10 @@ message Info {
 
 message Application {
     string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string namespace = 2;
-    bool activated = 3;
-    string oauth_callback_url = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    Type type = 5;
+    bool activated = 2;
+    string oauth_callback_url = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+    Type type = 4;
+    repeated Category categories = 5;
     Credentials credentials = 6 [(validator.field) = {msg_exists: true}];
     Info info = 7 [(validator.field) = {msg_exists: true}];
 }
@@ -171,7 +200,7 @@ service Applications {
     rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse) {
         option(google.api.http).delete = "/app/{application_id}";
     };
-    rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
+    rpc ListApplications(ListApplicationsRequest) returns (stream Application) {
         option(google.api.http).get = "/apps";
     };
     rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
@@ -186,7 +215,7 @@ service Applications {
     rpc GetAttributeDefinition(GetAttributeDefinitionRequest) returns (GetAttributeDefinitionResponse){
         option(google.api.http).get = "/app/{application_id}/attribute/{attribute_id}";
     };
-    rpc ListAttributeDefinitions(ListAttributeDefinitionsRequest) returns (ListAttributeDefinitionsResponse) {
+    rpc ListAttributeDefinitions(ListAttributeDefinitionsRequest) returns (stream AttributeDefinition) {
         option(google.api.http).get = "/app/{application_id}/attributes";
     };
     rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse) {

@@ -119,21 +119,20 @@ func local_request_Applications_DeRegister_0(ctx context.Context, marshaler runt
 
 }
 
-func request_Applications_ListApplications_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Applications_ListApplications_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (Applications_ListApplicationsClient, runtime.ServerMetadata, error) {
 	var protoReq ListApplicationsRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.ListApplications(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_Applications_ListApplications_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListApplicationsRequest
-	var metadata runtime.ServerMetadata
-
-	msg, err := server.ListApplications(ctx, &protoReq)
-	return msg, metadata, err
+	stream, err := client.ListApplications(ctx, &protoReq)
+	if err != nil {
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
 
 }
 
@@ -337,7 +336,7 @@ func local_request_Applications_GetAttributeDefinition_0(ctx context.Context, ma
 
 }
 
-func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (Applications_ListAttributeDefinitionsClient, runtime.ServerMetadata, error) {
 	var protoReq ListAttributeDefinitionsRequest
 	var metadata runtime.ServerMetadata
 
@@ -359,35 +358,16 @@ func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
 	}
 
-	msg, err := client.ListAttributeDefinitions(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_Applications_ListAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListAttributeDefinitionsRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["application_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
-	}
-
-	protoReq.ApplicationId, err = runtime.String(val)
-
+	stream, err := client.ListAttributeDefinitions(ctx, &protoReq)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+		return nil, metadata, err
 	}
-
-	msg, err := server.ListAttributeDefinitions(ctx, &protoReq)
-	return msg, metadata, err
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
 
 }
 
@@ -547,23 +527,10 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 	})
 
 	mux.Handle("GET", pattern_Applications_ListApplications_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_Applications_ListApplications_0(rctx, inboundMarshaler, server, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_Applications_ListApplications_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
 	})
 
 	mux.Handle("GET", pattern_Applications_GetApplication_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
@@ -627,23 +594,10 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 	})
 
 	mux.Handle("GET", pattern_Applications_ListAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_Applications_ListAttributeDefinitions_0(rctx, inboundMarshaler, server, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_Applications_ListAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
 	})
 
 	mux.Handle("DELETE", pattern_Applications_DeleteAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
@@ -783,7 +737,7 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_Applications_ListApplications_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_ListApplications_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -863,7 +817,7 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_Applications_ListAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_ListAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -935,7 +889,7 @@ var (
 
 	forward_Applications_DeRegister_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_ListApplications_0 = runtime.ForwardResponseMessage
+	forward_Applications_ListApplications_0 = runtime.ForwardResponseStream
 
 	forward_Applications_GetApplication_0 = runtime.ForwardResponseMessage
 
@@ -943,7 +897,7 @@ var (
 
 	forward_Applications_GetAttributeDefinition_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_ListAttributeDefinitions_0 = runtime.ForwardResponseMessage
+	forward_Applications_ListAttributeDefinitions_0 = runtime.ForwardResponseStream
 
 	forward_Applications_DeleteAttributeDefinition_0 = runtime.ForwardResponseMessage
 
