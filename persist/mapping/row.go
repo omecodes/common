@@ -1,4 +1,4 @@
-package mapped
+package mapping
 
 type Row struct {
 	first   string

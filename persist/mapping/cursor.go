@@ -1,4 +1,4 @@
-package mapped
+package mapping
 
 import (
 	"github.com/zoenion/common/codec"
