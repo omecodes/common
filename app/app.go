@@ -146,7 +146,9 @@ func (a *App) init()  {
 				cfgFilename := filepath.Join(a.dataDir, "configs.json")
 				if futils.FileExists(cfgFilename) {
 					err = jcon.Load(cfgFilename, &a.configs)
-					log2.Fatal("configs loading", err)
+					if err != nil {
+						log2.Error("configs loading", err)
+					}
 				}
 
 				a.options.startCMDFunc()
