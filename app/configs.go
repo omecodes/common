@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"github.com/zoenion/common/crypto/key"
 	"github.com/zoenion/common/database"
 	"github.com/zoenion/common/errors"
 	"github.com/zoenion/common/jcon"
@@ -27,6 +28,7 @@ const (
 	ConfigSecrets
 	ConfigCredentialsTable
 	ConfigDirs
+	ConfigSecretKeys
 	ConfigNetwork
 	ConfigMySQLDatabase
 	ConfigSQLiteDatabase
@@ -49,6 +51,9 @@ func (ci ConfigType) String() string {
 
 	case ConfigDirs:
 		return "dirs"
+
+	case ConfigSecretKeys:
+		return "secret-keys"
 
 	case ConfigSecrets:
 		return "secrets"
@@ -93,6 +98,9 @@ func (ci configItem) create(description string, defaults jcon.Map) (jcon.Map, er
 
 	case ConfigDirs:
 		return configureDirs(description, defaults, ci.entries...)
+
+	case ConfigSecretKeys:
+		return configureSecretKeys(description, defaults, ci.entries...)
 
 	case ConfigCredentialsTable:
 		return configureCredentialsTable(description, defaults)
@@ -148,6 +156,10 @@ func configureSecrets(description string, defaults jcon.Map) (jcon.Map, error) {
 
 	var err error
 	count := 0
+	if defaults == nil {
+		defaults = jcon.Map{}
+	}
+
 	cfg := jcon.Map{}
 
 	for {
@@ -167,7 +179,8 @@ func configureSecrets(description string, defaults jcon.Map) (jcon.Map, error) {
 			return nil, err
 		}
 
-		secret, err := prompt.Password("Secret")
+		oldValue, _ := defaults.GetString(name)
+		secret, err := prompt.TextWithDefault("Secret", oldValue, false)
 		if err != nil {
 			return nil, err
 		}
@@ -373,6 +386,42 @@ func configureDirs(description string, defaults jcon.Map, names ...string) (jcon
 		fmt.Println()
 	}
 
+	return cfg, err
+}
+
+func configureSecretKeys(description string, defaults jcon.Map, names ...string) (jcon.Map, error) {
+	header("Secret keys", description)
+
+	var err error
+	if defaults == nil {
+		defaults = jcon.Map{}
+	}
+
+	cfg := jcon.Map{}
+
+
+	passPhrase, err := prompt.Password("pass phrase")
+	if err != nil {
+		return nil, err
+	}
+
+	passPhraseConfirm, err := prompt.Password("confirm")
+	if err != nil {
+		return nil, err
+	}
+
+	if passPhrase != passPhraseConfirm {
+		return nil, errors.New("pass phrases differ")
+	}
+
+	for _, name := range names {
+		_, info, err := key.Generate(passPhrase, 32)
+		if err != nil {
+			return nil, err
+		}
+		cfg[name] = info
+		// fmt.Println()
+	}
 	return cfg, err
 }
 
@@ -589,7 +638,6 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 			defaultsValues = jcon.Map{}
 		}
 
-
 		oldLabel, _ := defaultsValues.GetString("info/label")
 		label, err := prompt.TextWithDefault("display name", oldLabel, false)
 		if err != nil {
@@ -603,13 +651,13 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 		}
 
 		oldServerURL, _ := defaultsValues.GetString("config/server_url")
-		serverURL, err := prompt.TextWithDefault("serverURL", oldServerURL,false)
+		serverURL, err := prompt.TextWithDefault("serverURL", oldServerURL, false)
 		if err != nil {
 			return nil, err
 		}
 
 		oldClientID, _ := defaultsValues.GetString("config/client_id")
-		clientID, err := prompt.TextWithDefault("client ID", oldClientID,false)
+		clientID, err := prompt.TextWithDefault("client ID", oldClientID, false)
 		if err != nil {
 			return nil, err
 		}
@@ -620,14 +668,14 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 			return nil, err
 		}
 
-		cfg[name] = jcon.Map {
+		cfg[name] = jcon.Map{
 			"config": jcon.Map{
 				"server_url": serverURL,
-				"client_id": clientID,
-				"secret": clientSecret,
+				"client_id":  clientID,
+				"secret":     clientSecret,
 			},
 			"info": jcon.Map{
-				"label": label,
+				"label":    label,
 				"logo_url": logoURL,
 			},
 		}

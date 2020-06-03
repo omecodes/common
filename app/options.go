@@ -11,6 +11,7 @@ type options struct {
 	withResources        bool
 	configItems          []configItem
 	customAppDataDirPath string
+	instanceName         string
 }
 
 type Option func(*options)
@@ -54,5 +55,17 @@ func WithConfig(description string, confType ConfigType) Option {
 func WithDirConfigs(description string, names ...string) Option {
 	return func(o *options) {
 		o.configItems = append(o.configItems, configItem{description: description, configType: ConfigDirs, entries: names})
+	}
+}
+
+func WithSecretKeysConfig(description string, names ...string) Option {
+	return func(o *options) {
+		o.configItems = append(o.configItems, configItem{description: description, configType: ConfigSecretKeys, entries: names})
+	}
+}
+
+func WithInstanceName(name string) Option {
+	return func(opts *options) {
+		opts.instanceName = name
 	}
 }
