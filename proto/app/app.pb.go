@@ -39,19 +39,21 @@ const (
 	FieldType_FloatingNumber    FieldType = 7
 	FieldType_FloatingNumberMap FieldType = 8
 	FieldType_Timestamp         FieldType = 9
+	FieldType_JsonEncoded       FieldType = 10
 )
 
 var FieldType_name = map[int32]string{
-	0: "Other",
-	1: "String",
-	2: "StringList",
-	3: "StringMap",
-	4: "Text",
-	5: "Number",
-	6: "NumberMap",
-	7: "FloatingNumber",
-	8: "FloatingNumberMap",
-	9: "Timestamp",
+	0:  "Other",
+	1:  "String",
+	2:  "StringList",
+	3:  "StringMap",
+	4:  "Text",
+	5:  "Number",
+	6:  "NumberMap",
+	7:  "FloatingNumber",
+	8:  "FloatingNumberMap",
+	9:  "Timestamp",
+	10: "JsonEncoded",
 }
 
 var FieldType_value = map[string]int32{
@@ -65,6 +67,7 @@ var FieldType_value = map[string]int32{
 	"FloatingNumber":    7,
 	"FloatingNumberMap": 8,
 	"Timestamp":         9,
+	"JsonEncoded":       10,
 }
 
 func (x FieldType) String() string {
@@ -78,21 +81,24 @@ func (FieldType) EnumDescriptor() ([]byte, []int) {
 type Type int32
 
 const (
-	Type_Master   Type = 0
-	Type_Internal Type = 1
-	Type_External Type = 2
+	Type_Root     Type = 0
+	Type_Master   Type = 1
+	Type_Internal Type = 2
+	Type_External Type = 3
 )
 
 var Type_name = map[int32]string{
-	0: "Master",
-	1: "Internal",
-	2: "External",
+	0: "Root",
+	1: "Master",
+	2: "Internal",
+	3: "External",
 }
 
 var Type_value = map[string]int32{
-	"Master":   0,
-	"Internal": 1,
-	"External": 2,
+	"Root":     0,
+	"Master":   1,
+	"Internal": 2,
+	"External": 3,
 }
 
 func (x Type) String() string {
@@ -488,7 +494,7 @@ func (m *Application) GetType() Type {
 	if m != nil {
 		return m.Type
 	}
-	return Type_Master
+	return Type_Root
 }
 
 func (m *Application) GetCategories() []Category {
@@ -512,7 +518,7 @@ func (m *Application) GetInfo() *Info {
 	return nil
 }
 
-type AttributeDefinition struct {
+type UserAttributeDefinition struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Mime                 string   `protobuf:"bytes,2,opt,name=mime,proto3" json:"mime,omitempty"`
 	Context              string   `protobuf:"bytes,3,opt,name=context,proto3" json:"context,omitempty"`
@@ -527,88 +533,151 @@ type AttributeDefinition struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AttributeDefinition) Reset()         { *m = AttributeDefinition{} }
-func (m *AttributeDefinition) String() string { return proto.CompactTextString(m) }
-func (*AttributeDefinition) ProtoMessage()    {}
-func (*AttributeDefinition) Descriptor() ([]byte, []int) {
+func (m *UserAttributeDefinition) Reset()         { *m = UserAttributeDefinition{} }
+func (m *UserAttributeDefinition) String() string { return proto.CompactTextString(m) }
+func (*UserAttributeDefinition) ProtoMessage()    {}
+func (*UserAttributeDefinition) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e0f9056a14b86d47, []int{4}
 }
 
-func (m *AttributeDefinition) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AttributeDefinition.Unmarshal(m, b)
+func (m *UserAttributeDefinition) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UserAttributeDefinition.Unmarshal(m, b)
 }
-func (m *AttributeDefinition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AttributeDefinition.Marshal(b, m, deterministic)
+func (m *UserAttributeDefinition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UserAttributeDefinition.Marshal(b, m, deterministic)
 }
-func (m *AttributeDefinition) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AttributeDefinition.Merge(m, src)
+func (m *UserAttributeDefinition) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserAttributeDefinition.Merge(m, src)
 }
-func (m *AttributeDefinition) XXX_Size() int {
-	return xxx_messageInfo_AttributeDefinition.Size(m)
+func (m *UserAttributeDefinition) XXX_Size() int {
+	return xxx_messageInfo_UserAttributeDefinition.Size(m)
 }
-func (m *AttributeDefinition) XXX_DiscardUnknown() {
-	xxx_messageInfo_AttributeDefinition.DiscardUnknown(m)
+func (m *UserAttributeDefinition) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserAttributeDefinition.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AttributeDefinition proto.InternalMessageInfo
+var xxx_messageInfo_UserAttributeDefinition proto.InternalMessageInfo
 
-func (m *AttributeDefinition) GetName() string {
+func (m *UserAttributeDefinition) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetMime() string {
+func (m *UserAttributeDefinition) GetMime() string {
 	if m != nil {
 		return m.Mime
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetContext() string {
+func (m *UserAttributeDefinition) GetContext() string {
 	if m != nil {
 		return m.Context
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetScope() Scope {
+func (m *UserAttributeDefinition) GetScope() Scope {
 	if m != nil {
 		return m.Scope
 	}
 	return Scope_Public
 }
 
-func (m *AttributeDefinition) GetCategories() []string {
+func (m *UserAttributeDefinition) GetCategories() []string {
 	if m != nil {
 		return m.Categories
 	}
 	return nil
 }
 
-func (m *AttributeDefinition) GetEditableOutOfContext() bool {
+func (m *UserAttributeDefinition) GetEditableOutOfContext() bool {
 	if m != nil {
 		return m.EditableOutOfContext
 	}
 	return false
 }
 
-func (m *AttributeDefinition) GetLabel() string {
+func (m *UserAttributeDefinition) GetLabel() string {
 	if m != nil {
 		return m.Label
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetDescription() string {
+func (m *UserAttributeDefinition) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-func (m *AttributeDefinition) GetFields() []*Field {
+func (m *UserAttributeDefinition) GetFields() []*Field {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+type ApplicationAttributeDefinition struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Label                string   `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Fields               []*Field `protobuf:"bytes,4,rep,name=fields,proto3" json:"fields,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ApplicationAttributeDefinition) Reset()         { *m = ApplicationAttributeDefinition{} }
+func (m *ApplicationAttributeDefinition) String() string { return proto.CompactTextString(m) }
+func (*ApplicationAttributeDefinition) ProtoMessage()    {}
+func (*ApplicationAttributeDefinition) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{5}
+}
+
+func (m *ApplicationAttributeDefinition) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ApplicationAttributeDefinition.Unmarshal(m, b)
+}
+func (m *ApplicationAttributeDefinition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ApplicationAttributeDefinition.Marshal(b, m, deterministic)
+}
+func (m *ApplicationAttributeDefinition) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ApplicationAttributeDefinition.Merge(m, src)
+}
+func (m *ApplicationAttributeDefinition) XXX_Size() int {
+	return xxx_messageInfo_ApplicationAttributeDefinition.Size(m)
+}
+func (m *ApplicationAttributeDefinition) XXX_DiscardUnknown() {
+	xxx_messageInfo_ApplicationAttributeDefinition.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ApplicationAttributeDefinition proto.InternalMessageInfo
+
+func (m *ApplicationAttributeDefinition) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *ApplicationAttributeDefinition) GetLabel() string {
+	if m != nil {
+		return m.Label
+	}
+	return ""
+}
+
+func (m *ApplicationAttributeDefinition) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *ApplicationAttributeDefinition) GetFields() []*Field {
 	if m != nil {
 		return m.Fields
 	}
@@ -616,8 +685,9 @@ func (m *AttributeDefinition) GetFields() []*Field {
 }
 
 type FieldTranslation struct {
-	Label                string   `protobuf:"bytes,1,opt,name=label,proto3" json:"label,omitempty"`
-	Description          string   `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Label                string   `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -627,7 +697,7 @@ func (m *FieldTranslation) Reset()         { *m = FieldTranslation{} }
 func (m *FieldTranslation) String() string { return proto.CompactTextString(m) }
 func (*FieldTranslation) ProtoMessage()    {}
 func (*FieldTranslation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{5}
+	return fileDescriptor_e0f9056a14b86d47, []int{6}
 }
 
 func (m *FieldTranslation) XXX_Unmarshal(b []byte) error {
@@ -648,6 +718,13 @@ func (m *FieldTranslation) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_FieldTranslation proto.InternalMessageInfo
 
+func (m *FieldTranslation) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 func (m *FieldTranslation) GetLabel() string {
 	if m != nil {
 		return m.Label
@@ -665,9 +742,10 @@ func (m *FieldTranslation) GetDescription() string {
 type AttributeTranslation struct {
 	AttributeId          string            `protobuf:"bytes,1,opt,name=attribute_id,json=attributeId,proto3" json:"attribute_id,omitempty"`
 	LocaleName           string            `protobuf:"bytes,2,opt,name=locale_name,json=localeName,proto3" json:"locale_name,omitempty"`
-	Label                string            `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
-	Description          string            `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Fields               *FieldTranslation `protobuf:"bytes,5,opt,name=fields,proto3" json:"fields,omitempty"`
+	IsAppAttribute       bool              `protobuf:"varint,3,opt,name=is_app_attribute,json=isAppAttribute,proto3" json:"is_app_attribute,omitempty"`
+	Label                string            `protobuf:"bytes,4,opt,name=label,proto3" json:"label,omitempty"`
+	Description          string            `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	Fields               *FieldTranslation `protobuf:"bytes,6,opt,name=fields,proto3" json:"fields,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -677,7 +755,7 @@ func (m *AttributeTranslation) Reset()         { *m = AttributeTranslation{} }
 func (m *AttributeTranslation) String() string { return proto.CompactTextString(m) }
 func (*AttributeTranslation) ProtoMessage()    {}
 func (*AttributeTranslation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{6}
+	return fileDescriptor_e0f9056a14b86d47, []int{7}
 }
 
 func (m *AttributeTranslation) XXX_Unmarshal(b []byte) error {
@@ -712,6 +790,13 @@ func (m *AttributeTranslation) GetLocaleName() string {
 	return ""
 }
 
+func (m *AttributeTranslation) GetIsAppAttribute() bool {
+	if m != nil {
+		return m.IsAppAttribute
+	}
+	return false
+}
+
 func (m *AttributeTranslation) GetLabel() string {
 	if m != nil {
 		return m.Label
@@ -744,7 +829,7 @@ func (m *RegisterApplicationRequest) Reset()         { *m = RegisterApplicationR
 func (m *RegisterApplicationRequest) String() string { return proto.CompactTextString(m) }
 func (*RegisterApplicationRequest) ProtoMessage()    {}
 func (*RegisterApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{7}
+	return fileDescriptor_e0f9056a14b86d47, []int{8}
 }
 
 func (m *RegisterApplicationRequest) XXX_Unmarshal(b []byte) error {
@@ -783,7 +868,7 @@ func (m *RegisterApplicationResponse) Reset()         { *m = RegisterApplication
 func (m *RegisterApplicationResponse) String() string { return proto.CompactTextString(m) }
 func (*RegisterApplicationResponse) ProtoMessage()    {}
 func (*RegisterApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{8}
+	return fileDescriptor_e0f9056a14b86d47, []int{9}
 }
 
 func (m *RegisterApplicationResponse) XXX_Unmarshal(b []byte) error {
@@ -822,7 +907,7 @@ func (m *DeRegisterApplicationRequest) Reset()         { *m = DeRegisterApplicat
 func (m *DeRegisterApplicationRequest) String() string { return proto.CompactTextString(m) }
 func (*DeRegisterApplicationRequest) ProtoMessage()    {}
 func (*DeRegisterApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{9}
+	return fileDescriptor_e0f9056a14b86d47, []int{10}
 }
 
 func (m *DeRegisterApplicationRequest) XXX_Unmarshal(b []byte) error {
@@ -860,7 +945,7 @@ func (m *DeRegisterApplicationResponse) Reset()         { *m = DeRegisterApplica
 func (m *DeRegisterApplicationResponse) String() string { return proto.CompactTextString(m) }
 func (*DeRegisterApplicationResponse) ProtoMessage()    {}
 func (*DeRegisterApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{10}
+	return fileDescriptor_e0f9056a14b86d47, []int{11}
 }
 
 func (m *DeRegisterApplicationResponse) XXX_Unmarshal(b []byte) error {
@@ -891,7 +976,7 @@ func (m *ListApplicationsRequest) Reset()         { *m = ListApplicationsRequest
 func (m *ListApplicationsRequest) String() string { return proto.CompactTextString(m) }
 func (*ListApplicationsRequest) ProtoMessage()    {}
 func (*ListApplicationsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{11}
+	return fileDescriptor_e0f9056a14b86d47, []int{12}
 }
 
 func (m *ListApplicationsRequest) XXX_Unmarshal(b []byte) error {
@@ -923,7 +1008,7 @@ func (m *ListApplicationsResponse) Reset()         { *m = ListApplicationsRespon
 func (m *ListApplicationsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListApplicationsResponse) ProtoMessage()    {}
 func (*ListApplicationsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{12}
+	return fileDescriptor_e0f9056a14b86d47, []int{13}
 }
 
 func (m *ListApplicationsResponse) XXX_Unmarshal(b []byte) error {
@@ -962,7 +1047,7 @@ func (m *GetApplicationRequest) Reset()         { *m = GetApplicationRequest{} }
 func (m *GetApplicationRequest) String() string { return proto.CompactTextString(m) }
 func (*GetApplicationRequest) ProtoMessage()    {}
 func (*GetApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{13}
+	return fileDescriptor_e0f9056a14b86d47, []int{14}
 }
 
 func (m *GetApplicationRequest) XXX_Unmarshal(b []byte) error {
@@ -1001,7 +1086,7 @@ func (m *GetApplicationResponse) Reset()         { *m = GetApplicationResponse{}
 func (m *GetApplicationResponse) String() string { return proto.CompactTextString(m) }
 func (*GetApplicationResponse) ProtoMessage()    {}
 func (*GetApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{14}
+	return fileDescriptor_e0f9056a14b86d47, []int{15}
 }
 
 func (m *GetApplicationResponse) XXX_Unmarshal(b []byte) error {
@@ -1029,7 +1114,7 @@ func (m *GetApplicationResponse) GetApplication() *Application {
 	return nil
 }
 
-type GetAttributeDefinitionRequest struct {
+type GetUserAttributeDefinitionRequest struct {
 	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
 	AttributeId          string   `protobuf:"bytes,2,opt,name=attribute_id,json=attributeId,proto3" json:"attribute_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1037,249 +1122,101 @@ type GetAttributeDefinitionRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetAttributeDefinitionRequest) Reset()         { *m = GetAttributeDefinitionRequest{} }
-func (m *GetAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
-func (*GetAttributeDefinitionRequest) ProtoMessage()    {}
-func (*GetAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{15}
+func (m *GetUserAttributeDefinitionRequest) Reset()         { *m = GetUserAttributeDefinitionRequest{} }
+func (m *GetUserAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*GetUserAttributeDefinitionRequest) ProtoMessage()    {}
+func (*GetUserAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{16}
 }
 
-func (m *GetAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAttributeDefinitionRequest.Unmarshal(m, b)
+func (m *GetUserAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUserAttributeDefinitionRequest.Unmarshal(m, b)
 }
-func (m *GetAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAttributeDefinitionRequest.Marshal(b, m, deterministic)
+func (m *GetUserAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUserAttributeDefinitionRequest.Marshal(b, m, deterministic)
 }
-func (m *GetAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAttributeDefinitionRequest.Merge(m, src)
+func (m *GetUserAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUserAttributeDefinitionRequest.Merge(m, src)
 }
-func (m *GetAttributeDefinitionRequest) XXX_Size() int {
-	return xxx_messageInfo_GetAttributeDefinitionRequest.Size(m)
+func (m *GetUserAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_GetUserAttributeDefinitionRequest.Size(m)
 }
-func (m *GetAttributeDefinitionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAttributeDefinitionRequest.DiscardUnknown(m)
+func (m *GetUserAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUserAttributeDefinitionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAttributeDefinitionRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetUserAttributeDefinitionRequest proto.InternalMessageInfo
 
-func (m *GetAttributeDefinitionRequest) GetApplicationId() string {
+func (m *GetUserAttributeDefinitionRequest) GetApplicationId() string {
 	if m != nil {
 		return m.ApplicationId
 	}
 	return ""
 }
 
-func (m *GetAttributeDefinitionRequest) GetAttributeId() string {
+func (m *GetUserAttributeDefinitionRequest) GetAttributeId() string {
 	if m != nil {
 		return m.AttributeId
 	}
 	return ""
 }
 
-type GetAttributeDefinitionResponse struct {
-	Definition           *AttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
-	Label                string               `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
-	Description          string               `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+type GetUserAttributeDefinitionResponse struct {
+	Definition           *UserAttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	Label                string                   `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`
+	Description          string                   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
+	XXX_unrecognized     []byte                   `json:"-"`
+	XXX_sizecache        int32                    `json:"-"`
 }
 
-func (m *GetAttributeDefinitionResponse) Reset()         { *m = GetAttributeDefinitionResponse{} }
-func (m *GetAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
-func (*GetAttributeDefinitionResponse) ProtoMessage()    {}
-func (*GetAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{16}
+func (m *GetUserAttributeDefinitionResponse) Reset()         { *m = GetUserAttributeDefinitionResponse{} }
+func (m *GetUserAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*GetUserAttributeDefinitionResponse) ProtoMessage()    {}
+func (*GetUserAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{17}
 }
 
-func (m *GetAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetAttributeDefinitionResponse.Unmarshal(m, b)
+func (m *GetUserAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetUserAttributeDefinitionResponse.Unmarshal(m, b)
 }
-func (m *GetAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetAttributeDefinitionResponse.Marshal(b, m, deterministic)
+func (m *GetUserAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetUserAttributeDefinitionResponse.Marshal(b, m, deterministic)
 }
-func (m *GetAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetAttributeDefinitionResponse.Merge(m, src)
+func (m *GetUserAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetUserAttributeDefinitionResponse.Merge(m, src)
 }
-func (m *GetAttributeDefinitionResponse) XXX_Size() int {
-	return xxx_messageInfo_GetAttributeDefinitionResponse.Size(m)
+func (m *GetUserAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_GetUserAttributeDefinitionResponse.Size(m)
 }
-func (m *GetAttributeDefinitionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetAttributeDefinitionResponse.DiscardUnknown(m)
+func (m *GetUserAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetUserAttributeDefinitionResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetAttributeDefinitionResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetUserAttributeDefinitionResponse proto.InternalMessageInfo
 
-func (m *GetAttributeDefinitionResponse) GetDefinition() *AttributeDefinition {
+func (m *GetUserAttributeDefinitionResponse) GetDefinition() *UserAttributeDefinition {
 	if m != nil {
 		return m.Definition
 	}
 	return nil
 }
 
-func (m *GetAttributeDefinitionResponse) GetLabel() string {
+func (m *GetUserAttributeDefinitionResponse) GetLabel() string {
 	if m != nil {
 		return m.Label
 	}
 	return ""
 }
 
-func (m *GetAttributeDefinitionResponse) GetDescription() string {
+func (m *GetUserAttributeDefinitionResponse) GetDescription() string {
 	if m != nil {
 		return m.Description
 	}
 	return ""
 }
 
-type ListAttributeDefinitionsRequest struct {
-	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ListAttributeDefinitionsRequest) Reset()         { *m = ListAttributeDefinitionsRequest{} }
-func (m *ListAttributeDefinitionsRequest) String() string { return proto.CompactTextString(m) }
-func (*ListAttributeDefinitionsRequest) ProtoMessage()    {}
-func (*ListAttributeDefinitionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{17}
-}
-
-func (m *ListAttributeDefinitionsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListAttributeDefinitionsRequest.Unmarshal(m, b)
-}
-func (m *ListAttributeDefinitionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListAttributeDefinitionsRequest.Marshal(b, m, deterministic)
-}
-func (m *ListAttributeDefinitionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListAttributeDefinitionsRequest.Merge(m, src)
-}
-func (m *ListAttributeDefinitionsRequest) XXX_Size() int {
-	return xxx_messageInfo_ListAttributeDefinitionsRequest.Size(m)
-}
-func (m *ListAttributeDefinitionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListAttributeDefinitionsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListAttributeDefinitionsRequest proto.InternalMessageInfo
-
-func (m *ListAttributeDefinitionsRequest) GetApplicationId() string {
-	if m != nil {
-		return m.ApplicationId
-	}
-	return ""
-}
-
-type ListAttributeDefinitionsResponse struct {
-	Definitions          []*AttributeDefinition `protobuf:"bytes,1,rep,name=definitions,proto3" json:"definitions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
-	XXX_unrecognized     []byte                 `json:"-"`
-	XXX_sizecache        int32                  `json:"-"`
-}
-
-func (m *ListAttributeDefinitionsResponse) Reset()         { *m = ListAttributeDefinitionsResponse{} }
-func (m *ListAttributeDefinitionsResponse) String() string { return proto.CompactTextString(m) }
-func (*ListAttributeDefinitionsResponse) ProtoMessage()    {}
-func (*ListAttributeDefinitionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{18}
-}
-
-func (m *ListAttributeDefinitionsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListAttributeDefinitionsResponse.Unmarshal(m, b)
-}
-func (m *ListAttributeDefinitionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListAttributeDefinitionsResponse.Marshal(b, m, deterministic)
-}
-func (m *ListAttributeDefinitionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListAttributeDefinitionsResponse.Merge(m, src)
-}
-func (m *ListAttributeDefinitionsResponse) XXX_Size() int {
-	return xxx_messageInfo_ListAttributeDefinitionsResponse.Size(m)
-}
-func (m *ListAttributeDefinitionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListAttributeDefinitionsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListAttributeDefinitionsResponse proto.InternalMessageInfo
-
-func (m *ListAttributeDefinitionsResponse) GetDefinitions() []*AttributeDefinition {
-	if m != nil {
-		return m.Definitions
-	}
-	return nil
-}
-
-type SaveAttributeDefinitionRequest struct {
-	Definition           *AttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *SaveAttributeDefinitionRequest) Reset()         { *m = SaveAttributeDefinitionRequest{} }
-func (m *SaveAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
-func (*SaveAttributeDefinitionRequest) ProtoMessage()    {}
-func (*SaveAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{19}
-}
-
-func (m *SaveAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SaveAttributeDefinitionRequest.Unmarshal(m, b)
-}
-func (m *SaveAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SaveAttributeDefinitionRequest.Marshal(b, m, deterministic)
-}
-func (m *SaveAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SaveAttributeDefinitionRequest.Merge(m, src)
-}
-func (m *SaveAttributeDefinitionRequest) XXX_Size() int {
-	return xxx_messageInfo_SaveAttributeDefinitionRequest.Size(m)
-}
-func (m *SaveAttributeDefinitionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SaveAttributeDefinitionRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SaveAttributeDefinitionRequest proto.InternalMessageInfo
-
-func (m *SaveAttributeDefinitionRequest) GetDefinition() *AttributeDefinition {
-	if m != nil {
-		return m.Definition
-	}
-	return nil
-}
-
-type SaveAttributeDefinitionResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SaveAttributeDefinitionResponse) Reset()         { *m = SaveAttributeDefinitionResponse{} }
-func (m *SaveAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
-func (*SaveAttributeDefinitionResponse) ProtoMessage()    {}
-func (*SaveAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{20}
-}
-
-func (m *SaveAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SaveAttributeDefinitionResponse.Unmarshal(m, b)
-}
-func (m *SaveAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SaveAttributeDefinitionResponse.Marshal(b, m, deterministic)
-}
-func (m *SaveAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SaveAttributeDefinitionResponse.Merge(m, src)
-}
-func (m *SaveAttributeDefinitionResponse) XXX_Size() int {
-	return xxx_messageInfo_SaveAttributeDefinitionResponse.Size(m)
-}
-func (m *SaveAttributeDefinitionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SaveAttributeDefinitionResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SaveAttributeDefinitionResponse proto.InternalMessageInfo
-
-type DeleteAttributeDefinitionRequest struct {
+type GetApplicationAttributeDefinitionRequest struct {
 	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
 	AttributeId          string   `protobuf:"bytes,2,opt,name=attribute_id,json=attributeId,proto3" json:"attribute_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1287,75 +1224,561 @@ type DeleteAttributeDefinitionRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteAttributeDefinitionRequest) Reset()         { *m = DeleteAttributeDefinitionRequest{} }
-func (m *DeleteAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteAttributeDefinitionRequest) ProtoMessage()    {}
-func (*DeleteAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{21}
+func (m *GetApplicationAttributeDefinitionRequest) Reset() {
+	*m = GetApplicationAttributeDefinitionRequest{}
+}
+func (m *GetApplicationAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*GetApplicationAttributeDefinitionRequest) ProtoMessage()    {}
+func (*GetApplicationAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{18}
 }
 
-func (m *DeleteAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteAttributeDefinitionRequest.Unmarshal(m, b)
+func (m *GetApplicationAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionRequest.Unmarshal(m, b)
 }
-func (m *DeleteAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteAttributeDefinitionRequest.Marshal(b, m, deterministic)
+func (m *GetApplicationAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionRequest.Marshal(b, m, deterministic)
 }
-func (m *DeleteAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteAttributeDefinitionRequest.Merge(m, src)
+func (m *GetApplicationAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetApplicationAttributeDefinitionRequest.Merge(m, src)
 }
-func (m *DeleteAttributeDefinitionRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteAttributeDefinitionRequest.Size(m)
+func (m *GetApplicationAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionRequest.Size(m)
 }
-func (m *DeleteAttributeDefinitionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteAttributeDefinitionRequest.DiscardUnknown(m)
+func (m *GetApplicationAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetApplicationAttributeDefinitionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteAttributeDefinitionRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetApplicationAttributeDefinitionRequest proto.InternalMessageInfo
 
-func (m *DeleteAttributeDefinitionRequest) GetApplicationId() string {
+func (m *GetApplicationAttributeDefinitionRequest) GetApplicationId() string {
 	if m != nil {
 		return m.ApplicationId
 	}
 	return ""
 }
 
-func (m *DeleteAttributeDefinitionRequest) GetAttributeId() string {
+func (m *GetApplicationAttributeDefinitionRequest) GetAttributeId() string {
 	if m != nil {
 		return m.AttributeId
 	}
 	return ""
 }
 
-type DeleteAttributeDefinitionResponse struct {
+type GetApplicationAttributeDefinitionResponse struct {
+	Definition           *ApplicationAttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
+	XXX_unrecognized     []byte                          `json:"-"`
+	XXX_sizecache        int32                           `json:"-"`
+}
+
+func (m *GetApplicationAttributeDefinitionResponse) Reset() {
+	*m = GetApplicationAttributeDefinitionResponse{}
+}
+func (m *GetApplicationAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*GetApplicationAttributeDefinitionResponse) ProtoMessage()    {}
+func (*GetApplicationAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{19}
+}
+
+func (m *GetApplicationAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionResponse.Unmarshal(m, b)
+}
+func (m *GetApplicationAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *GetApplicationAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetApplicationAttributeDefinitionResponse.Merge(m, src)
+}
+func (m *GetApplicationAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_GetApplicationAttributeDefinitionResponse.Size(m)
+}
+func (m *GetApplicationAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetApplicationAttributeDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetApplicationAttributeDefinitionResponse proto.InternalMessageInfo
+
+func (m *GetApplicationAttributeDefinitionResponse) GetDefinition() *ApplicationAttributeDefinition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type ListUserAttributeDefinitionsRequest struct {
+	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteAttributeDefinitionResponse) Reset()         { *m = DeleteAttributeDefinitionResponse{} }
-func (m *DeleteAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteAttributeDefinitionResponse) ProtoMessage()    {}
-func (*DeleteAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+func (m *ListUserAttributeDefinitionsRequest) Reset()         { *m = ListUserAttributeDefinitionsRequest{} }
+func (m *ListUserAttributeDefinitionsRequest) String() string { return proto.CompactTextString(m) }
+func (*ListUserAttributeDefinitionsRequest) ProtoMessage()    {}
+func (*ListUserAttributeDefinitionsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{20}
+}
+
+func (m *ListUserAttributeDefinitionsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListUserAttributeDefinitionsRequest.Unmarshal(m, b)
+}
+func (m *ListUserAttributeDefinitionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListUserAttributeDefinitionsRequest.Marshal(b, m, deterministic)
+}
+func (m *ListUserAttributeDefinitionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListUserAttributeDefinitionsRequest.Merge(m, src)
+}
+func (m *ListUserAttributeDefinitionsRequest) XXX_Size() int {
+	return xxx_messageInfo_ListUserAttributeDefinitionsRequest.Size(m)
+}
+func (m *ListUserAttributeDefinitionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListUserAttributeDefinitionsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListUserAttributeDefinitionsRequest proto.InternalMessageInfo
+
+func (m *ListUserAttributeDefinitionsRequest) GetApplicationId() string {
+	if m != nil {
+		return m.ApplicationId
+	}
+	return ""
+}
+
+type ListUserAttributeDefinitionsResponse struct {
+	Definitions          []*UserAttributeDefinition `protobuf:"bytes,1,rep,name=definitions,proto3" json:"definitions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *ListUserAttributeDefinitionsResponse) Reset()         { *m = ListUserAttributeDefinitionsResponse{} }
+func (m *ListUserAttributeDefinitionsResponse) String() string { return proto.CompactTextString(m) }
+func (*ListUserAttributeDefinitionsResponse) ProtoMessage()    {}
+func (*ListUserAttributeDefinitionsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{21}
+}
+
+func (m *ListUserAttributeDefinitionsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListUserAttributeDefinitionsResponse.Unmarshal(m, b)
+}
+func (m *ListUserAttributeDefinitionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListUserAttributeDefinitionsResponse.Marshal(b, m, deterministic)
+}
+func (m *ListUserAttributeDefinitionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListUserAttributeDefinitionsResponse.Merge(m, src)
+}
+func (m *ListUserAttributeDefinitionsResponse) XXX_Size() int {
+	return xxx_messageInfo_ListUserAttributeDefinitionsResponse.Size(m)
+}
+func (m *ListUserAttributeDefinitionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListUserAttributeDefinitionsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListUserAttributeDefinitionsResponse proto.InternalMessageInfo
+
+func (m *ListUserAttributeDefinitionsResponse) GetDefinitions() []*UserAttributeDefinition {
+	if m != nil {
+		return m.Definitions
+	}
+	return nil
+}
+
+type ListApplicationAttributeDefinitionsRequest struct {
+	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ListApplicationAttributeDefinitionsRequest) Reset() {
+	*m = ListApplicationAttributeDefinitionsRequest{}
+}
+func (m *ListApplicationAttributeDefinitionsRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*ListApplicationAttributeDefinitionsRequest) ProtoMessage() {}
+func (*ListApplicationAttributeDefinitionsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e0f9056a14b86d47, []int{22}
 }
 
-func (m *DeleteAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteAttributeDefinitionResponse.Unmarshal(m, b)
+func (m *ListApplicationAttributeDefinitionsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsRequest.Unmarshal(m, b)
 }
-func (m *DeleteAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteAttributeDefinitionResponse.Marshal(b, m, deterministic)
+func (m *ListApplicationAttributeDefinitionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsRequest.Marshal(b, m, deterministic)
 }
-func (m *DeleteAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteAttributeDefinitionResponse.Merge(m, src)
+func (m *ListApplicationAttributeDefinitionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListApplicationAttributeDefinitionsRequest.Merge(m, src)
 }
-func (m *DeleteAttributeDefinitionResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteAttributeDefinitionResponse.Size(m)
+func (m *ListApplicationAttributeDefinitionsRequest) XXX_Size() int {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsRequest.Size(m)
 }
-func (m *DeleteAttributeDefinitionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteAttributeDefinitionResponse.DiscardUnknown(m)
+func (m *ListApplicationAttributeDefinitionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListApplicationAttributeDefinitionsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteAttributeDefinitionResponse proto.InternalMessageInfo
+var xxx_messageInfo_ListApplicationAttributeDefinitionsRequest proto.InternalMessageInfo
+
+func (m *ListApplicationAttributeDefinitionsRequest) GetApplicationId() string {
+	if m != nil {
+		return m.ApplicationId
+	}
+	return ""
+}
+
+type ListApplicationAttributeDefinitionsResponse struct {
+	Definitions          []*UserAttributeDefinition `protobuf:"bytes,1,rep,name=definitions,proto3" json:"definitions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *ListApplicationAttributeDefinitionsResponse) Reset() {
+	*m = ListApplicationAttributeDefinitionsResponse{}
+}
+func (m *ListApplicationAttributeDefinitionsResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*ListApplicationAttributeDefinitionsResponse) ProtoMessage() {}
+func (*ListApplicationAttributeDefinitionsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{23}
+}
+
+func (m *ListApplicationAttributeDefinitionsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsResponse.Unmarshal(m, b)
+}
+func (m *ListApplicationAttributeDefinitionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsResponse.Marshal(b, m, deterministic)
+}
+func (m *ListApplicationAttributeDefinitionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListApplicationAttributeDefinitionsResponse.Merge(m, src)
+}
+func (m *ListApplicationAttributeDefinitionsResponse) XXX_Size() int {
+	return xxx_messageInfo_ListApplicationAttributeDefinitionsResponse.Size(m)
+}
+func (m *ListApplicationAttributeDefinitionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListApplicationAttributeDefinitionsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListApplicationAttributeDefinitionsResponse proto.InternalMessageInfo
+
+func (m *ListApplicationAttributeDefinitionsResponse) GetDefinitions() []*UserAttributeDefinition {
+	if m != nil {
+		return m.Definitions
+	}
+	return nil
+}
+
+type SaveUserAttributeDefinitionRequest struct {
+	Definition           *UserAttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
+	XXX_unrecognized     []byte                   `json:"-"`
+	XXX_sizecache        int32                    `json:"-"`
+}
+
+func (m *SaveUserAttributeDefinitionRequest) Reset()         { *m = SaveUserAttributeDefinitionRequest{} }
+func (m *SaveUserAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*SaveUserAttributeDefinitionRequest) ProtoMessage()    {}
+func (*SaveUserAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{24}
+}
+
+func (m *SaveUserAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveUserAttributeDefinitionRequest.Unmarshal(m, b)
+}
+func (m *SaveUserAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveUserAttributeDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *SaveUserAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveUserAttributeDefinitionRequest.Merge(m, src)
+}
+func (m *SaveUserAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_SaveUserAttributeDefinitionRequest.Size(m)
+}
+func (m *SaveUserAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveUserAttributeDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveUserAttributeDefinitionRequest proto.InternalMessageInfo
+
+func (m *SaveUserAttributeDefinitionRequest) GetDefinition() *UserAttributeDefinition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type SaveUserAttributeDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveUserAttributeDefinitionResponse) Reset()         { *m = SaveUserAttributeDefinitionResponse{} }
+func (m *SaveUserAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*SaveUserAttributeDefinitionResponse) ProtoMessage()    {}
+func (*SaveUserAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{25}
+}
+
+func (m *SaveUserAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveUserAttributeDefinitionResponse.Unmarshal(m, b)
+}
+func (m *SaveUserAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveUserAttributeDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *SaveUserAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveUserAttributeDefinitionResponse.Merge(m, src)
+}
+func (m *SaveUserAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_SaveUserAttributeDefinitionResponse.Size(m)
+}
+func (m *SaveUserAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveUserAttributeDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveUserAttributeDefinitionResponse proto.InternalMessageInfo
+
+type SaveApplicationAttributeDefinitionRequest struct {
+	Definition           *ApplicationAttributeDefinition `protobuf:"bytes,1,opt,name=definition,proto3" json:"definition,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
+	XXX_unrecognized     []byte                          `json:"-"`
+	XXX_sizecache        int32                           `json:"-"`
+}
+
+func (m *SaveApplicationAttributeDefinitionRequest) Reset() {
+	*m = SaveApplicationAttributeDefinitionRequest{}
+}
+func (m *SaveApplicationAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*SaveApplicationAttributeDefinitionRequest) ProtoMessage()    {}
+func (*SaveApplicationAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{26}
+}
+
+func (m *SaveApplicationAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionRequest.Unmarshal(m, b)
+}
+func (m *SaveApplicationAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *SaveApplicationAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveApplicationAttributeDefinitionRequest.Merge(m, src)
+}
+func (m *SaveApplicationAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionRequest.Size(m)
+}
+func (m *SaveApplicationAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveApplicationAttributeDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveApplicationAttributeDefinitionRequest proto.InternalMessageInfo
+
+func (m *SaveApplicationAttributeDefinitionRequest) GetDefinition() *ApplicationAttributeDefinition {
+	if m != nil {
+		return m.Definition
+	}
+	return nil
+}
+
+type SaveApplicationAttributeDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SaveApplicationAttributeDefinitionResponse) Reset() {
+	*m = SaveApplicationAttributeDefinitionResponse{}
+}
+func (m *SaveApplicationAttributeDefinitionResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*SaveApplicationAttributeDefinitionResponse) ProtoMessage() {}
+func (*SaveApplicationAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{27}
+}
+
+func (m *SaveApplicationAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionResponse.Unmarshal(m, b)
+}
+func (m *SaveApplicationAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *SaveApplicationAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SaveApplicationAttributeDefinitionResponse.Merge(m, src)
+}
+func (m *SaveApplicationAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_SaveApplicationAttributeDefinitionResponse.Size(m)
+}
+func (m *SaveApplicationAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SaveApplicationAttributeDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SaveApplicationAttributeDefinitionResponse proto.InternalMessageInfo
+
+type DeleteUserAttributeDefinitionRequest struct {
+	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
+	AttributeId          string   `protobuf:"bytes,2,opt,name=attribute_id,json=attributeId,proto3" json:"attribute_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteUserAttributeDefinitionRequest) Reset()         { *m = DeleteUserAttributeDefinitionRequest{} }
+func (m *DeleteUserAttributeDefinitionRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteUserAttributeDefinitionRequest) ProtoMessage()    {}
+func (*DeleteUserAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{28}
+}
+
+func (m *DeleteUserAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionRequest.Unmarshal(m, b)
+}
+func (m *DeleteUserAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteUserAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteUserAttributeDefinitionRequest.Merge(m, src)
+}
+func (m *DeleteUserAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionRequest.Size(m)
+}
+func (m *DeleteUserAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteUserAttributeDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteUserAttributeDefinitionRequest proto.InternalMessageInfo
+
+func (m *DeleteUserAttributeDefinitionRequest) GetApplicationId() string {
+	if m != nil {
+		return m.ApplicationId
+	}
+	return ""
+}
+
+func (m *DeleteUserAttributeDefinitionRequest) GetAttributeId() string {
+	if m != nil {
+		return m.AttributeId
+	}
+	return ""
+}
+
+type DeleteUserAttributeDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteUserAttributeDefinitionResponse) Reset()         { *m = DeleteUserAttributeDefinitionResponse{} }
+func (m *DeleteUserAttributeDefinitionResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteUserAttributeDefinitionResponse) ProtoMessage()    {}
+func (*DeleteUserAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{29}
+}
+
+func (m *DeleteUserAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionResponse.Unmarshal(m, b)
+}
+func (m *DeleteUserAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteUserAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteUserAttributeDefinitionResponse.Merge(m, src)
+}
+func (m *DeleteUserAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteUserAttributeDefinitionResponse.Size(m)
+}
+func (m *DeleteUserAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteUserAttributeDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteUserAttributeDefinitionResponse proto.InternalMessageInfo
+
+type DeleteApplicationAttributeDefinitionRequest struct {
+	ApplicationId        string   `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
+	AttributeId          string   `protobuf:"bytes,2,opt,name=attribute_id,json=attributeId,proto3" json:"attribute_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteApplicationAttributeDefinitionRequest) Reset() {
+	*m = DeleteApplicationAttributeDefinitionRequest{}
+}
+func (m *DeleteApplicationAttributeDefinitionRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*DeleteApplicationAttributeDefinitionRequest) ProtoMessage() {}
+func (*DeleteApplicationAttributeDefinitionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{30}
+}
+
+func (m *DeleteApplicationAttributeDefinitionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest.Unmarshal(m, b)
+}
+func (m *DeleteApplicationAttributeDefinitionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteApplicationAttributeDefinitionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest.Merge(m, src)
+}
+func (m *DeleteApplicationAttributeDefinitionRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest.Size(m)
+}
+func (m *DeleteApplicationAttributeDefinitionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteApplicationAttributeDefinitionRequest proto.InternalMessageInfo
+
+func (m *DeleteApplicationAttributeDefinitionRequest) GetApplicationId() string {
+	if m != nil {
+		return m.ApplicationId
+	}
+	return ""
+}
+
+func (m *DeleteApplicationAttributeDefinitionRequest) GetAttributeId() string {
+	if m != nil {
+		return m.AttributeId
+	}
+	return ""
+}
+
+type DeleteApplicationAttributeDefinitionResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteApplicationAttributeDefinitionResponse) Reset() {
+	*m = DeleteApplicationAttributeDefinitionResponse{}
+}
+func (m *DeleteApplicationAttributeDefinitionResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*DeleteApplicationAttributeDefinitionResponse) ProtoMessage() {}
+func (*DeleteApplicationAttributeDefinitionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{31}
+}
+
+func (m *DeleteApplicationAttributeDefinitionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse.Unmarshal(m, b)
+}
+func (m *DeleteApplicationAttributeDefinitionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteApplicationAttributeDefinitionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse.Merge(m, src)
+}
+func (m *DeleteApplicationAttributeDefinitionResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse.Size(m)
+}
+func (m *DeleteApplicationAttributeDefinitionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteApplicationAttributeDefinitionResponse proto.InternalMessageInfo
 
 type AddAttributeTranslationRequest struct {
 	Translation          *AttributeTranslation `protobuf:"bytes,1,opt,name=translation,proto3" json:"translation,omitempty"`
@@ -1368,7 +1791,7 @@ func (m *AddAttributeTranslationRequest) Reset()         { *m = AddAttributeTran
 func (m *AddAttributeTranslationRequest) String() string { return proto.CompactTextString(m) }
 func (*AddAttributeTranslationRequest) ProtoMessage()    {}
 func (*AddAttributeTranslationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{23}
+	return fileDescriptor_e0f9056a14b86d47, []int{32}
 }
 
 func (m *AddAttributeTranslationRequest) XXX_Unmarshal(b []byte) error {
@@ -1406,7 +1829,7 @@ func (m *AddAttributeTranslationResponse) Reset()         { *m = AddAttributeTra
 func (m *AddAttributeTranslationResponse) String() string { return proto.CompactTextString(m) }
 func (*AddAttributeTranslationResponse) ProtoMessage()    {}
 func (*AddAttributeTranslationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{24}
+	return fileDescriptor_e0f9056a14b86d47, []int{33}
 }
 
 func (m *AddAttributeTranslationResponse) XXX_Unmarshal(b []byte) error {
@@ -1440,7 +1863,7 @@ func (m *VerifyAuthenticationChallengeRequest) Reset()         { *m = VerifyAuth
 func (m *VerifyAuthenticationChallengeRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifyAuthenticationChallengeRequest) ProtoMessage()    {}
 func (*VerifyAuthenticationChallengeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{25}
+	return fileDescriptor_e0f9056a14b86d47, []int{34}
 }
 
 func (m *VerifyAuthenticationChallengeRequest) XXX_Unmarshal(b []byte) error {
@@ -1493,7 +1916,7 @@ func (m *VerifyAuthenticationChallengeResponse) Reset()         { *m = VerifyAut
 func (m *VerifyAuthenticationChallengeResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifyAuthenticationChallengeResponse) ProtoMessage()    {}
 func (*VerifyAuthenticationChallengeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{26}
+	return fileDescriptor_e0f9056a14b86d47, []int{35}
 }
 
 func (m *VerifyAuthenticationChallengeResponse) XXX_Unmarshal(b []byte) error {
@@ -1532,7 +1955,7 @@ func (m *CheckIfExistsRequest) Reset()         { *m = CheckIfExistsRequest{} }
 func (m *CheckIfExistsRequest) String() string { return proto.CompactTextString(m) }
 func (*CheckIfExistsRequest) ProtoMessage()    {}
 func (*CheckIfExistsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{27}
+	return fileDescriptor_e0f9056a14b86d47, []int{36}
 }
 
 func (m *CheckIfExistsRequest) XXX_Unmarshal(b []byte) error {
@@ -1571,7 +1994,7 @@ func (m *CheckIfExistsResponse) Reset()         { *m = CheckIfExistsResponse{} }
 func (m *CheckIfExistsResponse) String() string { return proto.CompactTextString(m) }
 func (*CheckIfExistsResponse) ProtoMessage()    {}
 func (*CheckIfExistsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{28}
+	return fileDescriptor_e0f9056a14b86d47, []int{37}
 }
 
 func (m *CheckIfExistsResponse) XXX_Unmarshal(b []byte) error {
@@ -1608,7 +2031,8 @@ func init() {
 	proto.RegisterType((*Credentials)(nil), "apppb.Credentials")
 	proto.RegisterType((*Info)(nil), "apppb.Info")
 	proto.RegisterType((*Application)(nil), "apppb.Application")
-	proto.RegisterType((*AttributeDefinition)(nil), "apppb.AttributeDefinition")
+	proto.RegisterType((*UserAttributeDefinition)(nil), "apppb.UserAttributeDefinition")
+	proto.RegisterType((*ApplicationAttributeDefinition)(nil), "apppb.ApplicationAttributeDefinition")
 	proto.RegisterType((*FieldTranslation)(nil), "apppb.FieldTranslation")
 	proto.RegisterType((*AttributeTranslation)(nil), "apppb.AttributeTranslation")
 	proto.RegisterType((*RegisterApplicationRequest)(nil), "apppb.RegisterApplicationRequest")
@@ -1619,14 +2043,22 @@ func init() {
 	proto.RegisterType((*ListApplicationsResponse)(nil), "apppb.ListApplicationsResponse")
 	proto.RegisterType((*GetApplicationRequest)(nil), "apppb.GetApplicationRequest")
 	proto.RegisterType((*GetApplicationResponse)(nil), "apppb.GetApplicationResponse")
-	proto.RegisterType((*GetAttributeDefinitionRequest)(nil), "apppb.GetAttributeDefinitionRequest")
-	proto.RegisterType((*GetAttributeDefinitionResponse)(nil), "apppb.GetAttributeDefinitionResponse")
-	proto.RegisterType((*ListAttributeDefinitionsRequest)(nil), "apppb.ListAttributeDefinitionsRequest")
-	proto.RegisterType((*ListAttributeDefinitionsResponse)(nil), "apppb.ListAttributeDefinitionsResponse")
-	proto.RegisterType((*SaveAttributeDefinitionRequest)(nil), "apppb.SaveAttributeDefinitionRequest")
-	proto.RegisterType((*SaveAttributeDefinitionResponse)(nil), "apppb.SaveAttributeDefinitionResponse")
-	proto.RegisterType((*DeleteAttributeDefinitionRequest)(nil), "apppb.DeleteAttributeDefinitionRequest")
-	proto.RegisterType((*DeleteAttributeDefinitionResponse)(nil), "apppb.DeleteAttributeDefinitionResponse")
+	proto.RegisterType((*GetUserAttributeDefinitionRequest)(nil), "apppb.GetUserAttributeDefinitionRequest")
+	proto.RegisterType((*GetUserAttributeDefinitionResponse)(nil), "apppb.GetUserAttributeDefinitionResponse")
+	proto.RegisterType((*GetApplicationAttributeDefinitionRequest)(nil), "apppb.GetApplicationAttributeDefinitionRequest")
+	proto.RegisterType((*GetApplicationAttributeDefinitionResponse)(nil), "apppb.GetApplicationAttributeDefinitionResponse")
+	proto.RegisterType((*ListUserAttributeDefinitionsRequest)(nil), "apppb.ListUserAttributeDefinitionsRequest")
+	proto.RegisterType((*ListUserAttributeDefinitionsResponse)(nil), "apppb.ListUserAttributeDefinitionsResponse")
+	proto.RegisterType((*ListApplicationAttributeDefinitionsRequest)(nil), "apppb.ListApplicationAttributeDefinitionsRequest")
+	proto.RegisterType((*ListApplicationAttributeDefinitionsResponse)(nil), "apppb.ListApplicationAttributeDefinitionsResponse")
+	proto.RegisterType((*SaveUserAttributeDefinitionRequest)(nil), "apppb.SaveUserAttributeDefinitionRequest")
+	proto.RegisterType((*SaveUserAttributeDefinitionResponse)(nil), "apppb.SaveUserAttributeDefinitionResponse")
+	proto.RegisterType((*SaveApplicationAttributeDefinitionRequest)(nil), "apppb.SaveApplicationAttributeDefinitionRequest")
+	proto.RegisterType((*SaveApplicationAttributeDefinitionResponse)(nil), "apppb.SaveApplicationAttributeDefinitionResponse")
+	proto.RegisterType((*DeleteUserAttributeDefinitionRequest)(nil), "apppb.DeleteUserAttributeDefinitionRequest")
+	proto.RegisterType((*DeleteUserAttributeDefinitionResponse)(nil), "apppb.DeleteUserAttributeDefinitionResponse")
+	proto.RegisterType((*DeleteApplicationAttributeDefinitionRequest)(nil), "apppb.DeleteApplicationAttributeDefinitionRequest")
+	proto.RegisterType((*DeleteApplicationAttributeDefinitionResponse)(nil), "apppb.DeleteApplicationAttributeDefinitionResponse")
 	proto.RegisterType((*AddAttributeTranslationRequest)(nil), "apppb.AddAttributeTranslationRequest")
 	proto.RegisterType((*AddAttributeTranslationResponse)(nil), "apppb.AddAttributeTranslationResponse")
 	proto.RegisterType((*VerifyAuthenticationChallengeRequest)(nil), "apppb.VerifyAuthenticationChallengeRequest")
@@ -1638,122 +2070,142 @@ func init() {
 func init() { proto.RegisterFile("app.proto", fileDescriptor_e0f9056a14b86d47) }
 
 var fileDescriptor_e0f9056a14b86d47 = []byte{
-	// 1831 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0x4b, 0x6f, 0x1b, 0xc9,
-	0x11, 0xd6, 0xf0, 0xcd, 0xa2, 0x24, 0xb7, 0xdb, 0x92, 0x45, 0x8f, 0xf5, 0xa0, 0xc7, 0x2f, 0x41,
-	0xbb, 0x2b, 0x2e, 0x1c, 0xc0, 0x08, 0x16, 0xf1, 0x41, 0xa2, 0xed, 0xb5, 0x36, 0x6b, 0x5b, 0xa0,
-	0x1c, 0x2f, 0x90, 0x0b, 0xd3, 0x9c, 0x69, 0x92, 0x0d, 0x0d, 0xa7, 0x27, 0x33, 0x4d, 0xd9, 0xcc,
-	0xc2, 0x40, 0x92, 0x63, 0x6e, 0x41, 0x2e, 0x39, 0x24, 0x40, 0x4e, 0xf9, 0x09, 0xf9, 0x03, 0xf9,
-	0x09, 0xf9, 0x01, 0x0b, 0x2c, 0xf6, 0x10, 0x20, 0xf7, 0x9c, 0x83, 0xee, 0xe9, 0x79, 0xf0, 0x29,
-	0x7b, 0xb3, 0xc0, 0xde, 0xa6, 0xbb, 0xeb, 0xf1, 0xd5, 0xd7, 0x55, 0xd5, 0x45, 0x42, 0x95, 0xf8,
-	0xfe, 0xa1, 0x1f, 0x70, 0xc1, 0x71, 0x91, 0xf8, 0xbe, 0xdf, 0x35, 0xb7, 0xfb, 0x9c, 0xf7, 0x5d,
-	0xda, 0x24, 0x3e, 0x6b, 0x12, 0xcf, 0xe3, 0x82, 0x08, 0xc6, 0xbd, 0x30, 0x12, 0x32, 0x1f, 0xf6,
-	0x99, 0x18, 0x8c, 0xba, 0x87, 0x36, 0x1f, 0x36, 0x87, 0x6f, 0x98, 0x38, 0xe7, 0x6f, 0x9a, 0x7d,
-	0xfe, 0x89, 0x3a, 0xfc, 0xe4, 0x82, 0xb8, 0xcc, 0x21, 0x82, 0x07, 0x61, 0x33, 0xf9, 0x8c, 0xf4,
-	0xac, 0x31, 0x14, 0x9f, 0x32, 0xea, 0x3a, 0x18, 0x43, 0xc1, 0x23, 0x43, 0x5a, 0x37, 0x1a, 0xc6,
-	0x7e, 0xb5, 0xad, 0xbe, 0xf1, 0x1d, 0x28, 0x88, 0xb1, 0x4f, 0xeb, 0xb9, 0x86, 0xb1, 0xbf, 0xfe,
-	0x00, 0x1d, 0x2a, 0x20, 0x87, 0x4a, 0xfe, 0xd5, 0xd8, 0xa7, 0x6d, 0x75, 0x8a, 0x37, 0xa0, 0xe8,
-	0x92, 0x2e, 0x75, 0xeb, 0x79, 0xa5, 0x1a, 0x2d, 0x70, 0x03, 0x6a, 0x0e, 0x0d, 0xed, 0x80, 0xf9,
-	0x12, 0x66, 0xbd, 0xa0, 0xce, 0xb2, 0x5b, 0xd6, 0xcf, 0xa1, 0xd6, 0x0a, 0xa8, 0x43, 0x3d, 0xc1,
-	0x88, 0x1b, 0x62, 0x13, 0xf2, 0xe7, 0x74, 0x1c, 0xf9, 0x3f, 0xae, 0x7c, 0xfb, 0xcd, 0x5e, 0xa1,
-	0x61, 0xf8, 0x2b, 0x6d, 0xb9, 0x89, 0x1b, 0x50, 0x0a, 0xa9, 0x1d, 0x50, 0xa1, 0xa0, 0x64, 0x8f,
-	0xf5, 0xbe, 0xf5, 0x5f, 0x03, 0x0a, 0x27, 0x5e, 0x8f, 0xe3, 0x26, 0xac, 0x13, 0xdf, 0x77, 0x99,
-	0xad, 0xe8, 0xe9, 0x30, 0x67, 0xc6, 0xe2, 0x5a, 0xe6, 0xfc, 0xc4, 0xc1, 0x3b, 0x00, 0x76, 0x40,
-	0x89, 0xa0, 0x4e, 0xa7, 0x3b, 0x8e, 0xec, 0xb7, 0xab, 0x7a, 0xe7, 0x78, 0x8c, 0xef, 0xa7, 0xc7,
-	0x44, 0xa8, 0x10, 0xf3, 0x91, 0x2d, 0xb4, 0xd2, 0x30, 0x12, 0xc1, 0x23, 0x81, 0x77, 0x63, 0x1a,
-	0x0a, 0x53, 0xfe, 0x34, 0x21, 0x37, 0xa0, 0xe2, 0xf2, 0x3e, 0xef, 0x8c, 0x02, 0xb7, 0x5e, 0x54,
-	0x5e, 0xca, 0x72, 0xfd, 0x8b, 0x60, 0x86, 0xab, 0xd2, 0x0c, 0x57, 0xb8, 0x0e, 0xe5, 0x37, 0xb4,
-	0x1b, 0x32, 0x41, 0xeb, 0xe5, 0x48, 0x57, 0x2f, 0xad, 0x7f, 0xe4, 0xa0, 0x76, 0x94, 0x06, 0x84,
-	0xeb, 0x90, 0x9b, 0x13, 0x73, 0x8e, 0x39, 0x78, 0x1b, 0xaa, 0xc4, 0x16, 0xec, 0x42, 0xe2, 0x55,
-	0x71, 0x56, 0xda, 0xe9, 0x06, 0x7e, 0x08, 0x98, 0x93, 0x91, 0x18, 0x74, 0x6c, 0xe2, 0xba, 0x5d,
-	0x62, 0x9f, 0x2b, 0xa0, 0xf9, 0x29, 0x3b, 0x48, 0xc9, 0xb4, 0xb4, 0x88, 0xc4, 0xbe, 0xa7, 0x73,
-	0xa4, 0xa0, 0x72, 0xa4, 0xa6, 0x73, 0x24, 0x93, 0x1e, 0x4d, 0x00, 0x9b, 0x08, 0xda, 0xe7, 0x01,
-	0xa3, 0x61, 0xbd, 0xd8, 0xc8, 0xef, 0xaf, 0x3f, 0xb8, 0xa2, 0xc5, 0x5a, 0xd1, 0xc1, 0xb8, 0x9d,
-	0x11, 0xc1, 0x3f, 0x83, 0x9a, 0x9d, 0xe6, 0x85, 0x62, 0xa3, 0xf6, 0x00, 0xc7, 0x1a, 0xe9, 0xc9,
-	0x71, 0xe9, 0xdb, 0x6f, 0xf6, 0x72, 0x0d, 0xa3, 0x9d, 0x15, 0xc7, 0xf7, 0xa1, 0xc0, 0xbc, 0x1e,
-	0x57, 0x34, 0xd5, 0x12, 0x3c, 0x32, 0x35, 0x12, 0x79, 0x25, 0x60, 0xfd, 0x3b, 0x07, 0xd7, 0x8e,
-	0x84, 0x08, 0x58, 0x77, 0x24, 0xe8, 0x63, 0xda, 0x63, 0x1e, 0x53, 0x04, 0x9a, 0xd9, 0x42, 0x48,
-	0x75, 0x54, 0x41, 0x98, 0x50, 0x18, 0xb2, 0x21, 0xd5, 0x59, 0x98, 0x9c, 0xc9, 0x3d, 0xdc, 0x80,
-	0xb2, 0xcd, 0x3d, 0x41, 0xdf, 0x0a, 0xcd, 0x5a, 0x7c, 0x1c, 0x6f, 0xe3, 0x03, 0x28, 0x86, 0x36,
-	0x4f, 0xb8, 0x5a, 0xd5, 0xd8, 0xce, 0xe4, 0x5e, 0x22, 0x1d, 0x89, 0xe0, 0x7b, 0x33, 0xac, 0xa5,
-	0x06, 0xb3, 0x64, 0x3d, 0x82, 0x2d, 0xea, 0x30, 0x41, 0xba, 0x2e, 0xed, 0xf0, 0x91, 0xe8, 0xf0,
-	0x5e, 0x27, 0x46, 0x21, 0x89, 0xab, 0x24, 0x4a, 0x1b, 0xb1, 0xd8, 0xcb, 0x91, 0x78, 0xd9, 0x6b,
-	0x69, 0x48, 0x49, 0xed, 0x96, 0x97, 0xd4, 0x6e, 0x65, 0x36, 0x1f, 0x3f, 0x86, 0x52, 0x4f, 0xb6,
-	0x81, 0xb0, 0x5e, 0x6d, 0xe4, 0xf7, 0x6b, 0x49, 0x2c, 0xaa, 0x37, 0x24, 0x3e, 0xb5, 0x8c, 0xf5,
-	0x05, 0xa0, 0xa8, 0x69, 0x04, 0xc4, 0x0b, 0xdd, 0x28, 0x4f, 0x13, 0xcf, 0xc6, 0x12, 0xcf, 0xb9,
-	0xd9, 0xae, 0xf1, 0x4f, 0x03, 0x36, 0x92, 0x6b, 0xcb, 0x1a, 0xbc, 0x05, 0xab, 0x24, 0xde, 0x4f,
-	0xca, 0xbe, 0x5d, 0x4b, 0xf6, 0x4e, 0x1c, 0xbc, 0x07, 0x35, 0x97, 0xdb, 0xc4, 0xa5, 0x1d, 0x75,
-	0xc3, 0x91, 0x75, 0x88, 0xb6, 0x5e, 0xc8, 0xfb, 0xfd, 0x9e, 0xad, 0x0c, 0x37, 0x13, 0x3a, 0x8a,
-	0x2a, 0xed, 0xb6, 0x26, 0x5a, 0x65, 0x0a, 0x32, 0x61, 0xe4, 0x97, 0x60, 0xb6, 0x69, 0x9f, 0x85,
-	0x82, 0x06, 0x99, 0xe2, 0x6d, 0xd3, 0x5f, 0x8f, 0x68, 0x28, 0x64, 0x05, 0x64, 0x7a, 0x94, 0x8a,
-	0x24, 0xad, 0x80, 0x8c, 0x7c, 0x5a, 0x01, 0x19, 0x71, 0xeb, 0x33, 0xb8, 0x39, 0xd7, 0x76, 0xe8,
-	0x73, 0x2f, 0xa4, 0xf8, 0x26, 0x54, 0x99, 0xd3, 0xa1, 0x6f, 0x59, 0x28, 0x42, 0x65, 0xba, 0xd2,
-	0xae, 0x30, 0xe7, 0x89, 0x5a, 0x5b, 0x2f, 0x61, 0xfb, 0x31, 0x5d, 0x82, 0xec, 0x43, 0xbb, 0xab,
-	0xb5, 0x07, 0x3b, 0x0b, 0x0c, 0x46, 0x70, 0xac, 0x1b, 0xb0, 0xf5, 0x25, 0x0b, 0x45, 0xe6, 0x28,
-	0xd4, 0xce, 0xac, 0x36, 0xd4, 0x67, 0x8f, 0x74, 0x14, 0x0f, 0x61, 0x35, 0xe3, 0x48, 0x06, 0x92,
-	0x9f, 0xcf, 0x51, 0x7b, 0x42, 0xce, 0x7a, 0x06, 0x9b, 0x9f, 0x53, 0xf1, 0x43, 0x44, 0xf6, 0x1a,
-	0xae, 0x4f, 0x5b, 0xd2, 0xd8, 0xfe, 0xbf, 0xeb, 0x7b, 0x07, 0x3b, 0xd2, 0xee, 0x6c, 0x67, 0xfa,
-	0xbe, 0x48, 0xf1, 0x47, 0x53, 0x95, 0x31, 0xfd, 0x86, 0x66, 0x6b, 0xc4, 0xfa, 0x8b, 0x01, 0xbb,
-	0x8b, 0xfc, 0xeb, 0xf8, 0x8e, 0x01, 0x9c, 0x64, 0x57, 0x87, 0x67, 0xc6, 0xe1, 0xcd, 0xea, 0xa5,
-	0x7d, 0x2b, 0xd5, 0x4a, 0x2b, 0x2d, 0xb7, 0xa4, 0xd2, 0xf2, 0xb3, 0xe5, 0xff, 0x0c, 0xf6, 0x54,
-	0x4e, 0xcc, 0xba, 0x89, 0xd3, 0x06, 0xdf, 0x9d, 0xcf, 0xcf, 0xf4, 0xfd, 0xfd, 0x0a, 0x1a, 0x8b,
-	0x2d, 0xa5, 0x37, 0x99, 0x62, 0x8e, 0x93, 0x6c, 0x49, 0xa8, 0xed, 0xac, 0xb8, 0xe5, 0xc0, 0xee,
-	0x19, 0xb9, 0xa0, 0x4b, 0xae, 0xf2, 0x07, 0x60, 0xd2, 0xba, 0x05, 0x7b, 0x0b, 0xbd, 0xe8, 0x1a,
-	0xfb, 0xad, 0x01, 0x8d, 0xc7, 0xd4, 0xa5, 0x82, 0xfe, 0x68, 0x69, 0x75, 0x1b, 0x6e, 0x2d, 0x41,
-	0xa0, 0x71, 0x76, 0x60, 0xf7, 0xc8, 0x71, 0xe6, 0x75, 0xf7, 0x18, 0xe4, 0x23, 0xa8, 0x89, 0x74,
-	0x57, 0x33, 0x76, 0x73, 0x9a, 0xb1, 0xac, 0x62, 0x56, 0x5e, 0x72, 0xb5, 0xd0, 0x81, 0xc6, 0xf0,
-	0x3b, 0x03, 0xee, 0xbc, 0xa6, 0x01, 0xeb, 0x8d, 0x8f, 0x46, 0x62, 0x20, 0xa7, 0x8a, 0x28, 0xe0,
-	0xd6, 0x80, 0xb8, 0x2e, 0xf5, 0xfa, 0xf4, 0xc3, 0xd2, 0x4c, 0x26, 0xba, 0xc7, 0x3d, 0x3b, 0x7e,
-	0x6d, 0xa2, 0x85, 0x9c, 0xc5, 0xec, 0xd8, 0xa0, 0x4e, 0xf3, 0x74, 0xc3, 0x6a, 0xc1, 0xdd, 0x4b,
-	0x20, 0xe8, 0xfc, 0x34, 0xa1, 0x72, 0x21, 0x05, 0x19, 0x75, 0xe2, 0x56, 0x1e, 0xaf, 0xad, 0x47,
-	0xb0, 0xd1, 0x1a, 0x50, 0xfb, 0xfc, 0xa4, 0x17, 0xf5, 0xf6, 0x0f, 0x2c, 0x8f, 0x26, 0x6c, 0x4e,
-	0xa9, 0x6b, 0x9f, 0xd7, 0xa1, 0x34, 0xf1, 0x78, 0xe8, 0xd5, 0xc1, 0xdf, 0x0c, 0xa8, 0x26, 0x3f,
-	0x0d, 0x70, 0x15, 0x8a, 0x2f, 0xc5, 0x80, 0x06, 0x68, 0x05, 0x03, 0x94, 0xce, 0x44, 0xc0, 0xbc,
-	0x3e, 0x32, 0xf0, 0x3a, 0x40, 0xf4, 0x2d, 0x4b, 0x0f, 0xe5, 0xf0, 0x1a, 0x54, 0xa3, 0xf5, 0x73,
-	0xe2, 0xa3, 0x3c, 0xae, 0x40, 0xe1, 0x15, 0x7d, 0x2b, 0x50, 0x41, 0x2a, 0xbd, 0x18, 0x0d, 0xbb,
-	0x34, 0x40, 0x45, 0x29, 0x14, 0x7d, 0x4b, 0xa1, 0x12, 0xc6, 0xb0, 0xfe, 0xd4, 0xe5, 0x44, 0x30,
-	0xaf, 0xaf, 0x45, 0xca, 0x78, 0x13, 0xae, 0x4e, 0xee, 0x49, 0xd1, 0x8a, 0xd4, 0x7c, 0xc5, 0x86,
-	0x34, 0x14, 0x64, 0xe8, 0xa3, 0xea, 0xc1, 0x21, 0x14, 0x14, 0x38, 0x80, 0xd2, 0x73, 0x22, 0x1f,
-	0x24, 0xb4, 0x82, 0x57, 0xa1, 0x72, 0xe2, 0x09, 0x1a, 0x78, 0xc4, 0x45, 0x86, 0x5c, 0x3d, 0x79,
-	0xab, 0x57, 0xb9, 0x83, 0x9f, 0x42, 0x51, 0x0d, 0x67, 0x52, 0xe1, 0x74, 0xd4, 0x75, 0x99, 0x1d,
-	0x29, 0x9c, 0xd2, 0x20, 0xe4, 0x91, 0xc2, 0x26, 0x5c, 0xd5, 0xb3, 0x54, 0x9b, 0x86, 0x22, 0x60,
-	0xb6, 0xa0, 0x0e, 0xca, 0x1d, 0x7c, 0x97, 0x83, 0x4a, 0x3c, 0xdc, 0xca, 0xa8, 0x5e, 0x70, 0x8f,
-	0xa2, 0x15, 0x89, 0xe7, 0x89, 0x33, 0x8a, 0x38, 0x46, 0x86, 0x62, 0xc6, 0x1e, 0x70, 0xee, 0xa2,
-	0x9c, 0xfc, 0x6e, 0x91, 0x80, 0xd2, 0x00, 0xe5, 0xd5, 0x3e, 0xb7, 0x19, 0x71, 0x23, 0x22, 0xce,
-	0x7c, 0x1e, 0x88, 0x10, 0x95, 0x24, 0xa9, 0xcf, 0x47, 0x21, 0xb3, 0x51, 0x19, 0x5f, 0x81, 0xda,
-	0xe9, 0x80, 0x0b, 0xde, 0x0f, 0x88, 0x3f, 0x18, 0xa3, 0x0a, 0x46, 0xb0, 0x7a, 0x1a, 0x70, 0x67,
-	0x24, 0x07, 0x7a, 0x26, 0xc6, 0xa8, 0x2a, 0x81, 0x9e, 0x0d, 0xb8, 0xef, 0x4b, 0xe6, 0x41, 0x32,
-	0xff, 0x39, 0xbf, 0xa0, 0x81, 0x37, 0xa4, 0x9e, 0x40, 0x35, 0x05, 0x8a, 0xbe, 0x09, 0xd1, 0xaa,
-	0xb4, 0x7a, 0x1a, 0xd0, 0x30, 0x44, 0x6b, 0xf2, 0xf3, 0x98, 0xf3, 0xf3, 0x10, 0xad, 0xe3, 0x1a,
-	0x94, 0x9f, 0x32, 0x8f, 0x78, 0x36, 0x45, 0x57, 0xa4, 0xa9, 0xe3, 0x51, 0xc8, 0x3c, 0x29, 0x85,
-	0x24, 0xa4, 0x63, 0x4a, 0x46, 0x62, 0x8c, 0xae, 0x2a, 0x36, 0xb8, 0x63, 0x93, 0x50, 0x84, 0x08,
-	0xcb, 0x93, 0x67, 0x94, 0xb8, 0x62, 0x80, 0xae, 0x49, 0x03, 0xcf, 0xa9, 0xc3, 0x6c, 0xe2, 0xa2,
-	0x0d, 0x79, 0xf0, 0x58, 0xdd, 0x0e, 0xda, 0x94, 0xf7, 0xd7, 0xe2, 0xc3, 0xe1, 0xc8, 0x8b, 0x1f,
-	0x65, 0x74, 0x1d, 0x5f, 0x85, 0xb5, 0x27, 0xf2, 0x16, 0x04, 0x61, 0x11, 0xc0, 0x2d, 0x09, 0xf0,
-	0x29, 0xe7, 0x0e, 0xaa, 0x4b, 0xd6, 0xbe, 0x64, 0x3d, 0x1a, 0x8a, 0xb1, 0x4b, 0xd1, 0x0d, 0x09,
-	0xf2, 0x35, 0x73, 0x28, 0x47, 0xe6, 0x83, 0xff, 0xd4, 0x60, 0x35, 0x3b, 0x1e, 0xe0, 0xaf, 0xe0,
-	0x8a, 0x6c, 0x86, 0x99, 0x5e, 0x8e, 0x97, 0xf4, 0x53, 0xf3, 0x5e, 0x3c, 0x82, 0x2f, 0x6f, 0xa0,
-	0xfb, 0x06, 0xbe, 0x80, 0x6b, 0x73, 0xa6, 0x18, 0x7c, 0x4b, 0x1b, 0x58, 0x3c, 0x32, 0x99, 0xd6,
-	0x32, 0x11, 0xdd, 0x74, 0xea, 0xbf, 0xff, 0xd7, 0x77, 0x7f, 0xca, 0x61, 0x6b, 0xad, 0x49, 0x7c,
-	0xbf, 0x19, 0x68, 0xc9, 0xcf, 0x8c, 0x03, 0x7c, 0x01, 0x90, 0xce, 0x4f, 0xf8, 0xb6, 0xb6, 0xb5,
-	0x6c, 0x46, 0x33, 0xef, 0x2c, 0x17, 0xd2, 0x2e, 0x77, 0x94, 0xcb, 0xad, 0x83, 0x4d, 0xe5, 0xf2,
-	0xeb, 0xc9, 0x96, 0xf0, 0x0e, 0x7f, 0x05, 0x68, 0x7a, 0xf6, 0xc2, 0xbb, 0xda, 0xf0, 0x82, 0x79,
-	0xcd, 0x9c, 0x33, 0xe2, 0x58, 0x6b, 0xca, 0x4d, 0x19, 0x17, 0xa5, 0x9b, 0xf0, 0x53, 0x03, 0xbb,
-	0xb0, 0x3e, 0x39, 0x36, 0xe1, 0x6d, 0xad, 0x36, 0x77, 0x2e, 0x33, 0x77, 0x16, 0x9c, 0x4e, 0x86,
-	0x81, 0x17, 0x84, 0xf1, 0x67, 0x03, 0xb6, 0x16, 0x5c, 0x2e, 0xbe, 0x7b, 0xd9, 0xe5, 0x47, 0x00,
-	0xde, 0x33, 0x47, 0xac, 0x43, 0x85, 0x64, 0xdf, 0xba, 0x1d, 0x21, 0x49, 0x5f, 0xe8, 0x43, 0xfd,
-	0x83, 0xec, 0x5d, 0x33, 0x79, 0x10, 0xe5, 0xcd, 0xfe, 0xd5, 0x88, 0x06, 0xc8, 0x39, 0xc8, 0xee,
-	0x64, 0x62, 0x5e, 0x0c, 0xec, 0xee, 0x25, 0x52, 0x1a, 0xd7, 0x43, 0x85, 0xeb, 0x53, 0x7c, 0x38,
-	0x97, 0xa1, 0x14, 0x53, 0xf3, 0xeb, 0xec, 0x6b, 0xfe, 0x0e, 0xff, 0xc1, 0xd0, 0xe3, 0xf7, 0x9c,
-	0x01, 0x09, 0xdf, 0xcb, 0xa6, 0xc2, 0xe2, 0x59, 0xcc, 0x5c, 0x52, 0x7c, 0xd6, 0xbe, 0x02, 0x66,
-	0xe1, 0xc6, 0x25, 0xc0, 0x64, 0xd6, 0xfc, 0xdd, 0x80, 0x1b, 0x0b, 0xe7, 0x07, 0x7c, 0x3f, 0xc9,
-	0xf8, 0xe5, 0x33, 0x8e, 0xb9, 0x7f, 0xb9, 0xe0, 0x24, 0x6b, 0x07, 0x1f, 0xca, 0xda, 0x1f, 0x0d,
-	0xa8, 0x2f, 0x18, 0x31, 0xc2, 0x24, 0xe3, 0x96, 0x0f, 0x39, 0x49, 0xc6, 0x5d, 0x36, 0xaa, 0xdc,
-	0x53, 0x18, 0x1b, 0xd6, 0x4d, 0x85, 0x31, 0xe5, 0xab, 0x99, 0x19, 0x79, 0x64, 0xa6, 0x7d, 0x01,
-	0x6b, 0x13, 0x4f, 0x39, 0x8e, 0x07, 0xa6, 0x79, 0xf3, 0x81, 0xb9, 0x3d, 0xff, 0x50, 0xbf, 0xfe,
-	0xbf, 0x81, 0x9d, 0xa5, 0xa3, 0x09, 0xfe, 0x48, 0xab, 0xbf, 0xcf, 0x0c, 0x65, 0x7e, 0xfc, 0x7e,
-	0xc2, 0x91, 0xef, 0x6e, 0x49, 0xfd, 0x65, 0xf9, 0x93, 0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0xf8,
-	0x79, 0x45, 0x95, 0x1c, 0x15, 0x00, 0x00,
+	// 2151 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x59, 0x4f, 0x73, 0x1b, 0xb7,
+	0x15, 0xf7, 0x92, 0x94, 0x44, 0x3e, 0xca, 0x32, 0x0c, 0x5b, 0x36, 0xbd, 0x92, 0x2d, 0x6a, 0x2d,
+	0xd9, 0x32, 0x6d, 0x8b, 0x8e, 0xdd, 0x7a, 0x5c, 0x37, 0x9e, 0x44, 0x92, 0xff, 0xc4, 0xa9, 0xff,
+	0x0d, 0xe5, 0xf8, 0xd0, 0x43, 0x39, 0xcb, 0x5d, 0x88, 0xc4, 0x78, 0xb9, 0xd8, 0x2e, 0x40, 0x59,
+	0x74, 0xc6, 0x87, 0x64, 0x7a, 0x68, 0xa7, 0xb7, 0xb4, 0x1f, 0xa1, 0xe7, 0x4c, 0x7b, 0x68, 0x0f,
+	0x3d, 0xf4, 0xd2, 0x8f, 0x90, 0x0f, 0x90, 0x99, 0x4c, 0x8e, 0xed, 0xb5, 0xe7, 0x0e, 0xb0, 0xe0,
+	0x72, 0xf9, 0x9f, 0x72, 0x34, 0x93, 0xdc, 0x08, 0xe0, 0xe1, 0xbd, 0xdf, 0xfb, 0xe1, 0xbd, 0x07,
+	0xbc, 0x25, 0xe4, 0xec, 0x20, 0xd8, 0x0c, 0x42, 0x26, 0x18, 0x9e, 0xb1, 0x83, 0x20, 0xa8, 0x99,
+	0xcb, 0x75, 0xc6, 0xea, 0x1e, 0x29, 0xdb, 0x01, 0x2d, 0xdb, 0xbe, 0xcf, 0x84, 0x2d, 0x28, 0xf3,
+	0x79, 0x24, 0x64, 0xde, 0xae, 0x53, 0xd1, 0x68, 0xd5, 0x36, 0x1d, 0xd6, 0x2c, 0x37, 0xdf, 0x50,
+	0xf1, 0x9a, 0xbd, 0x29, 0xd7, 0xd9, 0x75, 0xb5, 0x78, 0x7d, 0xdf, 0xf6, 0xa8, 0x6b, 0x0b, 0x16,
+	0xf2, 0x72, 0xfc, 0x33, 0xda, 0x67, 0xb5, 0x61, 0xe6, 0x21, 0x25, 0x9e, 0x8b, 0x31, 0x64, 0x7c,
+	0xbb, 0x49, 0x0a, 0x46, 0xd1, 0xd8, 0xc8, 0x55, 0xd4, 0x6f, 0xbc, 0x06, 0x19, 0xd1, 0x0e, 0x48,
+	0x21, 0x55, 0x34, 0x36, 0x16, 0x6e, 0xa2, 0x4d, 0x05, 0x64, 0x53, 0xc9, 0xbf, 0x6c, 0x07, 0xa4,
+	0xa2, 0x56, 0xf1, 0x69, 0x98, 0xf1, 0xec, 0x1a, 0xf1, 0x0a, 0x69, 0xb5, 0x35, 0x1a, 0xe0, 0x22,
+	0xe4, 0x5d, 0xc2, 0x9d, 0x90, 0x06, 0x12, 0x66, 0x21, 0xa3, 0xd6, 0x92, 0x53, 0xd6, 0xaf, 0x20,
+	0xbf, 0x13, 0x12, 0x97, 0xf8, 0x82, 0xda, 0x1e, 0xc7, 0x26, 0xa4, 0x5f, 0x93, 0x76, 0x64, 0x7f,
+	0x3b, 0xfb, 0xdd, 0xb7, 0x2b, 0x99, 0xa2, 0x11, 0x1c, 0xab, 0xc8, 0x49, 0x5c, 0x84, 0x59, 0x4e,
+	0x9c, 0x90, 0x08, 0x05, 0x25, 0xb9, 0xac, 0xe7, 0xad, 0xff, 0x19, 0x90, 0x79, 0xec, 0xef, 0x31,
+	0x5c, 0x86, 0x05, 0x3b, 0x08, 0x3c, 0xea, 0x28, 0x7a, 0xaa, 0xd4, 0x1d, 0xd0, 0x78, 0x3c, 0xb1,
+	0xfe, 0xd8, 0xc5, 0xe7, 0x01, 0x9c, 0x90, 0xd8, 0x82, 0xb8, 0xd5, 0x5a, 0x3b, 0xd2, 0x5f, 0xc9,
+	0xe9, 0x99, 0xed, 0x36, 0xbe, 0xdc, 0x5d, 0xb6, 0x85, 0x72, 0x31, 0x1d, 0xe9, 0x42, 0xc7, 0x8a,
+	0x46, 0x2c, 0xb8, 0x25, 0xf0, 0x85, 0x0e, 0x0d, 0x99, 0x3e, 0x7b, 0x9a, 0x90, 0x73, 0x90, 0xf5,
+	0x58, 0x9d, 0x55, 0x5b, 0xa1, 0x57, 0x98, 0x51, 0x56, 0xe6, 0xe4, 0xf8, 0xb3, 0x70, 0x80, 0xab,
+	0xd9, 0x01, 0xae, 0x70, 0x01, 0xe6, 0xde, 0x90, 0x1a, 0xa7, 0x82, 0x14, 0xe6, 0xa2, 0xbd, 0x7a,
+	0x68, 0xfd, 0x23, 0x05, 0xf9, 0xad, 0xae, 0x43, 0xb8, 0x00, 0xa9, 0x21, 0x3e, 0xa7, 0xa8, 0x8b,
+	0x97, 0x21, 0x67, 0x3b, 0x82, 0xee, 0x4b, 0xbc, 0xca, 0xcf, 0x6c, 0xa5, 0x3b, 0x81, 0x6f, 0x03,
+	0x66, 0x76, 0x4b, 0x34, 0xaa, 0x8e, 0xed, 0x79, 0x35, 0xdb, 0x79, 0xad, 0x80, 0xa6, 0xfb, 0xf4,
+	0x20, 0x25, 0xb3, 0xa3, 0x45, 0x24, 0xf6, 0x15, 0x1d, 0x23, 0x19, 0x15, 0x23, 0x79, 0x1d, 0x23,
+	0x89, 0xf0, 0x28, 0x03, 0x38, 0xb6, 0x20, 0x75, 0x16, 0x52, 0xc2, 0x0b, 0x33, 0xc5, 0xf4, 0xc6,
+	0xc2, 0xcd, 0x13, 0x5a, 0x6c, 0x27, 0x5a, 0x68, 0x57, 0x12, 0x22, 0xf8, 0x43, 0xc8, 0x3b, 0xdd,
+	0xb8, 0x50, 0x6c, 0xe4, 0x6f, 0xe2, 0xce, 0x8e, 0xee, 0xca, 0xf6, 0xec, 0x77, 0xdf, 0xae, 0xa4,
+	0x8a, 0x46, 0x25, 0x29, 0x8e, 0x2f, 0x43, 0x86, 0xfa, 0x7b, 0x4c, 0xd1, 0x94, 0x8f, 0xf1, 0xc8,
+	0xd0, 0x88, 0xe5, 0x95, 0x80, 0xf5, 0x9f, 0x14, 0x9c, 0xfd, 0x8c, 0x93, 0x70, 0x4b, 0x88, 0x90,
+	0xd6, 0x5a, 0x82, 0xdc, 0x27, 0x7b, 0xd4, 0xa7, 0x8a, 0x44, 0x33, 0x99, 0x0c, 0xdd, 0x7d, 0x2a,
+	0x29, 0x4c, 0xc8, 0x34, 0x69, 0x93, 0xe8, 0x48, 0x8c, 0xd7, 0xe4, 0x1c, 0x2e, 0xc2, 0x9c, 0xc3,
+	0x7c, 0x41, 0x0e, 0x84, 0x66, 0xae, 0xb3, 0xdc, 0x99, 0xc6, 0x25, 0x98, 0xe1, 0x0e, 0x8b, 0xf9,
+	0x9a, 0xd7, 0xf8, 0x76, 0xe5, 0x5c, 0x2c, 0x1d, 0x89, 0xe0, 0x4b, 0x03, 0xcc, 0x75, 0x15, 0x26,
+	0x09, 0xbb, 0x07, 0x67, 0x89, 0x4b, 0x85, 0x5d, 0xf3, 0x48, 0x95, 0xb5, 0x44, 0x95, 0xed, 0x55,
+	0x3b, 0x28, 0x24, 0x79, 0xd9, 0x78, 0xd3, 0xe9, 0x8e, 0xd8, 0xf3, 0x96, 0x78, 0xbe, 0xb7, 0xa3,
+	0x21, 0xc5, 0xf9, 0x3b, 0x37, 0x26, 0x7f, 0xb3, 0x83, 0x31, 0x79, 0x0d, 0x66, 0xf7, 0x64, 0x29,
+	0xe0, 0x85, 0x5c, 0x31, 0xbd, 0x91, 0x8f, 0x7d, 0x51, 0xf5, 0x21, 0xb6, 0xa9, 0x65, 0xac, 0xaf,
+	0x0c, 0xb8, 0x90, 0x88, 0xd3, 0x61, 0xac, 0x0f, 0x2b, 0x41, 0x31, 0xb8, 0xd4, 0x18, 0x70, 0xe9,
+	0x41, 0x70, 0x6b, 0x31, 0xb8, 0xcc, 0x20, 0xb8, 0x18, 0xd4, 0x6f, 0x00, 0x45, 0xd5, 0x2c, 0xb4,
+	0x7d, 0xee, 0xd9, 0x47, 0x8d, 0xc2, 0xfa, 0xaf, 0x01, 0xa7, 0x63, 0x4f, 0x93, 0x46, 0x56, 0x61,
+	0xde, 0xee, 0xcc, 0xc7, 0x35, 0xaa, 0x92, 0x8f, 0xe7, 0x1e, 0xbb, 0x78, 0x05, 0xf2, 0x1e, 0x73,
+	0x6c, 0x8f, 0x54, 0x15, 0x9c, 0xc8, 0x32, 0x44, 0x53, 0xcf, 0x24, 0xa8, 0x0d, 0x40, 0x94, 0x57,
+	0xed, 0x20, 0xa8, 0xc6, 0xdb, 0x14, 0x86, 0x6c, 0x65, 0x81, 0xf2, 0xad, 0x20, 0x88, 0x0d, 0x77,
+	0xe1, 0x67, 0xc6, 0xc0, 0x9f, 0x19, 0x24, 0xb1, 0x1c, 0x93, 0x18, 0x25, 0xe1, 0xd9, 0x9e, 0x1b,
+	0xa0, 0xeb, 0x4e, 0xcc, 0xe7, 0xaf, 0xc1, 0xac, 0x90, 0x3a, 0xe5, 0x82, 0x84, 0x89, 0xb3, 0xae,
+	0x90, 0xdf, 0xb6, 0x08, 0x17, 0x32, 0xb1, 0x13, 0xa5, 0x57, 0xf9, 0xdc, 0x4d, 0xec, 0x84, 0x7c,
+	0x37, 0xb1, 0x13, 0xe2, 0xd6, 0x5d, 0x58, 0x1a, 0xaa, 0x9b, 0x07, 0xcc, 0xe7, 0x04, 0x2f, 0x41,
+	0x8e, 0xba, 0x55, 0x72, 0x40, 0xb9, 0xe0, 0x4a, 0x75, 0xb6, 0x92, 0xa5, 0xee, 0x03, 0x35, 0xb6,
+	0x9e, 0xc3, 0xf2, 0x7d, 0x32, 0x06, 0xd9, 0x61, 0x2f, 0x0d, 0x6b, 0x05, 0xce, 0x8f, 0x50, 0x18,
+	0xc1, 0xb1, 0xce, 0xc1, 0xd9, 0x27, 0x94, 0x8b, 0xc4, 0x12, 0xd7, 0xc6, 0xac, 0x0a, 0x14, 0x06,
+	0x97, 0xb4, 0x17, 0xb7, 0x61, 0x3e, 0x61, 0x48, 0x3a, 0x92, 0x1e, 0xce, 0x51, 0xa5, 0x47, 0xce,
+	0xfa, 0x04, 0x16, 0x1f, 0x11, 0x71, 0x14, 0x9e, 0xbd, 0x82, 0x33, 0xfd, 0x9a, 0x34, 0xb6, 0x1f,
+	0x76, 0x7c, 0x5f, 0x18, 0xb0, 0xfa, 0x88, 0x88, 0x11, 0x15, 0xf7, 0x7d, 0xe1, 0xe2, 0xab, 0x7d,
+	0x89, 0xd4, 0xff, 0x3e, 0x48, 0xa6, 0x94, 0xf5, 0x17, 0x03, 0xac, 0x71, 0x18, 0xb4, 0xa3, 0x0f,
+	0x01, 0xdc, 0x78, 0x56, 0xfb, 0x79, 0x41, 0xfb, 0x39, 0x62, 0x6f, 0xb7, 0x2e, 0x77, 0x77, 0xbe,
+	0x77, 0xd5, 0xf8, 0xbd, 0x01, 0x1b, 0xbd, 0x67, 0xf0, 0xa3, 0x31, 0xf6, 0x16, 0xae, 0x4c, 0x81,
+	0x44, 0xf3, 0xf6, 0x74, 0x08, 0x6f, 0xeb, 0x83, 0xf1, 0x31, 0x25, 0x7d, 0xd6, 0x13, 0xb8, 0x28,
+	0xf3, 0x64, 0x04, 0xe3, 0x9d, 0x74, 0xc2, 0xeb, 0xc3, 0x09, 0xe8, 0x8f, 0xeb, 0x06, 0xac, 0x8d,
+	0xd7, 0xa6, 0x9d, 0xf8, 0x58, 0x1e, 0x4f, 0x3c, 0xad, 0x13, 0x70, 0xc2, 0xe9, 0x57, 0x92, 0x5b,
+	0xac, 0x5d, 0x28, 0xf5, 0xe5, 0xf7, 0x11, 0xc0, 0x67, 0x70, 0x75, 0x2a, 0xa5, 0x47, 0xe6, 0x85,
+	0x07, 0xd6, 0xae, 0xbd, 0x4f, 0x26, 0xe4, 0xeb, 0x11, 0xa5, 0x8a, 0xb5, 0x0e, 0x17, 0xc7, 0x5a,
+	0xd3, 0x55, 0xf5, 0x2d, 0x5c, 0x91, 0x62, 0xd3, 0x65, 0xc6, 0x11, 0x87, 0xe3, 0x35, 0x28, 0x4d,
+	0x63, 0x5b, 0x23, 0xfd, 0x9d, 0x01, 0x6b, 0xf7, 0x89, 0x47, 0x04, 0xf9, 0x51, 0x2b, 0xde, 0x65,
+	0x58, 0x9f, 0x80, 0x42, 0xe3, 0xfd, 0xa3, 0x01, 0x57, 0x23, 0xc9, 0x9f, 0x42, 0xd9, 0xd9, 0x84,
+	0x6b, 0xd3, 0x81, 0xd1, 0xe8, 0xab, 0x70, 0x61, 0xcb, 0x75, 0x87, 0xbd, 0xb4, 0x3a, 0x78, 0xef,
+	0x41, 0x5e, 0x74, 0x67, 0x75, 0x34, 0x2c, 0x75, 0xa2, 0x61, 0xd8, 0xc6, 0xa4, 0xbc, 0xb5, 0x0a,
+	0x2b, 0x23, 0x0d, 0x68, 0x0c, 0x5f, 0x18, 0xb0, 0xf6, 0x8a, 0x84, 0x74, 0xaf, 0xbd, 0xd5, 0x12,
+	0x0d, 0xd9, 0x8e, 0x44, 0xb8, 0x77, 0x1a, 0xb6, 0xe7, 0x11, 0xbf, 0x4e, 0x0e, 0x97, 0xf1, 0xf2,
+	0xf6, 0xf0, 0x99, 0xef, 0x74, 0x5e, 0x7e, 0xd1, 0x40, 0x36, 0x71, 0x4e, 0x47, 0xa1, 0xbe, 0x3b,
+	0xba, 0x13, 0xd6, 0x0e, 0xac, 0x4f, 0x80, 0xa0, 0xeb, 0x83, 0x09, 0xd9, 0x7d, 0x29, 0x48, 0x89,
+	0xdb, 0x79, 0x2c, 0x75, 0xc6, 0xd6, 0x3d, 0x38, 0xbd, 0xd3, 0x20, 0xce, 0xeb, 0xc7, 0x7b, 0xd1,
+	0xeb, 0xe9, 0x90, 0x95, 0xaa, 0x0c, 0x8b, 0x7d, 0xdb, 0xb5, 0xcd, 0x33, 0x30, 0xdb, 0xf3, 0x3c,
+	0xd3, 0xa3, 0xd2, 0xdf, 0x0c, 0xc8, 0xc5, 0xdf, 0x14, 0x70, 0x0e, 0x66, 0x9e, 0x8b, 0x06, 0x09,
+	0xd1, 0x31, 0x0c, 0x30, 0xbb, 0x2b, 0x42, 0xea, 0xd7, 0x91, 0x81, 0x17, 0x00, 0xa2, 0xdf, 0xb2,
+	0x0a, 0xa2, 0x14, 0x3e, 0x0e, 0xb9, 0x68, 0xfc, 0xd4, 0x0e, 0x50, 0x1a, 0x67, 0x21, 0xf3, 0x92,
+	0x1c, 0x08, 0x94, 0x91, 0x9b, 0x9e, 0xb5, 0x9a, 0x35, 0x12, 0xa2, 0x19, 0x29, 0x14, 0xfd, 0x96,
+	0x42, 0xb3, 0x18, 0xc3, 0xc2, 0x43, 0x8f, 0xd9, 0x82, 0xfa, 0x75, 0x2d, 0x32, 0x87, 0x17, 0xe1,
+	0x64, 0xef, 0x9c, 0x14, 0xcd, 0xca, 0x9d, 0x2f, 0x69, 0x93, 0x70, 0x61, 0x37, 0x03, 0x94, 0xc3,
+	0x27, 0x20, 0xff, 0x29, 0x67, 0xfe, 0x03, 0xdf, 0x61, 0x2e, 0x71, 0x11, 0x94, 0xee, 0x40, 0x46,
+	0xa1, 0xcd, 0x42, 0xa6, 0xc2, 0x98, 0x88, 0xc0, 0x3e, 0xb5, 0xe5, 0x6b, 0x10, 0x19, 0x78, 0x1e,
+	0xb2, 0x8f, 0x7d, 0x41, 0x42, 0xdf, 0xf6, 0x50, 0x4a, 0x8e, 0x1e, 0x1c, 0xe8, 0x51, 0xba, 0x74,
+	0x07, 0x66, 0x54, 0xb3, 0x27, 0x37, 0xbc, 0x68, 0xd5, 0x3c, 0xea, 0xa0, 0x63, 0x52, 0xe4, 0x05,
+	0x09, 0x39, 0x93, 0x22, 0x86, 0xc4, 0xa4, 0x7b, 0xb3, 0x0a, 0xe1, 0x22, 0xa4, 0x8e, 0x20, 0x2e,
+	0x4a, 0x95, 0xbe, 0x4f, 0x41, 0xb6, 0xd3, 0x30, 0x4b, 0xc3, 0xcf, 0x98, 0x4f, 0xd0, 0x31, 0x09,
+	0xf5, 0x81, 0xdb, 0x8a, 0xe8, 0x47, 0x86, 0x22, 0xcd, 0x69, 0x30, 0x26, 0x2d, 0x03, 0xcc, 0xee,
+	0xd8, 0x21, 0x21, 0x21, 0x4a, 0xab, 0x79, 0xe6, 0x50, 0xdb, 0x8b, 0x38, 0xda, 0x0d, 0x58, 0x28,
+	0x38, 0x9a, 0x95, 0x7c, 0x3f, 0x6d, 0x71, 0xea, 0xa0, 0x39, 0xe9, 0xe5, 0x8b, 0x06, 0x13, 0xac,
+	0x1e, 0xda, 0x41, 0xa3, 0x8d, 0xb2, 0x18, 0xc1, 0xfc, 0x8b, 0x90, 0xb9, 0x2d, 0x47, 0xd0, 0x7d,
+	0x2a, 0xda, 0x28, 0x27, 0x81, 0xee, 0x36, 0x58, 0x10, 0xc8, 0x43, 0x01, 0x79, 0x28, 0x8f, 0xd8,
+	0x3e, 0x09, 0xfd, 0x26, 0xf1, 0x05, 0xca, 0x2b, 0x50, 0xe4, 0x0d, 0x47, 0xf3, 0x52, 0xeb, 0x8b,
+	0x90, 0x70, 0x8e, 0x8e, 0xcb, 0x9f, 0xdb, 0x8c, 0xbd, 0xe6, 0x68, 0x01, 0xe7, 0x61, 0xee, 0x21,
+	0xf5, 0x6d, 0xdf, 0x21, 0xe8, 0x84, 0x54, 0xb5, 0xdd, 0xe2, 0xd4, 0x97, 0x52, 0x48, 0x42, 0xda,
+	0x26, 0x76, 0x4b, 0xb4, 0xd1, 0x49, 0xc5, 0x06, 0x73, 0x1d, 0x9b, 0x0b, 0x8e, 0xb0, 0x5c, 0xf9,
+	0x84, 0xd8, 0x9e, 0x68, 0xa0, 0x53, 0x52, 0xc1, 0x53, 0xe2, 0x52, 0xc7, 0xf6, 0xd0, 0x69, 0xb9,
+	0x70, 0x5f, 0x1d, 0x1c, 0x5a, 0x94, 0x47, 0xbb, 0xc3, 0x9a, 0xcd, 0x96, 0xdf, 0x79, 0x11, 0xa3,
+	0x33, 0xf8, 0x24, 0x1c, 0x7f, 0x20, 0x4f, 0x41, 0xd8, 0x34, 0x02, 0x78, 0x56, 0x02, 0x7c, 0xc8,
+	0x98, 0x8b, 0x0a, 0x92, 0xb5, 0x27, 0x74, 0x8f, 0x70, 0xd1, 0xf6, 0x08, 0x3a, 0x27, 0x41, 0xbe,
+	0xa2, 0x2e, 0x61, 0xc8, 0xbc, 0xf9, 0x87, 0x45, 0x98, 0x4f, 0xbe, 0xcd, 0xf1, 0x9f, 0x0d, 0x58,
+	0x1e, 0x73, 0x39, 0x71, 0x3c, 0xe1, 0xc2, 0x33, 0x4b, 0x9d, 0x26, 0x7f, 0x8a, 0x1b, 0xee, 0xd2,
+	0x97, 0xdf, 0x7c, 0xff, 0xa7, 0x54, 0xd1, 0x5a, 0x8a, 0xbe, 0xf3, 0x75, 0x71, 0x94, 0xe3, 0xfa,
+	0xc8, 0xef, 0x1a, 0xa5, 0x0d, 0x03, 0x7f, 0x6d, 0x44, 0x77, 0xe6, 0x84, 0x27, 0x01, 0x9e, 0xee,
+	0xca, 0x33, 0x3f, 0x48, 0x80, 0x9c, 0xb2, 0xea, 0x5e, 0x55, 0x58, 0xd7, 0xad, 0xe2, 0x00, 0xd6,
+	0x16, 0x27, 0xe1, 0xf5, 0x7e, 0xc0, 0x6d, 0x38, 0x35, 0xa4, 0x63, 0xc2, 0xab, 0xda, 0xf0, 0xe8,
+	0xf6, 0xcc, 0xb4, 0xc6, 0x89, 0x68, 0x30, 0x4b, 0x0a, 0xcc, 0xa2, 0x89, 0xfa, 0xc1, 0xdc, 0x35,
+	0x4a, 0xf8, 0x4b, 0x03, 0xa0, 0xdb, 0xaf, 0xe1, 0x8b, 0x5a, 0xdf, 0xb8, 0x9e, 0xd0, 0x5c, 0x1b,
+	0x2f, 0xa4, 0xcd, 0x5e, 0x51, 0x66, 0x2f, 0x96, 0x56, 0x07, 0x38, 0xf8, 0xbc, 0xb7, 0x58, 0xbe,
+	0xc3, 0x0e, 0xa0, 0xfe, 0xbe, 0x2f, 0x0e, 0x9d, 0x11, 0xbd, 0xa2, 0x39, 0xa4, 0xbd, 0xb2, 0xce,
+	0x29, 0x93, 0xa7, 0xf0, 0xc9, 0x7e, 0x93, 0xfc, 0x86, 0x81, 0x0f, 0x60, 0xa1, 0xf7, 0xc1, 0x8e,
+	0x97, 0xb5, 0x8a, 0xa1, 0xfd, 0xa1, 0x79, 0x7e, 0xc4, 0x6a, 0xaf, 0x7b, 0x78, 0x0a, 0xf7, 0xfe,
+	0x6e, 0xc0, 0xd2, 0x98, 0x08, 0xc7, 0x57, 0xa6, 0xc9, 0x82, 0x08, 0xd4, 0x61, 0x12, 0xe6, 0x23,
+	0x85, 0xf0, 0x17, 0xd6, 0xcf, 0x06, 0x11, 0x76, 0x1f, 0x6f, 0x9b, 0xfa, 0x7b, 0xd8, 0xbb, 0xbe,
+	0xc8, 0x94, 0xb1, 0xf1, 0x57, 0x23, 0x7a, 0xe9, 0x4e, 0xf8, 0x38, 0x75, 0xe3, 0x10, 0xf9, 0x11,
+	0x79, 0xf1, 0x1e, 0x19, 0xb5, 0xae, 0x9c, 0x59, 0xb1, 0xcc, 0xd1, 0xd9, 0x2f, 0x21, 0xff, 0xd3,
+	0x00, 0x73, 0x74, 0x1f, 0x8b, 0x37, 0xba, 0x67, 0x3a, 0x81, 0xe8, 0x2b, 0x53, 0x48, 0x6a, 0x68,
+	0x8f, 0x14, 0xb4, 0x2d, 0xfc, 0xd1, 0xc4, 0x48, 0xe8, 0xe3, 0xb8, 0xfc, 0x79, 0xf2, 0xdd, 0xf7,
+	0x0e, 0xff, 0x2b, 0xfa, 0x10, 0x30, 0x81, 0xee, 0xf2, 0xd0, 0xb8, 0x1c, 0xe3, 0xca, 0x8d, 0xe9,
+	0x37, 0x68, 0x8f, 0x6e, 0x2b, 0x8f, 0x6e, 0xe0, 0x4d, 0xe9, 0xcd, 0xa0, 0x17, 0x23, 0x1d, 0xf8,
+	0xda, 0x80, 0xe5, 0x71, 0xad, 0x24, 0x2e, 0x25, 0x92, 0x7a, 0x42, 0xf7, 0x6a, 0x4e, 0xb8, 0x3b,
+	0xac, 0x8f, 0x15, 0xc8, 0xbb, 0xf8, 0xce, 0x61, 0x69, 0xe7, 0x65, 0x2e, 0x42, 0x62, 0x37, 0x6f,
+	0x18, 0x92, 0xf1, 0x8b, 0x53, 0x34, 0x8f, 0xf8, 0x83, 0xe1, 0xc5, 0x68, 0x1c, 0xfc, 0xe9, 0x2e,
+	0x17, 0xeb, 0x97, 0xca, 0x8b, 0x9f, 0xe3, 0x5b, 0x93, 0xbd, 0x18, 0xe6, 0xc0, 0xbf, 0x0d, 0x38,
+	0x3f, 0xb6, 0x8d, 0xc1, 0x57, 0xe3, 0x62, 0x3d, 0xb9, 0xe5, 0x32, 0xaf, 0x4d, 0x27, 0xdc, 0x1b,
+	0xf8, 0xa5, 0x1f, 0x1c, 0xf8, 0xdf, 0xc4, 0x2d, 0xe1, 0x84, 0xd8, 0xbf, 0xd9, 0x83, 0x6f, 0xba,
+	0xf0, 0xbf, 0x75, 0xa8, 0x3d, 0xda, 0xb5, 0x6d, 0xe5, 0xda, 0x87, 0xa5, 0xbb, 0x87, 0x38, 0x96,
+	0x7e, 0xaf, 0xbe, 0x32, 0xa0, 0x30, 0xa2, 0x35, 0x4a, 0xbc, 0x3d, 0xc6, 0x36, 0x67, 0xe6, 0xa5,
+	0x49, 0x62, 0x1a, 0xef, 0x65, 0x85, 0x77, 0xd5, 0x5a, 0x1e, 0xc0, 0x9b, 0xe8, 0xd5, 0x64, 0x81,
+	0xfc, 0x14, 0x8e, 0xf7, 0xf4, 0x20, 0xb8, 0xd3, 0xe9, 0x0d, 0x6b, 0x6c, 0xcc, 0xe5, 0xe1, 0x8b,
+	0xba, 0x6d, 0x79, 0x0b, 0xe7, 0xc7, 0xf6, 0x54, 0x71, 0xec, 0x4d, 0xd3, 0xfc, 0xc5, 0xb1, 0x37,
+	0x55, 0x9b, 0x56, 0x9b, 0x55, 0x7f, 0xd2, 0xde, 0xfa, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x50,
+	0xf1, 0xb8, 0x20, 0x0e, 0x1e, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1768,15 +2220,20 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ApplicationsClient interface {
-	SaveDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveDefinitionsClient, error)
+	SaveUserAttributeDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveUserAttributeDefinitionsClient, error)
+	SaveApplicationAttributeDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveApplicationAttributeDefinitionsClient, error)
 	RegisterApplication(ctx context.Context, in *RegisterApplicationRequest, opts ...grpc.CallOption) (*RegisterApplicationResponse, error)
 	DeRegister(ctx context.Context, in *DeRegisterApplicationRequest, opts ...grpc.CallOption) (*DeRegisterApplicationResponse, error)
 	ListApplications(ctx context.Context, in *ListApplicationsRequest, opts ...grpc.CallOption) (Applications_ListApplicationsClient, error)
 	GetApplication(ctx context.Context, in *GetApplicationRequest, opts ...grpc.CallOption) (*GetApplicationResponse, error)
-	SaveAttributeDefinition(ctx context.Context, in *SaveAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveAttributeDefinitionResponse, error)
-	GetAttributeDefinition(ctx context.Context, in *GetAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetAttributeDefinitionResponse, error)
-	ListAttributeDefinitions(ctx context.Context, in *ListAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListAttributeDefinitionsClient, error)
-	DeleteAttributeDefinition(ctx context.Context, in *DeleteAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteAttributeDefinitionResponse, error)
+	SaveUserAttributeDefinition(ctx context.Context, in *SaveUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveUserAttributeDefinitionResponse, error)
+	SaveApplicationAttributeDefinition(ctx context.Context, in *SaveApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveApplicationAttributeDefinitionResponse, error)
+	GetUserAttributeDefinition(ctx context.Context, in *GetUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetUserAttributeDefinitionResponse, error)
+	GetApplicationAttributeDefinition(ctx context.Context, in *GetApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetApplicationAttributeDefinitionResponse, error)
+	ListUserAttributeDefinitions(ctx context.Context, in *ListUserAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListUserAttributeDefinitionsClient, error)
+	ListApplicationAttributeDefinitions(ctx context.Context, in *ListApplicationAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListApplicationAttributeDefinitionsClient, error)
+	DeleteUserAttributeDefinition(ctx context.Context, in *DeleteUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteUserAttributeDefinitionResponse, error)
+	DeleteApplicationAttributeDefinition(ctx context.Context, in *DeleteApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteApplicationAttributeDefinitionResponse, error)
 	AddAttributeTranslations(ctx context.Context, in *AddAttributeTranslationRequest, opts ...grpc.CallOption) (*AddAttributeTranslationResponse, error)
 	CheckIfExists(ctx context.Context, in *CheckIfExistsRequest, opts ...grpc.CallOption) (*CheckIfExistsResponse, error)
 	VerifyAuthenticationChallenge(ctx context.Context, in *VerifyAuthenticationChallengeRequest, opts ...grpc.CallOption) (*VerifyAuthenticationChallengeResponse, error)
@@ -1790,34 +2247,68 @@ func NewApplicationsClient(cc grpc.ClientConnInterface) ApplicationsClient {
 	return &applicationsClient{cc}
 }
 
-func (c *applicationsClient) SaveDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveDefinitionsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[0], "/apppb.Applications/SaveDefinitions", opts...)
+func (c *applicationsClient) SaveUserAttributeDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveUserAttributeDefinitionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[0], "/apppb.Applications/SaveUserAttributeDefinitions", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &applicationsSaveDefinitionsClient{stream}
+	x := &applicationsSaveUserAttributeDefinitionsClient{stream}
 	return x, nil
 }
 
-type Applications_SaveDefinitionsClient interface {
-	Send(*AttributeDefinition) error
-	CloseAndRecv() (*SaveAttributeDefinitionResponse, error)
+type Applications_SaveUserAttributeDefinitionsClient interface {
+	Send(*UserAttributeDefinition) error
+	CloseAndRecv() (*SaveUserAttributeDefinitionResponse, error)
 	grpc.ClientStream
 }
 
-type applicationsSaveDefinitionsClient struct {
+type applicationsSaveUserAttributeDefinitionsClient struct {
 	grpc.ClientStream
 }
 
-func (x *applicationsSaveDefinitionsClient) Send(m *AttributeDefinition) error {
+func (x *applicationsSaveUserAttributeDefinitionsClient) Send(m *UserAttributeDefinition) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *applicationsSaveDefinitionsClient) CloseAndRecv() (*SaveAttributeDefinitionResponse, error) {
+func (x *applicationsSaveUserAttributeDefinitionsClient) CloseAndRecv() (*SaveUserAttributeDefinitionResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(SaveAttributeDefinitionResponse)
+	m := new(SaveUserAttributeDefinitionResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *applicationsClient) SaveApplicationAttributeDefinitions(ctx context.Context, opts ...grpc.CallOption) (Applications_SaveApplicationAttributeDefinitionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[1], "/apppb.Applications/SaveApplicationAttributeDefinitions", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &applicationsSaveApplicationAttributeDefinitionsClient{stream}
+	return x, nil
+}
+
+type Applications_SaveApplicationAttributeDefinitionsClient interface {
+	Send(*ApplicationAttributeDefinition) error
+	CloseAndRecv() (*SaveApplicationAttributeDefinitionResponse, error)
+	grpc.ClientStream
+}
+
+type applicationsSaveApplicationAttributeDefinitionsClient struct {
+	grpc.ClientStream
+}
+
+func (x *applicationsSaveApplicationAttributeDefinitionsClient) Send(m *ApplicationAttributeDefinition) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *applicationsSaveApplicationAttributeDefinitionsClient) CloseAndRecv() (*SaveApplicationAttributeDefinitionResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(SaveApplicationAttributeDefinitionResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -1843,7 +2334,7 @@ func (c *applicationsClient) DeRegister(ctx context.Context, in *DeRegisterAppli
 }
 
 func (c *applicationsClient) ListApplications(ctx context.Context, in *ListApplicationsRequest, opts ...grpc.CallOption) (Applications_ListApplicationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[1], "/apppb.Applications/ListApplications", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[2], "/apppb.Applications/ListApplications", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1883,30 +2374,48 @@ func (c *applicationsClient) GetApplication(ctx context.Context, in *GetApplicat
 	return out, nil
 }
 
-func (c *applicationsClient) SaveAttributeDefinition(ctx context.Context, in *SaveAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveAttributeDefinitionResponse, error) {
-	out := new(SaveAttributeDefinitionResponse)
-	err := c.cc.Invoke(ctx, "/apppb.Applications/SaveAttributeDefinition", in, out, opts...)
+func (c *applicationsClient) SaveUserAttributeDefinition(ctx context.Context, in *SaveUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveUserAttributeDefinitionResponse, error) {
+	out := new(SaveUserAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/SaveUserAttributeDefinition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *applicationsClient) GetAttributeDefinition(ctx context.Context, in *GetAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetAttributeDefinitionResponse, error) {
-	out := new(GetAttributeDefinitionResponse)
-	err := c.cc.Invoke(ctx, "/apppb.Applications/GetAttributeDefinition", in, out, opts...)
+func (c *applicationsClient) SaveApplicationAttributeDefinition(ctx context.Context, in *SaveApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*SaveApplicationAttributeDefinitionResponse, error) {
+	out := new(SaveApplicationAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/SaveApplicationAttributeDefinition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *applicationsClient) ListAttributeDefinitions(ctx context.Context, in *ListAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListAttributeDefinitionsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[2], "/apppb.Applications/ListAttributeDefinitions", opts...)
+func (c *applicationsClient) GetUserAttributeDefinition(ctx context.Context, in *GetUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetUserAttributeDefinitionResponse, error) {
+	out := new(GetUserAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/GetUserAttributeDefinition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &applicationsListAttributeDefinitionsClient{stream}
+	return out, nil
+}
+
+func (c *applicationsClient) GetApplicationAttributeDefinition(ctx context.Context, in *GetApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*GetApplicationAttributeDefinitionResponse, error) {
+	out := new(GetApplicationAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/GetApplicationAttributeDefinition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *applicationsClient) ListUserAttributeDefinitions(ctx context.Context, in *ListUserAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListUserAttributeDefinitionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[3], "/apppb.Applications/ListUserAttributeDefinitions", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &applicationsListUserAttributeDefinitionsClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -1916,26 +2425,67 @@ func (c *applicationsClient) ListAttributeDefinitions(ctx context.Context, in *L
 	return x, nil
 }
 
-type Applications_ListAttributeDefinitionsClient interface {
-	Recv() (*AttributeDefinition, error)
+type Applications_ListUserAttributeDefinitionsClient interface {
+	Recv() (*UserAttributeDefinition, error)
 	grpc.ClientStream
 }
 
-type applicationsListAttributeDefinitionsClient struct {
+type applicationsListUserAttributeDefinitionsClient struct {
 	grpc.ClientStream
 }
 
-func (x *applicationsListAttributeDefinitionsClient) Recv() (*AttributeDefinition, error) {
-	m := new(AttributeDefinition)
+func (x *applicationsListUserAttributeDefinitionsClient) Recv() (*UserAttributeDefinition, error) {
+	m := new(UserAttributeDefinition)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *applicationsClient) DeleteAttributeDefinition(ctx context.Context, in *DeleteAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteAttributeDefinitionResponse, error) {
-	out := new(DeleteAttributeDefinitionResponse)
-	err := c.cc.Invoke(ctx, "/apppb.Applications/DeleteAttributeDefinition", in, out, opts...)
+func (c *applicationsClient) ListApplicationAttributeDefinitions(ctx context.Context, in *ListApplicationAttributeDefinitionsRequest, opts ...grpc.CallOption) (Applications_ListApplicationAttributeDefinitionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Applications_serviceDesc.Streams[4], "/apppb.Applications/ListApplicationAttributeDefinitions", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &applicationsListApplicationAttributeDefinitionsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Applications_ListApplicationAttributeDefinitionsClient interface {
+	Recv() (*ApplicationAttributeDefinition, error)
+	grpc.ClientStream
+}
+
+type applicationsListApplicationAttributeDefinitionsClient struct {
+	grpc.ClientStream
+}
+
+func (x *applicationsListApplicationAttributeDefinitionsClient) Recv() (*ApplicationAttributeDefinition, error) {
+	m := new(ApplicationAttributeDefinition)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *applicationsClient) DeleteUserAttributeDefinition(ctx context.Context, in *DeleteUserAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteUserAttributeDefinitionResponse, error) {
+	out := new(DeleteUserAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/DeleteUserAttributeDefinition", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *applicationsClient) DeleteApplicationAttributeDefinition(ctx context.Context, in *DeleteApplicationAttributeDefinitionRequest, opts ...grpc.CallOption) (*DeleteApplicationAttributeDefinitionResponse, error) {
+	out := new(DeleteApplicationAttributeDefinitionResponse)
+	err := c.cc.Invoke(ctx, "/apppb.Applications/DeleteApplicationAttributeDefinition", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1971,15 +2521,20 @@ func (c *applicationsClient) VerifyAuthenticationChallenge(ctx context.Context, 
 
 // ApplicationsServer is the server API for Applications service.
 type ApplicationsServer interface {
-	SaveDefinitions(Applications_SaveDefinitionsServer) error
+	SaveUserAttributeDefinitions(Applications_SaveUserAttributeDefinitionsServer) error
+	SaveApplicationAttributeDefinitions(Applications_SaveApplicationAttributeDefinitionsServer) error
 	RegisterApplication(context.Context, *RegisterApplicationRequest) (*RegisterApplicationResponse, error)
 	DeRegister(context.Context, *DeRegisterApplicationRequest) (*DeRegisterApplicationResponse, error)
 	ListApplications(*ListApplicationsRequest, Applications_ListApplicationsServer) error
 	GetApplication(context.Context, *GetApplicationRequest) (*GetApplicationResponse, error)
-	SaveAttributeDefinition(context.Context, *SaveAttributeDefinitionRequest) (*SaveAttributeDefinitionResponse, error)
-	GetAttributeDefinition(context.Context, *GetAttributeDefinitionRequest) (*GetAttributeDefinitionResponse, error)
-	ListAttributeDefinitions(*ListAttributeDefinitionsRequest, Applications_ListAttributeDefinitionsServer) error
-	DeleteAttributeDefinition(context.Context, *DeleteAttributeDefinitionRequest) (*DeleteAttributeDefinitionResponse, error)
+	SaveUserAttributeDefinition(context.Context, *SaveUserAttributeDefinitionRequest) (*SaveUserAttributeDefinitionResponse, error)
+	SaveApplicationAttributeDefinition(context.Context, *SaveApplicationAttributeDefinitionRequest) (*SaveApplicationAttributeDefinitionResponse, error)
+	GetUserAttributeDefinition(context.Context, *GetUserAttributeDefinitionRequest) (*GetUserAttributeDefinitionResponse, error)
+	GetApplicationAttributeDefinition(context.Context, *GetApplicationAttributeDefinitionRequest) (*GetApplicationAttributeDefinitionResponse, error)
+	ListUserAttributeDefinitions(*ListUserAttributeDefinitionsRequest, Applications_ListUserAttributeDefinitionsServer) error
+	ListApplicationAttributeDefinitions(*ListApplicationAttributeDefinitionsRequest, Applications_ListApplicationAttributeDefinitionsServer) error
+	DeleteUserAttributeDefinition(context.Context, *DeleteUserAttributeDefinitionRequest) (*DeleteUserAttributeDefinitionResponse, error)
+	DeleteApplicationAttributeDefinition(context.Context, *DeleteApplicationAttributeDefinitionRequest) (*DeleteApplicationAttributeDefinitionResponse, error)
 	AddAttributeTranslations(context.Context, *AddAttributeTranslationRequest) (*AddAttributeTranslationResponse, error)
 	CheckIfExists(context.Context, *CheckIfExistsRequest) (*CheckIfExistsResponse, error)
 	VerifyAuthenticationChallenge(context.Context, *VerifyAuthenticationChallengeRequest) (*VerifyAuthenticationChallengeResponse, error)
@@ -1989,8 +2544,11 @@ type ApplicationsServer interface {
 type UnimplementedApplicationsServer struct {
 }
 
-func (*UnimplementedApplicationsServer) SaveDefinitions(srv Applications_SaveDefinitionsServer) error {
-	return status.Errorf(codes.Unimplemented, "method SaveDefinitions not implemented")
+func (*UnimplementedApplicationsServer) SaveUserAttributeDefinitions(srv Applications_SaveUserAttributeDefinitionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method SaveUserAttributeDefinitions not implemented")
+}
+func (*UnimplementedApplicationsServer) SaveApplicationAttributeDefinitions(srv Applications_SaveApplicationAttributeDefinitionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method SaveApplicationAttributeDefinitions not implemented")
 }
 func (*UnimplementedApplicationsServer) RegisterApplication(ctx context.Context, req *RegisterApplicationRequest) (*RegisterApplicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterApplication not implemented")
@@ -2004,17 +2562,29 @@ func (*UnimplementedApplicationsServer) ListApplications(req *ListApplicationsRe
 func (*UnimplementedApplicationsServer) GetApplication(ctx context.Context, req *GetApplicationRequest) (*GetApplicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApplication not implemented")
 }
-func (*UnimplementedApplicationsServer) SaveAttributeDefinition(ctx context.Context, req *SaveAttributeDefinitionRequest) (*SaveAttributeDefinitionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveAttributeDefinition not implemented")
+func (*UnimplementedApplicationsServer) SaveUserAttributeDefinition(ctx context.Context, req *SaveUserAttributeDefinitionRequest) (*SaveUserAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveUserAttributeDefinition not implemented")
 }
-func (*UnimplementedApplicationsServer) GetAttributeDefinition(ctx context.Context, req *GetAttributeDefinitionRequest) (*GetAttributeDefinitionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAttributeDefinition not implemented")
+func (*UnimplementedApplicationsServer) SaveApplicationAttributeDefinition(ctx context.Context, req *SaveApplicationAttributeDefinitionRequest) (*SaveApplicationAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveApplicationAttributeDefinition not implemented")
 }
-func (*UnimplementedApplicationsServer) ListAttributeDefinitions(req *ListAttributeDefinitionsRequest, srv Applications_ListAttributeDefinitionsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListAttributeDefinitions not implemented")
+func (*UnimplementedApplicationsServer) GetUserAttributeDefinition(ctx context.Context, req *GetUserAttributeDefinitionRequest) (*GetUserAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserAttributeDefinition not implemented")
 }
-func (*UnimplementedApplicationsServer) DeleteAttributeDefinition(ctx context.Context, req *DeleteAttributeDefinitionRequest) (*DeleteAttributeDefinitionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteAttributeDefinition not implemented")
+func (*UnimplementedApplicationsServer) GetApplicationAttributeDefinition(ctx context.Context, req *GetApplicationAttributeDefinitionRequest) (*GetApplicationAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApplicationAttributeDefinition not implemented")
+}
+func (*UnimplementedApplicationsServer) ListUserAttributeDefinitions(req *ListUserAttributeDefinitionsRequest, srv Applications_ListUserAttributeDefinitionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListUserAttributeDefinitions not implemented")
+}
+func (*UnimplementedApplicationsServer) ListApplicationAttributeDefinitions(req *ListApplicationAttributeDefinitionsRequest, srv Applications_ListApplicationAttributeDefinitionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListApplicationAttributeDefinitions not implemented")
+}
+func (*UnimplementedApplicationsServer) DeleteUserAttributeDefinition(ctx context.Context, req *DeleteUserAttributeDefinitionRequest) (*DeleteUserAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserAttributeDefinition not implemented")
+}
+func (*UnimplementedApplicationsServer) DeleteApplicationAttributeDefinition(ctx context.Context, req *DeleteApplicationAttributeDefinitionRequest) (*DeleteApplicationAttributeDefinitionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteApplicationAttributeDefinition not implemented")
 }
 func (*UnimplementedApplicationsServer) AddAttributeTranslations(ctx context.Context, req *AddAttributeTranslationRequest) (*AddAttributeTranslationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAttributeTranslations not implemented")
@@ -2030,26 +2600,52 @@ func RegisterApplicationsServer(s *grpc.Server, srv ApplicationsServer) {
 	s.RegisterService(&_Applications_serviceDesc, srv)
 }
 
-func _Applications_SaveDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ApplicationsServer).SaveDefinitions(&applicationsSaveDefinitionsServer{stream})
+func _Applications_SaveUserAttributeDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ApplicationsServer).SaveUserAttributeDefinitions(&applicationsSaveUserAttributeDefinitionsServer{stream})
 }
 
-type Applications_SaveDefinitionsServer interface {
-	SendAndClose(*SaveAttributeDefinitionResponse) error
-	Recv() (*AttributeDefinition, error)
+type Applications_SaveUserAttributeDefinitionsServer interface {
+	SendAndClose(*SaveUserAttributeDefinitionResponse) error
+	Recv() (*UserAttributeDefinition, error)
 	grpc.ServerStream
 }
 
-type applicationsSaveDefinitionsServer struct {
+type applicationsSaveUserAttributeDefinitionsServer struct {
 	grpc.ServerStream
 }
 
-func (x *applicationsSaveDefinitionsServer) SendAndClose(m *SaveAttributeDefinitionResponse) error {
+func (x *applicationsSaveUserAttributeDefinitionsServer) SendAndClose(m *SaveUserAttributeDefinitionResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *applicationsSaveDefinitionsServer) Recv() (*AttributeDefinition, error) {
-	m := new(AttributeDefinition)
+func (x *applicationsSaveUserAttributeDefinitionsServer) Recv() (*UserAttributeDefinition, error) {
+	m := new(UserAttributeDefinition)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _Applications_SaveApplicationAttributeDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ApplicationsServer).SaveApplicationAttributeDefinitions(&applicationsSaveApplicationAttributeDefinitionsServer{stream})
+}
+
+type Applications_SaveApplicationAttributeDefinitionsServer interface {
+	SendAndClose(*SaveApplicationAttributeDefinitionResponse) error
+	Recv() (*ApplicationAttributeDefinition, error)
+	grpc.ServerStream
+}
+
+type applicationsSaveApplicationAttributeDefinitionsServer struct {
+	grpc.ServerStream
+}
+
+func (x *applicationsSaveApplicationAttributeDefinitionsServer) SendAndClose(m *SaveApplicationAttributeDefinitionResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *applicationsSaveApplicationAttributeDefinitionsServer) Recv() (*ApplicationAttributeDefinition, error) {
+	m := new(ApplicationAttributeDefinition)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -2131,77 +2727,152 @@ func _Applications_GetApplication_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Applications_SaveAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveAttributeDefinitionRequest)
+func _Applications_SaveUserAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveUserAttributeDefinitionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApplicationsServer).SaveAttributeDefinition(ctx, in)
+		return srv.(ApplicationsServer).SaveUserAttributeDefinition(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/apppb.Applications/SaveAttributeDefinition",
+		FullMethod: "/apppb.Applications/SaveUserAttributeDefinition",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationsServer).SaveAttributeDefinition(ctx, req.(*SaveAttributeDefinitionRequest))
+		return srv.(ApplicationsServer).SaveUserAttributeDefinition(ctx, req.(*SaveUserAttributeDefinitionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Applications_GetAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAttributeDefinitionRequest)
+func _Applications_SaveApplicationAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveApplicationAttributeDefinitionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApplicationsServer).GetAttributeDefinition(ctx, in)
+		return srv.(ApplicationsServer).SaveApplicationAttributeDefinition(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/apppb.Applications/GetAttributeDefinition",
+		FullMethod: "/apppb.Applications/SaveApplicationAttributeDefinition",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationsServer).GetAttributeDefinition(ctx, req.(*GetAttributeDefinitionRequest))
+		return srv.(ApplicationsServer).SaveApplicationAttributeDefinition(ctx, req.(*SaveApplicationAttributeDefinitionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Applications_ListAttributeDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ListAttributeDefinitionsRequest)
+func _Applications_GetUserAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserAttributeDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationsServer).GetUserAttributeDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apppb.Applications/GetUserAttributeDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationsServer).GetUserAttributeDefinition(ctx, req.(*GetUserAttributeDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Applications_GetApplicationAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetApplicationAttributeDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationsServer).GetApplicationAttributeDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apppb.Applications/GetApplicationAttributeDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationsServer).GetApplicationAttributeDefinition(ctx, req.(*GetApplicationAttributeDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Applications_ListUserAttributeDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListUserAttributeDefinitionsRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ApplicationsServer).ListAttributeDefinitions(m, &applicationsListAttributeDefinitionsServer{stream})
+	return srv.(ApplicationsServer).ListUserAttributeDefinitions(m, &applicationsListUserAttributeDefinitionsServer{stream})
 }
 
-type Applications_ListAttributeDefinitionsServer interface {
-	Send(*AttributeDefinition) error
+type Applications_ListUserAttributeDefinitionsServer interface {
+	Send(*UserAttributeDefinition) error
 	grpc.ServerStream
 }
 
-type applicationsListAttributeDefinitionsServer struct {
+type applicationsListUserAttributeDefinitionsServer struct {
 	grpc.ServerStream
 }
 
-func (x *applicationsListAttributeDefinitionsServer) Send(m *AttributeDefinition) error {
+func (x *applicationsListUserAttributeDefinitionsServer) Send(m *UserAttributeDefinition) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Applications_DeleteAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAttributeDefinitionRequest)
+func _Applications_ListApplicationAttributeDefinitions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListApplicationAttributeDefinitionsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ApplicationsServer).ListApplicationAttributeDefinitions(m, &applicationsListApplicationAttributeDefinitionsServer{stream})
+}
+
+type Applications_ListApplicationAttributeDefinitionsServer interface {
+	Send(*ApplicationAttributeDefinition) error
+	grpc.ServerStream
+}
+
+type applicationsListApplicationAttributeDefinitionsServer struct {
+	grpc.ServerStream
+}
+
+func (x *applicationsListApplicationAttributeDefinitionsServer) Send(m *ApplicationAttributeDefinition) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _Applications_DeleteUserAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserAttributeDefinitionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApplicationsServer).DeleteAttributeDefinition(ctx, in)
+		return srv.(ApplicationsServer).DeleteUserAttributeDefinition(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/apppb.Applications/DeleteAttributeDefinition",
+		FullMethod: "/apppb.Applications/DeleteUserAttributeDefinition",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationsServer).DeleteAttributeDefinition(ctx, req.(*DeleteAttributeDefinitionRequest))
+		return srv.(ApplicationsServer).DeleteUserAttributeDefinition(ctx, req.(*DeleteUserAttributeDefinitionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Applications_DeleteApplicationAttributeDefinition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteApplicationAttributeDefinitionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationsServer).DeleteApplicationAttributeDefinition(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apppb.Applications/DeleteApplicationAttributeDefinition",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationsServer).DeleteApplicationAttributeDefinition(ctx, req.(*DeleteApplicationAttributeDefinitionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2277,16 +2948,28 @@ var _Applications_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Applications_GetApplication_Handler,
 		},
 		{
-			MethodName: "SaveAttributeDefinition",
-			Handler:    _Applications_SaveAttributeDefinition_Handler,
+			MethodName: "SaveUserAttributeDefinition",
+			Handler:    _Applications_SaveUserAttributeDefinition_Handler,
 		},
 		{
-			MethodName: "GetAttributeDefinition",
-			Handler:    _Applications_GetAttributeDefinition_Handler,
+			MethodName: "SaveApplicationAttributeDefinition",
+			Handler:    _Applications_SaveApplicationAttributeDefinition_Handler,
 		},
 		{
-			MethodName: "DeleteAttributeDefinition",
-			Handler:    _Applications_DeleteAttributeDefinition_Handler,
+			MethodName: "GetUserAttributeDefinition",
+			Handler:    _Applications_GetUserAttributeDefinition_Handler,
+		},
+		{
+			MethodName: "GetApplicationAttributeDefinition",
+			Handler:    _Applications_GetApplicationAttributeDefinition_Handler,
+		},
+		{
+			MethodName: "DeleteUserAttributeDefinition",
+			Handler:    _Applications_DeleteUserAttributeDefinition_Handler,
+		},
+		{
+			MethodName: "DeleteApplicationAttributeDefinition",
+			Handler:    _Applications_DeleteApplicationAttributeDefinition_Handler,
 		},
 		{
 			MethodName: "AddAttributeTranslations",
@@ -2303,8 +2986,13 @@ var _Applications_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SaveDefinitions",
-			Handler:       _Applications_SaveDefinitions_Handler,
+			StreamName:    "SaveUserAttributeDefinitions",
+			Handler:       _Applications_SaveUserAttributeDefinitions_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "SaveApplicationAttributeDefinitions",
+			Handler:       _Applications_SaveApplicationAttributeDefinitions_Handler,
 			ClientStreams: true,
 		},
 		{
@@ -2313,8 +3001,13 @@ var _Applications_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListAttributeDefinitions",
-			Handler:       _Applications_ListAttributeDefinitions_Handler,
+			StreamName:    "ListUserAttributeDefinitions",
+			Handler:       _Applications_ListUserAttributeDefinitions_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListApplicationAttributeDefinitions",
+			Handler:       _Applications_ListApplicationAttributeDefinitions_Handler,
 			ServerStreams: true,
 		},
 	},

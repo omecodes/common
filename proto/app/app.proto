@@ -6,227 +6,290 @@ import "google/api/annotations.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 enum FieldType {
-    Other = 0;
-    String = 1;
-    StringList = 2;
-    StringMap = 3;
-    Text = 4;
-    Number = 5;
-    NumberMap = 6;
-    FloatingNumber = 7;
-    FloatingNumberMap = 8;
-    Timestamp = 9;
+  Other = 0;
+  String = 1;
+  StringList = 2;
+  StringMap = 3;
+  Text = 4;
+  Number = 5;
+  NumberMap = 6;
+  FloatingNumber = 7;
+  FloatingNumberMap = 8;
+  Timestamp = 9;
+  JsonEncoded = 10;
 }
 
 enum Type {
-    Master = 0;
-    Internal = 1;
-    External = 2;
+  Root = 0;
+  Master = 1;
+  Internal = 2;
+  External = 3;
 }
 
 enum Scope {
-    Public = 0;
-    Personal = 1;
-    ContextRestricted = 2;
+  Public = 0;
+  Personal = 1;
+  ContextRestricted = 2;
 }
 
 enum Category {
-    None = 0;
-    Education = 1;
-    School = 2;
-    Career = 3;
-    Social = 4;
-    Sports = 6;
-    Music = 7;
-    Photography = 8;
-    Productivity = 9;
-    Shopping = 10;
-    Government = 11;
-    News = 12;
-    Press = 13;
-    Books = 14;
-    Finance = 15;
-    Business = 16;
-    Beauty = 17;
-    Podcasts = 18;
-    Health = 19;
-    Medical = 20;
-    Dating = 21;
-    Communications = 22;
-    Entertainment = 23;
-    Food = 24;
-    Lifestyle = 25;
-    Video = 26;
+  None = 0;
+  Education = 1;
+  School = 2;
+  Career = 3;
+  Social = 4;
+  Sports = 6;
+  Music = 7;
+  Photography = 8;
+  Productivity = 9;
+  Shopping = 10;
+  Government = 11;
+  News = 12;
+  Press = 13;
+  Books = 14;
+  Finance = 15;
+  Business = 16;
+  Beauty = 17;
+  Podcasts = 18;
+  Health = 19;
+  Medical = 20;
+  Dating = 21;
+  Communications = 22;
+  Entertainment = 23;
+  Food = 24;
+  Lifestyle = 25;
+  Video = 26;
 }
 
 message Field {
-    string name = 1;
-    FieldType type = 2;
-    string label = 3;
-    string description = 4;
+  string name = 1;
+  FieldType type = 2;
+  string label = 3;
+  string description = 4;
 }
 
 message Credentials {
-    string key = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string secret = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string key = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string secret = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 
 message Info {
-    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string created_by = 2;
-    int64 created_at = 3 [(validator.field) = {msg_exists: true, int_gt: 0}];
-    string label = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string logo_url = 5;
-    string description = 6;
-    string website = 7;
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string created_by = 2;
+  int64 created_at = 3 [(validator.field) = {msg_exists: true, int_gt: 0}];
+  string label = 4 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string logo_url = 5;
+  string description = 6;
+  string website = 7;
 }
 
 message Application {
-    string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    bool activated = 2;
-    string oauth_callback_url = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    Type type = 4;
-    repeated Category categories = 5;
-    Credentials credentials = 6 [(validator.field) = {msg_exists: true}];
-    Info info = 7 [(validator.field) = {msg_exists: true}];
+  string id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  bool activated = 2;
+  string oauth_callback_url = 3 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  Type type = 4;
+  repeated Category categories = 5;
+  Credentials credentials = 6 [(validator.field) = {msg_exists: true}];
+  Info info = 7 [(validator.field) = {msg_exists: true}];
 }
 
-message AttributeDefinition {
-    string name = 1 [(validator.field) = {msg_exists: true}];
-    string mime = 2 [(validator.field) = {msg_exists: true}];
-    string context = 3 [(validator.field) = {msg_exists: true}];
-    Scope scope = 4 [(validator.field) = {msg_exists: true}];
-    repeated string categories = 5 [(validator.field) = {msg_exists: true}];
-    bool editable_out_of_context = 6 [(validator.field) = {msg_exists: true}];
-    string label = 7;
-    string description = 8;
-    repeated Field fields = 9 [(validator.field) = {msg_exists: true}];
+message UserAttributeDefinition {
+  string name = 1 [(validator.field) = {msg_exists: true}];
+  string mime = 2 [(validator.field) = {msg_exists: true}];
+  string context = 3 [(validator.field) = {msg_exists: true}];
+  Scope scope = 4 [(validator.field) = {msg_exists: true}];
+  repeated string categories = 5 [(validator.field) = {msg_exists: true}];
+  bool editable_out_of_context = 6 [(validator.field) = {msg_exists: true}];
+  string label = 7;
+  string description = 8;
+  repeated Field fields = 9 [(validator.field) = {msg_exists: true}];
+}
+
+message ApplicationAttributeDefinition {
+  string name = 1;
+  string label = 2;
+  string description = 3;
+  repeated Field fields = 4;
 }
 
 message FieldTranslation {
-    string label = 1;
-    string description = 2;
+  string name = 1;
+  string label = 2;
+  string description = 3;
 }
 
 message AttributeTranslation {
-    string attribute_id = 1;
-    string locale_name = 2;
-    string label = 3;
-    string description = 4;
-    FieldTranslation fields = 5;
+  string attribute_id = 1;
+  string locale_name = 2;
+  bool is_app_attribute = 3;
+  string label = 4;
+  string description = 5;
+  FieldTranslation fields = 6;
 }
 
 message RegisterApplicationRequest {
-    Application application = 1 [(validator.field) = {msg_exists: true}];
+  Application application = 1 [(validator.field) = {msg_exists: true}];
 }
 message RegisterApplicationResponse{
-    bool id_exists = 1;
+  bool id_exists = 1;
 }
 
 message DeRegisterApplicationRequest{
-    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 message DeRegisterApplicationResponse{}
 
 message ListApplicationsRequest{}
 message ListApplicationsResponse{
-    repeated Application applications = 1;
+  repeated Application applications = 1;
 }
 
 message GetApplicationRequest{
-    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
 message GetApplicationResponse{
-    Application application = 1 [(validator.field) = {msg_exists: true}];
+  Application application = 1 [(validator.field) = {msg_exists: true}];
 }
 
-message GetAttributeDefinitionRequest{
-    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+message GetUserAttributeDefinitionRequest{
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
-message GetAttributeDefinitionResponse{
-    AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
-    string label = 2;
-    string description = 3;
-}
-
-message ListAttributeDefinitionsRequest {
-    string application_id = 1;
-}
-message ListAttributeDefinitionsResponse {
-    repeated AttributeDefinition definitions = 1;
+message GetUserAttributeDefinitionResponse{
+  UserAttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+  string label = 2;
+  string description = 3;
 }
 
-message SaveAttributeDefinitionRequest{
-    AttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+message GetApplicationAttributeDefinitionRequest{
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
 }
-message SaveAttributeDefinitionResponse{}
+message GetApplicationAttributeDefinitionResponse{
+  ApplicationAttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+}
 
-message DeleteAttributeDefinitionRequest {
-    string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
-    string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+message ListUserAttributeDefinitionsRequest {
+  string application_id = 1;
 }
-message DeleteAttributeDefinitionResponse {}
+message ListUserAttributeDefinitionsResponse {
+  repeated UserAttributeDefinition definitions = 1;
+}
+
+message ListApplicationAttributeDefinitionsRequest {
+  string application_id = 1;
+}
+message ListApplicationAttributeDefinitionsResponse {
+  repeated UserAttributeDefinition definitions = 1;
+}
+
+message SaveUserAttributeDefinitionRequest{
+  UserAttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+}
+message SaveUserAttributeDefinitionResponse{}
+
+message SaveApplicationAttributeDefinitionRequest{
+  ApplicationAttributeDefinition definition = 1 [(validator.field) = {msg_exists: true}];
+}
+message SaveApplicationAttributeDefinitionResponse{}
+
+message DeleteUserAttributeDefinitionRequest {
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message DeleteUserAttributeDefinitionResponse {}
+
+message DeleteApplicationAttributeDefinitionRequest {
+  string application_id = 1 [(validator.field) = {msg_exists: true, length_gt: 0}];
+  string attribute_id = 2 [(validator.field) = {msg_exists: true, length_gt: 0}];
+}
+message DeleteApplicationAttributeDefinitionResponse {}
 
 message AddAttributeTranslationRequest {
-    AttributeTranslation translation = 1;
+  AttributeTranslation translation = 1;
 }
 message AddAttributeTranslationResponse {}
 
 message VerifyAuthenticationChallengeRequest {
-    string application_id = 1;
-    string nonce = 2;
-    string challenge = 3;
+  string application_id = 1;
+  string nonce = 2;
+  string challenge = 3;
 }
 message VerifyAuthenticationChallengeResponse {
-    bool verified = 1;
+  bool verified = 1;
 }
 
 message CheckIfExistsRequest {
-    string application_id = 1;
+  string application_id = 1;
 }
 message CheckIfExistsResponse {
-    bool exists = 1;
+  bool exists = 1;
 }
 
 service Applications {
-    rpc SaveDefinitions(stream AttributeDefinition) returns (SaveAttributeDefinitionResponse);
-    rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
-        option(google.api.http) = {
-            post: "/app/register";
-            body: "*";
-        };
+  rpc SaveUserAttributeDefinitions(stream UserAttributeDefinition) returns (SaveUserAttributeDefinitionResponse){
+    option(google.api.http) = {
+      post: "/api/application/attributes";
+      body: "*";
     };
-    rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse) {
-        option(google.api.http).delete = "/app/{application_id}";
+  };
+  rpc SaveApplicationAttributeDefinitions(stream ApplicationAttributeDefinition) returns (SaveApplicationAttributeDefinitionResponse){
+    option(google.api.http) = {
+      post: "/api/application/user-attributes";
+      body: "*";
     };
-    rpc ListApplications(ListApplicationsRequest) returns (stream Application) {
-        option(google.api.http).get = "/apps";
+  };
+  rpc RegisterApplication(RegisterApplicationRequest) returns (RegisterApplicationResponse) {
+    option(google.api.http) = {
+      put: "/api/application";
+      body: "*";
     };
-    rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
-        option(google.api.http).get = "/app/{application_id}";
+  };
+  rpc DeRegister(DeRegisterApplicationRequest) returns (DeRegisterApplicationResponse) {
+    option(google.api.http).delete = "/api/application/{application_id}";
+  };
+  rpc ListApplications(ListApplicationsRequest) returns (stream Application) {
+    option(google.api.http).get = "/api/applications";
+  };
+  rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
+    option(google.api.http).get = "/api/application/{application_id}";
+  };
+  rpc SaveUserAttributeDefinition(SaveUserAttributeDefinitionRequest) returns (SaveUserAttributeDefinitionResponse){
+    option(google.api.http) = {
+      post: "/api/application/{definition.context}/user-attribute";
+      body: "*";
     };
-    rpc SaveAttributeDefinition(SaveAttributeDefinitionRequest) returns (SaveAttributeDefinitionResponse){
-        option(google.api.http) = {
-            post: "/app/{definition.context}/attribute";
-            body: "*";
-        };
+  };
+  rpc SaveApplicationAttributeDefinition(SaveApplicationAttributeDefinitionRequest) returns (SaveApplicationAttributeDefinitionResponse){
+    option(google.api.http) = {
+      post: "/api/application/attribute";
+      body: "*";
     };
-    rpc GetAttributeDefinition(GetAttributeDefinitionRequest) returns (GetAttributeDefinitionResponse){
-        option(google.api.http).get = "/app/{application_id}/attribute/{attribute_id}";
+  };
+  rpc GetUserAttributeDefinition(GetUserAttributeDefinitionRequest) returns (GetUserAttributeDefinitionResponse){
+    option(google.api.http).get = "/api/application/{application_id}/user-attribute/{attribute_id}";
+  };
+  rpc GetApplicationAttributeDefinition(GetApplicationAttributeDefinitionRequest) returns (GetApplicationAttributeDefinitionResponse){
+    option(google.api.http).get = "/app/{application_id}/attribute/{attribute_id}";
+  };
+  rpc ListUserAttributeDefinitions(ListUserAttributeDefinitionsRequest) returns (stream UserAttributeDefinition) {
+    option(google.api.http).get = "/api/application/{application_id}/user-attributes/stream";
+  };
+  rpc ListApplicationAttributeDefinitions(ListApplicationAttributeDefinitionsRequest) returns (stream ApplicationAttributeDefinition){
+    option(google.api.http).get = "/api/application/{application_id}/attributes/stream";
+  };
+  rpc DeleteUserAttributeDefinition(DeleteUserAttributeDefinitionRequest) returns (DeleteUserAttributeDefinitionResponse) {
+    option(google.api.http).delete = "/api/application/{application_id}/user-attribute/{attribute_id}";
+  };
+  rpc DeleteApplicationAttributeDefinition(DeleteApplicationAttributeDefinitionRequest) returns (DeleteApplicationAttributeDefinitionResponse) {
+    option(google.api.http).delete = "/api/application/{application_id}/attribute/{attribute_id}";
+  };
+  rpc AddAttributeTranslations(AddAttributeTranslationRequest) returns (AddAttributeTranslationResponse) {
+    option(google.api.http) = {
+      post: "/api/application/translation";
+      body: "*";
     };
-    rpc ListAttributeDefinitions(ListAttributeDefinitionsRequest) returns (stream AttributeDefinition) {
-        option(google.api.http).get = "/app/{application_id}/attributes";
-    };
-    rpc DeleteAttributeDefinition(DeleteAttributeDefinitionRequest) returns (DeleteAttributeDefinitionResponse) {
-        option(google.api.http).delete = "/app/{application_id}/attribute/{attribute_id}";
-    };
-    rpc AddAttributeTranslations(AddAttributeTranslationRequest) returns (AddAttributeTranslationResponse) {
-        option(google.api.http) = {
-            post: "/app/attributes/translation";
-            body: "*";
-        };
-    };
-    rpc CheckIfExists(CheckIfExistsRequest) returns (CheckIfExistsResponse);
-    rpc VerifyAuthenticationChallenge(VerifyAuthenticationChallengeRequest) returns (VerifyAuthenticationChallengeResponse);
+  };
+  rpc CheckIfExists(CheckIfExistsRequest) returns (CheckIfExistsResponse);
+  rpc VerifyAuthenticationChallenge(VerifyAuthenticationChallengeRequest) returns (VerifyAuthenticationChallengeResponse);
 }

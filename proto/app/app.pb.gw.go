@@ -31,6 +31,94 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 
+func request_Applications_SaveUserAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var metadata runtime.ServerMetadata
+	stream, err := client.SaveUserAttributeDefinitions(ctx)
+	if err != nil {
+		grpclog.Infof("Failed to start streaming: %v", err)
+		return nil, metadata, err
+	}
+	dec := marshaler.NewDecoder(req.Body)
+	for {
+		var protoReq UserAttributeDefinition
+		err = dec.Decode(&protoReq)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			grpclog.Infof("Failed to decode request: %v", err)
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+		}
+		if err = stream.Send(&protoReq); err != nil {
+			if err == io.EOF {
+				break
+			}
+			grpclog.Infof("Failed to send request: %v", err)
+			return nil, metadata, err
+		}
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		grpclog.Infof("Failed to terminate client stream: %v", err)
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		grpclog.Infof("Failed to get header from client: %v", err)
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+
+	msg, err := stream.CloseAndRecv()
+	metadata.TrailerMD = stream.Trailer()
+	return msg, metadata, err
+
+}
+
+func request_Applications_SaveApplicationAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var metadata runtime.ServerMetadata
+	stream, err := client.SaveApplicationAttributeDefinitions(ctx)
+	if err != nil {
+		grpclog.Infof("Failed to start streaming: %v", err)
+		return nil, metadata, err
+	}
+	dec := marshaler.NewDecoder(req.Body)
+	for {
+		var protoReq ApplicationAttributeDefinition
+		err = dec.Decode(&protoReq)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			grpclog.Infof("Failed to decode request: %v", err)
+			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+		}
+		if err = stream.Send(&protoReq); err != nil {
+			if err == io.EOF {
+				break
+			}
+			grpclog.Infof("Failed to send request: %v", err)
+			return nil, metadata, err
+		}
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		grpclog.Infof("Failed to terminate client stream: %v", err)
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		grpclog.Infof("Failed to get header from client: %v", err)
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+
+	msg, err := stream.CloseAndRecv()
+	metadata.TrailerMD = stream.Trailer()
+	return msg, metadata, err
+
+}
+
 func request_Applications_RegisterApplication_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq RegisterApplicationRequest
 	var metadata runtime.ServerMetadata
@@ -190,8 +278,8 @@ func local_request_Applications_GetApplication_0(ctx context.Context, marshaler 
 
 }
 
-func request_Applications_SaveAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SaveAttributeDefinitionRequest
+func request_Applications_SaveUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SaveUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -220,13 +308,13 @@ func request_Applications_SaveAttributeDefinition_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "definition.context", err)
 	}
 
-	msg, err := client.SaveAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.SaveUserAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Applications_SaveAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SaveAttributeDefinitionRequest
+func local_request_Applications_SaveUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SaveUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -255,13 +343,47 @@ func local_request_Applications_SaveAttributeDefinition_0(ctx context.Context, m
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "definition.context", err)
 	}
 
-	msg, err := server.SaveAttributeDefinition(ctx, &protoReq)
+	msg, err := server.SaveUserAttributeDefinition(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Applications_GetAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAttributeDefinitionRequest
+func request_Applications_SaveApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SaveApplicationAttributeDefinitionRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.SaveApplicationAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Applications_SaveApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SaveApplicationAttributeDefinitionRequest
+	var metadata runtime.ServerMetadata
+
+	newReader, berr := utilities.IOReaderFactory(req.Body)
+	if berr != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
+	}
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.SaveApplicationAttributeDefinition(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_Applications_GetUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -293,13 +415,13 @@ func request_Applications_GetAttributeDefinition_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
 	}
 
-	msg, err := client.GetAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetUserAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Applications_GetAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAttributeDefinitionRequest
+func local_request_Applications_GetUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -331,13 +453,13 @@ func local_request_Applications_GetAttributeDefinition_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
 	}
 
-	msg, err := server.GetAttributeDefinition(ctx, &protoReq)
+	msg, err := server.GetUserAttributeDefinition(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (Applications_ListAttributeDefinitionsClient, runtime.ServerMetadata, error) {
-	var protoReq ListAttributeDefinitionsRequest
+func request_Applications_GetApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetApplicationAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -358,7 +480,83 @@ func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
 	}
 
-	stream, err := client.ListAttributeDefinitions(ctx, &protoReq)
+	val, ok = pathParams["attribute_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attribute_id")
+	}
+
+	protoReq.AttributeId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
+	}
+
+	msg, err := client.GetApplicationAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Applications_GetApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetApplicationAttributeDefinitionRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["application_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
+	}
+
+	protoReq.ApplicationId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+	}
+
+	val, ok = pathParams["attribute_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attribute_id")
+	}
+
+	protoReq.AttributeId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
+	}
+
+	msg, err := server.GetApplicationAttributeDefinition(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_Applications_ListUserAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (Applications_ListUserAttributeDefinitionsClient, runtime.ServerMetadata, error) {
+	var protoReq ListUserAttributeDefinitionsRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["application_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
+	}
+
+	protoReq.ApplicationId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+	}
+
+	stream, err := client.ListUserAttributeDefinitions(ctx, &protoReq)
 	if err != nil {
 		return nil, metadata, err
 	}
@@ -371,8 +569,43 @@ func request_Applications_ListAttributeDefinitions_0(ctx context.Context, marsha
 
 }
 
-func request_Applications_DeleteAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteAttributeDefinitionRequest
+func request_Applications_ListApplicationAttributeDefinitions_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (Applications_ListApplicationAttributeDefinitionsClient, runtime.ServerMetadata, error) {
+	var protoReq ListApplicationAttributeDefinitionsRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["application_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
+	}
+
+	protoReq.ApplicationId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+	}
+
+	stream, err := client.ListApplicationAttributeDefinitions(ctx, &protoReq)
+	if err != nil {
+		return nil, metadata, err
+	}
+	header, err := stream.Header()
+	if err != nil {
+		return nil, metadata, err
+	}
+	metadata.HeaderMD = header
+	return stream, metadata, nil
+
+}
+
+func request_Applications_DeleteUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -404,13 +637,13 @@ func request_Applications_DeleteAttributeDefinition_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
 	}
 
-	msg, err := client.DeleteAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteUserAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Applications_DeleteAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteAttributeDefinitionRequest
+func local_request_Applications_DeleteUserAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteUserAttributeDefinitionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -442,7 +675,83 @@ func local_request_Applications_DeleteAttributeDefinition_0(ctx context.Context,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
 	}
 
-	msg, err := server.DeleteAttributeDefinition(ctx, &protoReq)
+	msg, err := server.DeleteUserAttributeDefinition(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_Applications_DeleteApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, client ApplicationsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteApplicationAttributeDefinitionRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["application_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
+	}
+
+	protoReq.ApplicationId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+	}
+
+	val, ok = pathParams["attribute_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attribute_id")
+	}
+
+	protoReq.AttributeId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
+	}
+
+	msg, err := client.DeleteApplicationAttributeDefinition(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_Applications_DeleteApplicationAttributeDefinition_0(ctx context.Context, marshaler runtime.Marshaler, server ApplicationsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteApplicationAttributeDefinitionRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["application_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "application_id")
+	}
+
+	protoReq.ApplicationId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "application_id", err)
+	}
+
+	val, ok = pathParams["attribute_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attribute_id")
+	}
+
+	protoReq.AttributeId, err = runtime.String(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attribute_id", err)
+	}
+
+	msg, err := server.DeleteApplicationAttributeDefinition(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -486,7 +795,21 @@ func local_request_Applications_AddAttributeTranslations_0(ctx context.Context, 
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
 func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ApplicationsServer) error {
 
-	mux.Handle("POST", pattern_Applications_RegisterApplication_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveUserAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
+	})
+
+	mux.Handle("POST", pattern_Applications_SaveApplicationAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
+	})
+
+	mux.Handle("PUT", pattern_Applications_RegisterApplication_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -553,7 +876,7 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("POST", pattern_Applications_SaveAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -562,18 +885,18 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Applications_SaveAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Applications_SaveUserAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_SaveAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_SaveUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Applications_GetAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -582,25 +905,72 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Applications_GetAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Applications_SaveApplicationAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_GetAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_SaveApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Applications_ListAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Applications_GetUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Applications_GetUserAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_GetUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_Applications_GetApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Applications_GetApplicationAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_GetApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_Applications_ListUserAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
 		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 		return
 	})
 
-	mux.Handle("DELETE", pattern_Applications_DeleteAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Applications_ListApplicationAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		err := status.Error(codes.Unimplemented, "streaming calls are not yet supported in the in-process transport")
+		_, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+		return
+	})
+
+	mux.Handle("DELETE", pattern_Applications_DeleteUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -609,14 +979,34 @@ func RegisterApplicationsHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Applications_DeleteAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Applications_DeleteUserAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_DeleteAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_DeleteUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("DELETE", pattern_Applications_DeleteApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_Applications_DeleteApplicationAttributeDefinition_0(rctx, inboundMarshaler, server, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_DeleteApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -681,7 +1071,47 @@ func RegisterApplicationsHandler(ctx context.Context, mux *runtime.ServeMux, con
 // "ApplicationsClient" to call the correct interceptors.
 func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ApplicationsClient) error {
 
-	mux.Handle("POST", pattern_Applications_RegisterApplication_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveUserAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_SaveUserAttributeDefinitions_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_SaveUserAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("POST", pattern_Applications_SaveApplicationAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_SaveApplicationAttributeDefinitions_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_SaveApplicationAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("PUT", pattern_Applications_RegisterApplication_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -761,7 +1191,7 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("POST", pattern_Applications_SaveAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -770,18 +1200,18 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Applications_SaveAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Applications_SaveUserAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_SaveAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_SaveUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Applications_GetAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_Applications_SaveApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -790,18 +1220,18 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Applications_GetAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Applications_SaveApplicationAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_GetAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_SaveApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Applications_ListAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Applications_GetUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -810,18 +1240,18 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Applications_ListAttributeDefinitions_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Applications_GetUserAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_ListAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+		forward_Applications_GetUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_Applications_DeleteAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Applications_GetApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -830,14 +1260,94 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Applications_DeleteAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Applications_GetApplicationAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Applications_DeleteAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Applications_GetApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_Applications_ListUserAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_ListUserAttributeDefinitions_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_ListUserAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_Applications_ListApplicationAttributeDefinitions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_ListApplicationAttributeDefinitions_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_ListApplicationAttributeDefinitions_0(ctx, mux, outboundMarshaler, w, req, func() (proto.Message, error) { return resp.Recv() }, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("DELETE", pattern_Applications_DeleteUserAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_DeleteUserAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_DeleteUserAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("DELETE", pattern_Applications_DeleteApplicationAttributeDefinition_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_Applications_DeleteApplicationAttributeDefinition_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_Applications_DeleteApplicationAttributeDefinition_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -865,26 +1375,42 @@ func RegisterApplicationsHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_Applications_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"app", "register"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_SaveUserAttributeDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "application", "attributes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_DeRegister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"app", "application_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_SaveApplicationAttributeDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "application", "user-attributes"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_ListApplications_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"apps"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_RegisterApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "application"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_GetApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"app", "application_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_DeRegister_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "application", "application_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_SaveAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"app", "definition.context", "attribute"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_ListApplications_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "applications"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_GetAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"app", "application_id", "attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_GetApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "application", "application_id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_ListAttributeDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"app", "application_id", "attributes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_SaveUserAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "application", "definition.context", "user-attribute"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_DeleteAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"app", "application_id", "attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_SaveApplicationAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "application", "attribute"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Applications_AddAttributeTranslations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"app", "attributes", "translation"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Applications_GetUserAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "application", "application_id", "user-attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_GetApplicationAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"app", "application_id", "attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_ListUserAttributeDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "application", "application_id", "user-attributes", "stream"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_ListApplicationAttributeDefinitions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"api", "application", "application_id", "attributes", "stream"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_DeleteUserAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "application", "application_id", "user-attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_DeleteApplicationAttributeDefinition_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "application", "application_id", "attribute", "attribute_id"}, "", runtime.AssumeColonVerbOpt(true)))
+
+	pattern_Applications_AddAttributeTranslations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "application", "translation"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
+	forward_Applications_SaveUserAttributeDefinitions_0 = runtime.ForwardResponseMessage
+
+	forward_Applications_SaveApplicationAttributeDefinitions_0 = runtime.ForwardResponseMessage
+
 	forward_Applications_RegisterApplication_0 = runtime.ForwardResponseMessage
 
 	forward_Applications_DeRegister_0 = runtime.ForwardResponseMessage
@@ -893,13 +1419,21 @@ var (
 
 	forward_Applications_GetApplication_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_SaveAttributeDefinition_0 = runtime.ForwardResponseMessage
+	forward_Applications_SaveUserAttributeDefinition_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_GetAttributeDefinition_0 = runtime.ForwardResponseMessage
+	forward_Applications_SaveApplicationAttributeDefinition_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_ListAttributeDefinitions_0 = runtime.ForwardResponseStream
+	forward_Applications_GetUserAttributeDefinition_0 = runtime.ForwardResponseMessage
 
-	forward_Applications_DeleteAttributeDefinition_0 = runtime.ForwardResponseMessage
+	forward_Applications_GetApplicationAttributeDefinition_0 = runtime.ForwardResponseMessage
+
+	forward_Applications_ListUserAttributeDefinitions_0 = runtime.ForwardResponseStream
+
+	forward_Applications_ListApplicationAttributeDefinitions_0 = runtime.ForwardResponseStream
+
+	forward_Applications_DeleteUserAttributeDefinition_0 = runtime.ForwardResponseMessage
+
+	forward_Applications_DeleteApplicationAttributeDefinition_0 = runtime.ForwardResponseMessage
 
 	forward_Applications_AddAttributeTranslations_0 = runtime.ForwardResponseMessage
 )
