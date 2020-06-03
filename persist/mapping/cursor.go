@@ -27,8 +27,8 @@ func (d *defaultCursor) Next(o interface{}) error {
 		return err
 	}
 
-	data := []byte(i.(string))
-	return d.encoding.Decode(data, o)
+	row := i.(*Row)
+	return d.encoding.Decode([]byte(row.encoded), o)
 }
 
 func (d *defaultCursor) Close() error {

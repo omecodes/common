@@ -53,7 +53,7 @@ func (s *sqlPairMap) GetForFirst(primaryKey string) (MapCursor, error) {
 }
 
 func (s *sqlPairMap) GetAll() (Cursor, error) {
-	c, err := s.Query("select", "triplet_scanner")
+	c, err := s.Query("select_all", "scanner")
 	if err != nil {
 		return nil, err
 	}
