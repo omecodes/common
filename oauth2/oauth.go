@@ -1,4 +1,4 @@
-package oauth
+package oauth2
 
 import (
 	"crypto/hmac"
@@ -46,6 +46,13 @@ const (
 	ErrorTemporarilyUnavailable  = "temporarily_unavailable"
 
 	GrantTypeAuthorizationCode = "authorization_code"
+
+	KeyAccessToken  = "access_token"
+	KeyTokenType    = "token_type"
+	KeyExpiresIn    = "expires_in"
+	KeyIdToken      = "id_token"
+	KeyRefreshToken = "refresh_token"
+	KeyScope        = "scope"
 )
 
 type Provider interface {
