@@ -17,7 +17,6 @@ import (
 	"math/big"
 	"net"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/zoenion/common/errors"
@@ -34,18 +33,6 @@ type CertificateTemplate struct {
 	PublicKey         crypto.PublicKey
 	SignerPrivateKey  crypto.PrivateKey
 	SignerCertificate *x509.Certificate
-}
-
-func localIPs() []net.IP {
-	ips := []net.IP{}
-	ifaces, err := net.InterfaceAddrs()
-	if err == nil {
-		for i := range ifaces {
-			addr := ifaces[i]
-			ips = append(ips, net.ParseIP(strings.Split(addr.String(), "/")[0]))
-		}
-	}
-	return ips
 }
 
 func serialNumber() *big.Int {
