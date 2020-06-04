@@ -3,12 +3,9 @@ package authpb
 import (
 	"context"
 	"crypto/ecdsa"
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"math/big"
 	"strings"
 	"sync"
 	"time"
@@ -25,45 +22,8 @@ type tokenVerifier struct {
 	key *ecdsa.PublicKey
 }
 
-func (v *tokenVerifier) verifySignature(t *JWT) (bool, error) {
-	if t.Claims == nil {
-		return false, errors.Forbidden
-	}
-
-	claimsBytes, err := proto.Marshal(t.Claims)
-	if err != nil {
-		return false, fmt.Errorf("could not encode claims: %s", err)
-	}
-
-	sha := sha256.New()
-	sha.Write(claimsBytes)
-	hash := sha.Sum(nil)
-
-	parts := strings.Split(t.Signature, ".")
-	r, err := base64.StdEncoding.DecodeString(parts[0])
-	if err != nil {
-		return false, errors.New("token wrong format")
-	}
-	s, err := base64.StdEncoding.DecodeString(parts[1])
-	if err != nil {
-		return false, errors.New("token wrong format")
-	}
-
-	rInt := new(big.Int)
-	rInt.SetBytes(r)
-	sInt := new(big.Int)
-	sInt.SetBytes(s)
-
-	if t.Header.Alg == "ecdsa" {
-		return ecdsa.Verify(v.key, hash, rInt, sInt), nil
-
-	} else {
-		return false, errors.NotSupported
-	}
-}
-
-func (v *tokenVerifier) verifyToken(ctx context.Context, t *JWT) (JWTState, error) {
-	verified, err := v.verifySignature(t)
+func (v *tokenVerifier) verifyToken(t *JWT) (JWTState, error) {
+	verified, err := EcdsaJwtSignatureVerify(v.key, t)
 	if err != nil {
 		return 0, err
 	}
@@ -88,7 +48,7 @@ func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 		return JWTState_NOT_VALID, errors.Forbidden
 	}
 
-	state, err := v.verifyToken(ctx, t)
+	state, err := v.verifyToken(t)
 	if err != nil {
 		return JWTState_NOT_VALID, errors.Forbidden
 	}
@@ -118,17 +78,17 @@ func TokenFromJWT(jwt string) (*JWT, error) {
 	t.Header = new(JWTHeader)
 	t.Claims = new(Claims)
 
-	headerBytes, _ := base64.StdEncoding.DecodeString(parts[0])
+	headerBytes, _ := base64.RawURLEncoding.DecodeString(parts[0])
 	if headerBytes == nil {
 		return nil, malformed
 	}
 
-	claimsBytes, _ := base64.StdEncoding.DecodeString(parts[1])
+	claimsBytes, _ := base64.RawURLEncoding.DecodeString(parts[1])
 	if claimsBytes == nil {
 		return nil, malformed
 	}
 
-	signatureBytes, _ := base64.StdEncoding.DecodeString(parts[2])
+	signatureBytes, _ := base64.RawURLEncoding.DecodeString(parts[2])
 	if signatureBytes == nil {
 		return nil, malformed
 	}
@@ -187,8 +147,8 @@ func String(jwt *JWT) (string, error) {
 	}
 
 	return fmt.Sprintf("%s.%s.%s",
-		base64.StdEncoding.EncodeToString(headerBytes),
-		base64.StdEncoding.EncodeToString(claimsBytes),
-		base64.StdEncoding.EncodeToString(signatureBytes),
+		base64.RawURLEncoding.EncodeToString(headerBytes),
+		base64.RawURLEncoding.EncodeToString(claimsBytes),
+		base64.RawURLEncoding.EncodeToString(signatureBytes),
 	), nil
 }
