@@ -1,7 +1,8 @@
 package xhttp
 
 import (
-	"log"
+	"fmt"
+	"github.com/zoenion/common/log"
 	"net/http"
 	"time"
 )
@@ -10,11 +11,6 @@ func Logger(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		h.ServeHTTP(w, r)
-		log.Printf(
-			"%s %s %s",
-			r.Method,
-			r.RequestURI,
-			time.Since(start),
-		)
+		log.Info(fmt.Sprintf("[http] %s", r.Method), log.Field("uri", r.RequestURI), log.Field("duration", time.Since(start)))
 	})
 }
