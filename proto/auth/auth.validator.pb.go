@@ -5,11 +5,11 @@ package authpb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -45,6 +45,14 @@ func (this *JWT) Validate() error {
 func (this *Credentials) Validate() error {
 	return nil
 }
+func (this *SyncMessage) Validate() error {
+	if this.Info != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Info); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Info", err)
+		}
+	}
+	return nil
+}
 func (this *JwtInfo) Validate() error {
 	return nil
 }
@@ -63,6 +71,17 @@ func (this *FindJWTRequest) Validate() error {
 	return nil
 }
 func (this *FindJWTResponse) Validate() error {
+	return nil
+}
+func (this *SaveTokenRequest) Validate() error {
+	if this.Info != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Info); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Info", err)
+		}
+	}
+	return nil
+}
+func (this *SaveTokenResponse) Validate() error {
 	return nil
 }
 func (this *DeleteJWTRequest) Validate() error {

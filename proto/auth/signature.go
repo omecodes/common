@@ -45,8 +45,15 @@ func EcdsaJwtSignatureVerify(key *ecdsa.PublicKey, j *JWT) (bool, error) {
 		return false, fmt.Errorf("could not encode claims: %s", err)
 	}
 
+	headerBytes, err := json.Marshal(j.Header)
+	if err != nil {
+		return false, fmt.Errorf("could not encode header: %s", err)
+	}
+
+	data := base64.RawURLEncoding.EncodeToString(headerBytes) + "." + base64.RawURLEncoding.EncodeToString(claimsBytes)
+
 	sha := sha256.New()
-	sha.Write(claimsBytes)
+	sha.Write([]byte(data))
 	hash := sha.Sum(nil)
 
 	parts := strings.Split(j.Signature, ".")

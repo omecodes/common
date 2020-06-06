@@ -144,17 +144,6 @@
       ],
       "default": "Delete"
     },
-    "authpbFeedResponse": {
-      "type": "object",
-      "properties": {
-        "error": {
-          "type": "string"
-        },
-        "jti": {
-          "type": "string"
-        }
-      }
-    },
     "authpbFindJWTResponse": {
       "type": "object",
       "properties": {
@@ -200,17 +189,6 @@
       ],
       "default": "VALID"
     },
-    "authpbJwtEvent": {
-      "type": "object",
-      "properties": {
-        "action": {
-          "$ref": "#/definitions/authpbEventAction"
-        },
-        "info": {
-          "$ref": "#/definitions/authpbJwtInfo"
-        }
-      }
-    },
     "authpbJwtInfo": {
       "type": "object",
       "properties": {
@@ -233,12 +211,29 @@
     "authpbRevokeTokenResponse": {
       "type": "object"
     },
+    "authpbSaveTokenResponse": {
+      "type": "object"
+    },
     "authpbSetPasswordResponse": {
       "type": "object",
       "properties": {
         "already_used": {
           "type": "boolean",
           "format": "boolean"
+        }
+      }
+    },
+    "authpbSyncMessage": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/authpbEventAction"
+        },
+        "jti": {
+          "type": "string"
+        },
+        "info": {
+          "$ref": "#/definitions/authpbJwtInfo"
         }
       }
     },

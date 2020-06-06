@@ -78,12 +78,18 @@ enum EventAction {
 
 // TokenStoreService token database service
 service TokenStoreService {
-    rpc Feed (stream JwtEvent) returns (stream FeedResponse);
-    rpc Listen (ListenRequest) returns (stream JwtEvent);
+    rpc Sync (stream SyncMessage) returns (stream SyncMessage);
+    rpc SaveToken(SaveTokenRequest) returns (SaveTokenResponse);
     rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
         option (google.api.http).get = "/jwt/find/{jti}";
     };
+}
+
+message SyncMessage {
+    EventAction action = 1;
+    string jti = 2;
+    JwtInfo info = 3;
 }
 
 message JwtInfo {
@@ -109,6 +115,11 @@ message FindJWTRequest {
 message FindJWTResponse {
     JWTState state = 1;
 }
+
+message SaveTokenRequest {
+    JwtInfo info = 1;
+}
+message SaveTokenResponse {}
 
 message DeleteJWTRequest {
     string jti = 1;
