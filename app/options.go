@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/zoenion/common/jcon"
+	"github.com/omecodes/common/jcon"
 )
 
 type options struct {

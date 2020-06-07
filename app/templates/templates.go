@@ -1,7 +1,7 @@
 package templates
 
 import (
-	"github.com/zoenion/common/futils"
+	"github.com/omecodes/common/futils"
 	htmpl "html/template"
 	"io"
 	"path/filepath"

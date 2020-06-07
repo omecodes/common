@@ -1,7 +1,7 @@
 package process
 
 import (
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 	"sync"
 )
 

@@ -1,7 +1,7 @@
 package network
 
 import (
-	"github.com/zoenion/common/log"
+	"github.com/omecodes/common/log"
 	"net"
 	"sort"
 	"strconv"

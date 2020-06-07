@@ -6,8 +6,8 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/base64"
-	crypto2 "github.com/zoenion/common/crypto"
-	"github.com/zoenion/common/jcon"
+	crypto2 "github.com/omecodes/common/crypto"
+	"github.com/omecodes/common/jcon"
 	"golang.org/x/crypto/pbkdf2"
 	"hash"
 )

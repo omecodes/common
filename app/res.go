@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/zoenion/common/app/lang"
-	"github.com/zoenion/common/app/templates"
-	"github.com/zoenion/common/app/web"
+	"github.com/omecodes/common/app/lang"
+	"github.com/omecodes/common/app/templates"
+	"github.com/omecodes/common/app/web"
 	"golang.org/x/text/language"
 	"io"
 )

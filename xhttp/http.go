@@ -3,8 +3,8 @@ package xhttp
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/types"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/types"
 	"io"
 	"log"
 	"net/http"

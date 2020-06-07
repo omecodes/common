@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"github.com/zoenion/common/jcon"
+	"github.com/omecodes/common/jcon"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 	"gopkg.in/mgo.v2"
 	"strings"
 )

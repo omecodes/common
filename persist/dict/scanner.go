@@ -1,6 +1,6 @@
 package dict
 
-import "github.com/zoenion/common/dao"
+import "github.com/omecodes/common/dao"
 
 func scanRow(row dao.Row) (interface{}, error) {
 	p := new(Row)

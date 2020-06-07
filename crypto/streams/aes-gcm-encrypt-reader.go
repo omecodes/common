@@ -3,7 +3,7 @@ package streams
 import (
 	"bytes"
 	"crypto/rand"
-	crypto2 "github.com/zoenion/common/crypto"
+	crypto2 "github.com/omecodes/common/crypto"
 	"io"
 )
 

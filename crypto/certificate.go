@@ -19,8 +19,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/log"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/log"
 )
 
 //CertificateTemplate specs for generating a certificate

@@ -4,12 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/zoenion/common/crypto/key"
-	"github.com/zoenion/common/database"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/jcon"
-	"github.com/zoenion/common/network"
-	"github.com/zoenion/common/prompt"
+	"github.com/omecodes/common/crypto/key"
+	"github.com/omecodes/common/database"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/network"
+	"github.com/omecodes/common/prompt"
 )
 
 type configItem struct {

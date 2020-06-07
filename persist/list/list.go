@@ -1,10 +1,10 @@
 package list
 
 import (
-	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/dao"
-	"github.com/zoenion/common/jcon"
-	filespb "github.com/zoenion/common/proto/files"
+	"github.com/omecodes/common/codec"
+	"github.com/omecodes/common/dao"
+	"github.com/omecodes/common/jcon"
+	filespb "github.com/omecodes/common/proto/files"
 )
 
 // List is a convenience for persistence list

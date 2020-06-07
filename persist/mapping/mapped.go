@@ -1,9 +1,9 @@
 package mapping
 
 import (
-	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/dao"
-	"github.com/zoenion/common/jcon"
+	"github.com/omecodes/common/codec"
+	"github.com/omecodes/common/dao"
+	"github.com/omecodes/common/jcon"
 )
 
 type DoubleMap interface {

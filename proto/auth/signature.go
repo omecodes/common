@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 	"math/big"
 	"strings"
 )

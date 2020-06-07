@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zoenion/common/types"
+	"github.com/omecodes/common/types"
 )
 
 // Map wraps map type

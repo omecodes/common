@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 )
 
 type TokenVerifier interface {

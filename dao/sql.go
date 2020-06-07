@@ -3,10 +3,10 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"github.com/zoenion/common/database"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/jcon"
-	"github.com/zoenion/common/log"
+	"github.com/omecodes/common/database"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/log"
 	"strings"
 	"sync"
 )

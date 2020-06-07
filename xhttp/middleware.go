@@ -2,7 +2,7 @@ package xhttp
 
 import (
 	"fmt"
-	"github.com/zoenion/common/log"
+	"github.com/omecodes/common/log"
 	"net/http"
 	"time"
 )

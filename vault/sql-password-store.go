@@ -3,10 +3,10 @@ package vault
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/jcon"
-	"github.com/zoenion/common/persist/dict"
+	"github.com/omecodes/common/codec"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/persist/dict"
 )
 
 type stringWrapper struct {

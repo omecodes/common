@@ -1,6 +1,6 @@
 package tree
 
-import "github.com/zoenion/common/dao"
+import "github.com/omecodes/common/dao"
 
 func scanTreeRow(row dao.Row) (interface{}, error) {
 	var tr TreeRow

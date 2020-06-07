@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"net/http"

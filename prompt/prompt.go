@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/manifoldco/promptui"
-	"github.com/zoenion/common/errors"
+	"github.com/omecodes/common/errors"
 	"gopkg.in/AlecAivazis/survey.v1"
 )
 

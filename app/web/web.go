@@ -1,8 +1,8 @@
 package web
 
 import (
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/futils"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/futils"
 	"io"
 	"os"
 	"path/filepath"

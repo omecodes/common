@@ -3,7 +3,7 @@ package xhttp
 import (
 	"context"
 	"github.com/gorilla/sessions"
-	"github.com/zoenion/common/codec"
+	"github.com/omecodes/common/codec"
 	"net/http"
 )
 

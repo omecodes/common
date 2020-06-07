@@ -1,8 +1,8 @@
 package dict
 
 import (
-	"github.com/zoenion/common/codec"
-	"github.com/zoenion/common/dao"
+	"github.com/omecodes/common/codec"
+	"github.com/omecodes/common/dao"
 	"io"
 )
 

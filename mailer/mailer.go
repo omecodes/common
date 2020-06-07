@@ -2,8 +2,8 @@ package mailer
 
 import (
 	"crypto/tls"
-	"github.com/zoenion/common/errors"
-	"github.com/zoenion/common/jcon"
+	"github.com/omecodes/common/errors"
+	"github.com/omecodes/common/jcon"
 	"gopkg.in/gomail.v2"
 )
 
