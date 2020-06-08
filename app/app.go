@@ -3,14 +3,14 @@ package app
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
-	"github.com/shibukawa/configdir"
-	"github.com/spf13/cobra"
-	"github.com/omecodes/common/app/lang"
-	"github.com/omecodes/common/app/templates"
-	"github.com/omecodes/common/app/web"
 	"github.com/omecodes/common/futils"
 	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/lang"
 	log2 "github.com/omecodes/common/log"
+	"github.com/omecodes/common/web/app"
+	templates2 "github.com/omecodes/common/web/templates"
+	"github.com/shibukawa/configdir"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
@@ -39,7 +39,7 @@ type App struct {
 	configs         jcon.Map
 }
 
-func (a *App) init()  {
+func (a *App) init() {
 	if a.initialized {
 		return
 	}
@@ -208,7 +208,7 @@ func (a *App) initResources() error {
 				return err
 			}
 		}
-		a.Resources.web = web.New(a.wwwDir)
+		a.Resources.web = app.NewFolder(a.wwwDir)
 
 		if a.templatesDir == "" {
 			a.templatesDir = filepath.Join(a.dataDir, "res", "templates")
@@ -223,7 +223,7 @@ func (a *App) initResources() error {
 		if err != nil {
 			return err
 		}
-		a.Resources.templates = templates.New(a.templatesDir)
+		a.Resources.templates = templates2.NewFolder(a.templatesDir)
 
 		a.Resources.i18n = lang.NewManager(i18nDir)
 		err = a.Resources.i18n.Load()

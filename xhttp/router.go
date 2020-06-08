@@ -2,10 +2,8 @@ package xhttp
 
 import (
 	"context"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
-	"os"
 )
 
 type ContextWrapper func(context.Context) context.Context
@@ -26,17 +24,13 @@ func NewRouter(routes ...Route) *mux.Router {
 
 		if route.PathIsPrefix {
 			sr := router.PathPrefix(route.Pattern).Subrouter()
-			sr.Name(route.Name).Methods(route.Method...).Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				handlers.LoggingHandler(os.Stdout, handler).ServeHTTP(w, r)
-			}))
+			sr.Name(route.Name).Methods(route.Method...).Handler(handler)
 		} else {
 			router.
 				Methods(route.Method...).
 				Path(route.Pattern).
 				Name(route.Name).
-				Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					handlers.LoggingHandler(os.Stdout, handler).ServeHTTP(w, r)
-				}))
+				Handler(handler)
 		}
 	}
 	return router

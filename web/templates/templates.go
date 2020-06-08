@@ -9,14 +9,7 @@ import (
 	"text/template"
 )
 
-const (
-	DefaultLocal       = "fr-FR"
-	TmplLoginMail      = ""
-	RegistrationEmail  = "registration_email"
-	PasswordResetEmail = "reset_password_email"
-)
-
-func New(dir string) *Templates {
+func NewFolder(dir string) *Templates {
 	return &Templates{dir: dir}
 }
 
