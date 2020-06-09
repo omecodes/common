@@ -79,31 +79,25 @@ func (s *Webapp) Serve(locale string, appName string, filename string) (string, 
 }
 
 func (s *Webapp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
 	locale := r.URL.Query().Get("lang")
 	if locale == "" && s.i18n != nil {
 		tag := s.i18n.LanguageFromAcceptLanguageHeader(r.Header.Get("Accept-Language"))
 		locale = tag.String()
 	}
 
-	filename := path.Join(path.Join(parts[2:]...))
-	if path.Ext(filename) == "" {
-		url := r.URL.String()
-		if strings.HasSuffix(url, "/") {
-			url = url + "index.html"
-		} else {
-			url = url + "/index.html"
+	var appName, filename string
+	parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")
+	appName = parts[0]
+	if len(parts) == 2 {
+		filename = parts[1]
+		if path.Ext(filename) == "" {
+			filename = "index.html"
 		}
-
-		xhttp.Redirect(w, &xhttp.RedirectURL{
-			URL:         url,
-			Code:        200,
-			ContentType: "text/html",
-		})
-		return
+	} else {
+		filename = path.Join(parts[1:]...)
 	}
 
-	contentType, content, size, err := s.Serve(locale, parts[1], filename)
+	contentType, content, size, err := s.Serve(locale, appName, filename)
 	if err != nil {
 		xhttp.WriteError(w, err)
 		return
