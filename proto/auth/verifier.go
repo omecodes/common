@@ -61,7 +61,7 @@ func NewTokenVerifier(key *ecdsa.PublicKey) *tokenVerifier {
 	}
 }
 
-func TokenFromJWT(jwt string) (*JWT, error) {
+func ParseJWT(jwt string) (*JWT, error) {
 	if jwt == "" {
 		return nil, nil
 	}
@@ -116,7 +116,7 @@ type StringTokenVerifier struct {
 }
 
 func (stv *StringTokenVerifier) Verify(ctx context.Context, jwt string) (context.Context, error) {
-	t, err := TokenFromJWT(jwt)
+	t, err := ParseJWT(jwt)
 	if err != nil {
 		return ctx, err
 	}
