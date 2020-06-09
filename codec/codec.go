@@ -6,11 +6,6 @@ import (
 	"encoding/json"
 )
 
-type Codec interface {
-	Encoder
-	Decoder
-}
-
 type Encoder interface {
 	Encode(o interface{}) ([]byte, error)
 }
@@ -19,10 +14,19 @@ type Decoder interface {
 	Decode(data []byte, o interface{}) error
 }
 
+type Codec interface {
+	Encoder
+	Decoder
+}
+
 var Default Codec
+var Gob Codec
+var Json Codec
 
 func init() {
 	Default = &gobCodec{}
+	Gob = &gobCodec{}
+	Json = &jsonc{}
 }
 
 func GobDecode(data []byte, o interface{}) error {
@@ -58,4 +62,13 @@ func (g *gobCodec) Decode(data []byte, o interface{}) error {
 
 func NewGSONCodec() Codec {
 	return &gobCodec{}
+}
+
+type jsonc struct{}
+
+func (j *jsonc) Encode(o interface{}) ([]byte, error) {
+	return json.Marshal(o)
+}
+func (j *jsonc) Decode(data []byte, o interface{}) error {
+	return json.Unmarshal(data, o)
 }
