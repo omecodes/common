@@ -7,13 +7,17 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/omecodes/common/crypto"
-	"io/ioutil"
+	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/log"
+	"github.com/omecodes/common/system"
 	"net/http"
 	"net/url"
 	"strings"
+	"syscall"
 )
 
 const (
@@ -100,7 +104,7 @@ func (c *Client) GetURLAuthorizationURL() (string, error) {
 	return authURL, nil
 }
 
-func (c *Client) GetAccessToken(code string) (string, error) {
+func (c *Client) GetAccessToken(code string) (*Token, error) {
 	client := &http.Client{}
 
 	form := url.Values{}
@@ -109,7 +113,7 @@ func (c *Client) GetAccessToken(code string) (string, error) {
 
 	req, err := http.NewRequest(http.MethodPost, c.cfg.TokenEndpoint, strings.NewReader(form.Encode()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -118,17 +122,18 @@ func (c *Client) GetAccessToken(code string) (string, error) {
 
 	rsp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if rsp.StatusCode == 200 {
-		bodyBytes, err := ioutil.ReadAll(rsp.Body)
-		if err != nil {
-			return "", err
-		}
-		return string(bodyBytes), nil
+		var token Token
+		err = json.NewDecoder(rsp.Body).Decode(&token)
+		return &token, err
+	} else {
+		m := jcon.Map{}
+		err = json.NewDecoder(rsp.Body).Decode(&m)
+		return nil, errors.New(m.String())
 	}
-	return "", errors.New("failed to get jwt")
 }
 
 // Params
@@ -371,8 +376,15 @@ func (h *RedirectURIHandler) handle(w http.ResponseWriter, r *http.Request) {
 		h.errorChan <- errors.New("no token provided")
 	}
 
-	code := query.Get("code")
-	h.code <- code
+	code := query.Get(ParamCode)
+	if code != "" {
+		h.code <- code
+
+	} else {
+		err := query.Get(ParamError)
+		errDescription := query.Get(ParamErrorDescription)
+		h.errorChan <- errors.New(err + ". details: " + errDescription)
+	}
 }
 
 func (h *RedirectURIHandler) GetCode() (string, error) {
@@ -394,4 +406,34 @@ func NewRedirectURIHandler(redirectURI string, tc *tls.Config) *RedirectURIHandl
 		errorChan:   make(chan error, 1),
 		code:        make(chan string, 1),
 	}
+}
+
+func GetToken(cfg *Config) (*Token, error) {
+	client := NewClient(cfg)
+	authorizationURL, err := client.GetURLAuthorizationURL()
+	if err != nil {
+		log.Error("could not construct authorization URL", err)
+	}
+
+	cmd := system.OpenBrowserCMD(authorizationURL)
+	if cmd == nil {
+		return nil, errors.New("could not open browser")
+	}
+
+	go func() {
+		err := cmd.Start()
+		if err != nil {
+			log.Error("run browser command failed", err)
+		}
+	}()
+
+	redHandler := NewRedirectURIHandler("http://localhost:9876/handle", nil)
+	code, err := redHandler.GetCode()
+	if err != nil {
+		return nil, err
+	}
+
+	_ = cmd.Process.Signal(syscall.SIGTERM)
+	_ = cmd.Process.Kill()
+	return client.GetAccessToken(code)
 }
