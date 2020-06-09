@@ -201,15 +201,6 @@ func (a *App) initResources() error {
 	if a.options.withResources {
 		a.Resources = new(Resources)
 
-		if a.wwwDir == "" {
-			a.wwwDir = filepath.Join(a.dataDir, "res", "www")
-			err := os.MkdirAll(a.wwwDir, os.ModePerm)
-			if err != nil {
-				return err
-			}
-		}
-		a.Resources.web = app.NewFolder(a.wwwDir)
-
 		if a.templatesDir == "" {
 			a.templatesDir = filepath.Join(a.dataDir, "res", "templates")
 			err := os.MkdirAll(a.templatesDir, os.ModePerm)
@@ -230,6 +221,15 @@ func (a *App) initResources() error {
 		if err != nil {
 			return err
 		}
+
+		if a.wwwDir == "" {
+			a.wwwDir = filepath.Join(a.dataDir, "res", "www")
+			err := os.MkdirAll(a.wwwDir, os.ModePerm)
+			if err != nil {
+				return err
+			}
+		}
+		a.Resources.web = app.NewFolder(a.wwwDir, a.Resources.i18n)
 	}
 	return nil
 }

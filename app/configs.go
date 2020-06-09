@@ -35,6 +35,7 @@ const (
 	ConfigRedisDatabase
 	ConfigMongoDatabase
 	ConfigOauth2Providers
+	ConfigOme
 )
 
 func (ci ConfigType) String() string {
@@ -78,6 +79,9 @@ func (ci ConfigType) String() string {
 
 	case ConfigOauth2Providers:
 		return "oauth2-providers"
+
+	case ConfigOme:
+		return "ome"
 
 	default:
 		return ""
@@ -125,6 +129,9 @@ func (ci configItem) create(description string, defaults jcon.Map) (jcon.Map, er
 
 	case ConfigOauth2Providers:
 		return configureOauth2Providers(description, defaults)
+
+	case ConfigOme:
+		return configureOme(description, defaults)
 
 	default:
 		return nil, errors.NotSupported
@@ -398,7 +405,6 @@ func configureSecretKeys(description string, defaults jcon.Map, names ...string)
 	}
 
 	cfg := jcon.Map{}
-
 
 	passPhrase, err := prompt.Password("pass phrase")
 	if err != nil {
@@ -682,6 +688,38 @@ func configureOauth2Providers(description string, defaults jcon.Map) (jcon.Map, 
 		fmt.Println()
 	}
 	return cfg, err
+}
+
+func configureOme(description string, defaults jcon.Map) (jcon.Map, error) {
+	header("Ome Authority", description)
+	if defaults == nil {
+		defaults = jcon.Map{}
+	}
+
+	url, _ := defaults.GetString("url")
+	url, err := prompt.TextWithDefault("server url", url, false)
+	if err != nil {
+		return nil, err
+	}
+
+	accessKey, _ := defaults.GetString("credentials/key")
+	accessKey, err = prompt.TextWithDefault("client ID", accessKey, false)
+	if err != nil {
+		return nil, err
+	}
+
+	secret, err := prompt.Password("secret")
+	if err != nil {
+		return nil, err
+	}
+
+	return jcon.Map{
+		"server-url": url,
+		"credentials": jcon.Map{
+			"client_id": accessKey,
+			"secret":    secret,
+		},
+	}, nil
 }
 
 func header(title, description string) {
