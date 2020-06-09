@@ -714,7 +714,7 @@ func configureOme(description string, defaults jcon.Map) (jcon.Map, error) {
 	}
 
 	return jcon.Map{
-		"server-url": url,
+		"server_url": url,
 		"credentials": jcon.Map{
 			"client_id": accessKey,
 			"secret":    secret,
