@@ -98,7 +98,7 @@ func (s *ServerStreamSession) syncOut(stream pb.Nodes_SyncServer, wg *sync.WaitG
 		return
 	}
 
-	log.Info("grpc::msg sending all messages from store")
+	log.Info("grpc::msg sending all messages from messages")
 	for _, o := range list {
 		err = stream.SendMsg(o)
 		if err != nil {

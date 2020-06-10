@@ -9,10 +9,12 @@ import (
 	"sync"
 )
 
-func Serve(l net.Listener) (doers.Stopper, error) {
-	h := &handler{
-		store:         newMemMessageStore(),
-		stopRequested: false,
+func Serve(l net.Listener, handler pb.MessageHandler) (doers.Stopper, error) {
+	h := &server{
+		messages:           newMemMessageStore(),
+		stopRequested:      false,
+		messageHandler:     handler,
+		broadcastReceivers: map[int]chan *pb.SyncMessage{},
 	}
 
 	server := grpc.NewServer()
@@ -27,51 +29,56 @@ func Serve(l net.Listener) (doers.Stopper, error) {
 	return doers.StopFunc(h.Stop), nil
 }
 
-type handler struct {
+type server struct {
 	broadcastMutex     sync.Mutex
 	keyCounter         int
-	store              pb.Messages
+	messages           pb.Messages
 	stopRequested      bool
-	broadcastReceivers map[int]chan *pb.SyncMessage
 	stoppers           []doers.Stopper
+	broadcastReceivers map[int]chan *pb.SyncMessage
+	messageHandler     pb.MessageHandler
 }
 
-func (h *handler) Sync(stream pb.Nodes_SyncServer) error {
+func (s *server) Sync(stream pb.Nodes_SyncServer) error {
 	broadcastReceiver := make(chan *pb.SyncMessage, 30)
-	id := h.saveBroadcastReceiver(broadcastReceiver)
-	defer h.deleteBroadcastReceiver(id)
+	id := s.saveBroadcastReceiver(broadcastReceiver)
+	defer s.deleteBroadcastReceiver(id)
 
-	s := NewServerStreamSession(stream, broadcastReceiver, h.store, pb.MessageHandlerFunc(h.Handle))
-	s.sync()
+	sess := NewServerStreamSession(stream, broadcastReceiver, s.messages, pb.MessageHandlerFunc(s.Handle))
+	sess.sync()
 	return nil
 }
 
-func (h *handler) Handle(msg *pb.SyncMessage) {
-	h.broadcastMutex.Lock()
-	defer h.broadcastMutex.Unlock()
-	for _, r := range h.broadcastReceivers {
+func (s *server) Handle(msg *pb.SyncMessage) {
+	s.broadcastMutex.Lock()
+	defer s.broadcastMutex.Unlock()
+	for _, r := range s.broadcastReceivers {
 		r <- msg
 	}
 }
 
-func (h *handler) saveBroadcastReceiver(channel chan *pb.SyncMessage) int {
-	h.broadcastMutex.Lock()
-	defer h.broadcastMutex.Unlock()
-	h.keyCounter++
-	h.broadcastReceivers[h.keyCounter] = channel
-	return h.keyCounter
+func (s *server) saveBroadcastReceiver(channel chan *pb.SyncMessage) int {
+	s.broadcastMutex.Lock()
+	defer s.broadcastMutex.Unlock()
+	s.keyCounter++
+	s.broadcastReceivers[s.keyCounter] = channel
+	return s.keyCounter
 }
 
-func (h *handler) deleteBroadcastReceiver(key int) {
-	h.broadcastMutex.Lock()
-	defer h.broadcastMutex.Unlock()
-	c := h.broadcastReceivers[key]
+func (s *server) deleteBroadcastReceiver(key int) {
+	s.broadcastMutex.Lock()
+	defer s.broadcastMutex.Unlock()
+	c := s.broadcastReceivers[key]
 	defer close(c)
-	delete(h.broadcastReceivers, key)
+	delete(s.broadcastReceivers, key)
 }
 
-func (h *handler) Stop() error {
-	for _, stopper := range h.stoppers {
+func (s *server) broadcast(msg *pb.SyncMessage) {
+
+}
+
+func (s *server) Stop() error {
+	for _, stopper := range s.stoppers {
 		err := stopper.Stop()
 		if err != nil {
 			log.Error("msg::server stop failed", err)

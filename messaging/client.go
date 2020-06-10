@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-type ClientStreamSession struct {
+type Client struct {
 	syncMutex    sync.Mutex
 	handlersLock sync.Mutex
 
@@ -37,55 +37,55 @@ type ClientStreamSession struct {
 	client        pb.NodesClient
 }
 
-func (r *ClientStreamSession) connect() error {
-	if r.conn != nil && r.conn.GetState() == connectivity.Ready {
+func (c *Client) connect() error {
+	if c.conn != nil && c.conn.GetState() == connectivity.Ready {
 		return nil
 	}
 
 	var opts []grpc.DialOption
-	if r.tlsConfig != nil {
-		opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(r.tlsConfig)))
+	if c.tlsConfig != nil {
+		opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(c.tlsConfig)))
 	} else {
 		opts = append(opts, grpc.WithInsecure())
 	}
 
 	var err error
-	r.conn, err = grpc.Dial(r.serverAddress, opts...)
+	c.conn, err = grpc.Dial(c.serverAddress, opts...)
 	if err != nil {
 		return err
 	}
-	r.client = pb.NewNodesClient(r.conn)
+	c.client = pb.NewNodesClient(c.conn)
 	return nil
 }
 
-func (r *ClientStreamSession) sync() {
-	if r.isSyncing() {
+func (c *Client) sync() {
+	if c.isSyncing() {
 		return
 	}
-	r.setSyncing()
+	c.setSyncing()
 
-	for !r.stopRequested {
-		err := r.connect()
+	for !c.stopRequested {
+		err := c.connect()
 		if err != nil {
 			time.After(time.Second * 2)
 			continue
 		}
-		r.work()
+		c.work()
 	}
 }
 
-func (r *ClientStreamSession) work() {
-	r.sendCloseSignal = make(chan bool)
-	r.outboundStream = make(chan *pb.SyncMessage, 30)
-	defer close(r.outboundStream)
+func (c *Client) work() {
+	c.sendCloseSignal = make(chan bool)
+	c.outboundStream = make(chan *pb.SyncMessage, 30)
+	defer close(c.outboundStream)
 
-	r.connectionAttempts++
+	c.connectionAttempts++
 
-	stream, err := r.client.Sync(context.Background())
+	stream, err := c.client.Sync(context.Background())
 	if err != nil {
-		r.conn = nil
-		if r.connectionAttempts == 1 {
-			r.unconnectedTime = time.Now()
+		c.conn = nil
+		if c.connectionAttempts == 1 {
+			c.unconnectedTime = time.Now()
 			log.Error("grpc::msg unconnected", errors.Errorf("%d", status.Code(err)))
 			log.Info("grpc::msg trying again...")
 		}
@@ -93,30 +93,30 @@ func (r *ClientStreamSession) work() {
 	}
 	defer stream.CloseSend()
 
-	if r.connectionAttempts > 1 {
-		log.Info("grpc::msg connected", log.Field("after", time.Since(r.unconnectedTime).String()), log.Field("attempts", r.connectionAttempts))
+	if c.connectionAttempts > 1 {
+		log.Info("grpc::msg connected", log.Field("after", time.Since(c.unconnectedTime).String()), log.Field("attempts", c.connectionAttempts))
 	} else {
 		log.Info("grpc::msg connected")
 	}
-	r.connectionAttempts = 0
+	c.connectionAttempts = 0
 
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
-	go r.recv(stream, wg)
-	go r.send(stream, wg)
+	go c.recv(stream, wg)
+	go c.send(stream, wg)
 	wg.Wait()
 }
 
-func (r *ClientStreamSession) send(stream pb.Nodes_SyncClient, wg *sync.WaitGroup) {
+func (c *Client) send(stream pb.Nodes_SyncClient, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	for !r.stopRequested {
+	for !c.stopRequested {
 		select {
-		case <-r.sendCloseSignal:
+		case <-c.sendCloseSignal:
 			log.Info("grpc::msg stop send")
 			return
 
-		case event, open := <-r.outboundStream:
+		case event, open := <-c.outboundStream:
 			if !open {
 				return
 			}
@@ -132,20 +132,20 @@ func (r *ClientStreamSession) send(stream pb.Nodes_SyncClient, wg *sync.WaitGrou
 	}
 }
 
-func (r *ClientStreamSession) recv(stream pb.Nodes_SyncClient, wg *sync.WaitGroup) {
+func (c *Client) recv(stream pb.Nodes_SyncClient, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for !r.stopRequested {
+	for !c.stopRequested {
 		msg, err := stream.Recv()
 		if err != nil {
-			r.sendCloseSignal <- true
-			close(r.sendCloseSignal)
+			c.sendCloseSignal <- true
+			close(c.sendCloseSignal)
 			if err != io.EOF {
 				log.Error("grpc::msg recv event", err)
 			}
 			return
 		}
 
-		for _, h := range r.messageHandlers {
+		for _, h := range c.messageHandlers {
 			go h.Handle(msg)
 		}
 
@@ -153,34 +153,34 @@ func (r *ClientStreamSession) recv(stream pb.Nodes_SyncClient, wg *sync.WaitGrou
 	}
 }
 
-func (r *ClientStreamSession) isSyncing() bool {
-	r.syncMutex.Lock()
-	defer r.syncMutex.Unlock()
-	return r.syncing
+func (c *Client) isSyncing() bool {
+	c.syncMutex.Lock()
+	defer c.syncMutex.Unlock()
+	return c.syncing
 }
 
-func (r *ClientStreamSession) setSyncing() {
-	r.syncMutex.Lock()
-	defer r.syncMutex.Unlock()
-	r.syncing = true
+func (c *Client) setSyncing() {
+	c.syncMutex.Lock()
+	defer c.syncMutex.Unlock()
+	c.syncing = true
 }
 
-func (r *ClientStreamSession) RegisterHandler(h pb.MessageHandler) string {
-	r.handlersLock.Lock()
-	defer r.handlersLock.Unlock()
+func (c *Client) RegisterHandler(h pb.MessageHandler) string {
+	c.handlersLock.Lock()
+	defer c.handlersLock.Unlock()
 	hid := uuid.New().String()
-	r.messageHandlers[hid] = h
+	c.messageHandlers[hid] = h
 	return hid
 }
 
-func (r *ClientStreamSession) DeRegisterHandler(id string) {
-	r.handlersLock.Lock()
-	defer r.handlersLock.Unlock()
-	delete(r.messageHandlers, id)
+func (c *Client) DeRegisterHandler(id string) {
+	c.handlersLock.Lock()
+	defer c.handlersLock.Unlock()
+	delete(c.messageHandlers, id)
 }
 
-func (r *ClientStreamSession) Send(msgType string, name string, o interface{}) error {
-	if !r.isSyncing() {
+func (c *Client) Send(msgType string, name string, o interface{}) error {
+	if !c.isSyncing() {
 		return errors.New("not connected")
 	}
 
@@ -188,7 +188,7 @@ func (r *ClientStreamSession) Send(msgType string, name string, o interface{}) e
 	if err != nil {
 		return err
 	}
-	r.outboundStream <- &pb.SyncMessage{
+	c.outboundStream <- &pb.SyncMessage{
 		Type:    msgType,
 		Id:      name,
 		Encoded: encoded,
@@ -196,20 +196,24 @@ func (r *ClientStreamSession) Send(msgType string, name string, o interface{}) e
 	return nil
 }
 
-func (r *ClientStreamSession) SendMsg(msg *pb.SyncMessage) error {
-	if !r.isSyncing() {
+func (c *Client) SendMsg(msg *pb.SyncMessage) error {
+	if !c.isSyncing() {
 		return errors.New("not connected")
 	}
-	r.outboundStream <- msg
+	c.outboundStream <- msg
 	return nil
 }
 
-func NewClientStreamSession(address string, tlsConfig *tls.Config) *ClientStreamSession {
-	sc := &ClientStreamSession{
+func newClientStreamSession(address string, tlsConfig *tls.Config) *Client {
+	sc := &Client{
 		tlsConfig:       tlsConfig,
 		serverAddress:   address,
 		messageHandlers: map[string]pb.MessageHandler{},
 	}
 	go sc.sync()
 	return sc
+}
+
+func Connect(address string, tlsConfig *tls.Config) *Client {
+	return newClientStreamSession(address, tlsConfig)
 }
