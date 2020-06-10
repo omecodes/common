@@ -2,8 +2,8 @@ package mailer
 
 import (
 	"fmt"
-	"github.com/sendgrid/sendgrid-go"
 	"github.com/omecodes/common/jcon"
+	"github.com/sendgrid/sendgrid-go"
 )
 
 type sendGrid struct {

@@ -92,6 +92,6 @@ func IsNotFound(e error) bool {
 	return e == NotFound || e.Error() == "not found"
 }
 
-func IsForbidden(e error) bool {
+/* func IsForbidden(e error) bool {
 	return e == Forbidden || e.Error() == "forbidden"
-}
+} */

@@ -114,19 +114,6 @@ func Connect(c jcon.Map) (string, interface{}, error) {
 	}
 }
 
-func GetMysql(c jcon.Map) (*sql.DB, error) {
-	_, dbi, err := Connect(c)
-	if err != nil {
-		return nil, err
-	}
-
-	db, ok := dbi.(*sql.DB)
-	if !ok {
-		return nil, errors.NotFound
-	}
-	return db, nil
-}
-
 func Create(c jcon.Map) error {
 	driver := c["driver"]
 	if driver == "mysql" {
@@ -146,15 +133,6 @@ func Create(c jcon.Map) error {
 		return err
 	}
 	return nil
-}
-
-// SQLite creates an instance of SQLite database
-func SQLite(driver string, path string) (*sql.DB, error) {
-	return sql.Open(driver, path)
-}
-
-func Bolt(path string) (*bolt.DB, error) {
-	return bolt.Open(path, 0755, nil)
 }
 
 func SQLiteConfig(filename string) jcon.Map {

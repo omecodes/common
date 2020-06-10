@@ -21,7 +21,7 @@ func (m *Manager) List() []string {
 	m.Lock()
 	defer m.Unlock()
 	var names []string
-	for name, _ := range m.processes {
+	for name := range m.processes {
 		names = append(names, name)
 	}
 	return names

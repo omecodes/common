@@ -8,7 +8,7 @@ import (
 	"github.com/omecodes/common/database"
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/jcon"
-	"github.com/omecodes/common/network"
+	"github.com/omecodes/common/netx"
 	"github.com/omecodes/common/prompt"
 )
 
@@ -442,7 +442,7 @@ func configureNetwork(description string, defaults jcon.Map) (jcon.Map, error) {
 	internalIP, _ := defaults.GetString("internal_ip")
 	externalIP, _ := defaults.GetString("external_ip")
 
-	addrList := network.LocalAddresses()
+	addrList := netx.LocalAddresses()
 	internalIP, err = prompt.Selection("internal IP", addrList...)
 	if err != nil {
 		return nil, err

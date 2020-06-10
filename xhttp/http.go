@@ -13,10 +13,7 @@ import (
 )
 
 const (
-	Cookies           = types.String("cookies")
-	CtxCCookiesStore  = types.String("cookies")
 	CtxResponseWriter = types.String("response_writer")
-	HttpVars          = types.String("vars")
 )
 
 type (

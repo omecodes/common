@@ -32,7 +32,7 @@ func DiskStatus(disk string) (DiskUsage, error) {
 		_ = syscall.FreeLibrary(kernel32)
 	}()
 
-	GetDiskFreeSpaceEx, err := syscall.GetProcAddress(syscall.Handle(kernel32), "GetDiskFreeSpaceExW")
+	GetDiskFreeSpaceEx, err := syscall.GetProcAddress(kernel32, "GetDiskFreeSpaceExW")
 	if err != nil {
 		return DiskUsage{}, err
 	}
@@ -45,7 +45,7 @@ func DiskStatus(disk string) (DiskUsage, error) {
 	lpFreeBytesAvailable := int64(0)
 	lpTotalNumberOfBytes := int64(0)
 	lpTotalNumberOfFreeBytes := int64(0)
-	_, _, e := syscall.Syscall6(uintptr(GetDiskFreeSpaceEx), 4,
+	_, _, e := syscall.Syscall6(GetDiskFreeSpaceEx, 4,
 		uintptr(unsafe.Pointer(diskNamePtr)),
 		uintptr(unsafe.Pointer(&lpFreeBytesAvailable)),
 		uintptr(unsafe.Pointer(&lpTotalNumberOfBytes)),

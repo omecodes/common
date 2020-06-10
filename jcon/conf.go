@@ -36,7 +36,7 @@ func (item Map) getItem(key string) (interface{}, bool) {
 			temp = vItem
 
 		} else if vItem, ok := o.(map[string]interface{}); ok {
-			temp = Map(vItem)
+			temp = vItem
 
 		} else {
 			return nil, false

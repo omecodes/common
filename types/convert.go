@@ -26,7 +26,7 @@ func IntVal(i interface{}) (int, bool) {
 	}
 
 	if val, ok := i.(int); ok {
-		return int(val), true
+		return val, true
 	}
 	if val, ok := i.(int8); ok {
 		return int(val), true
@@ -73,7 +73,7 @@ func Int16Val(i interface{}) (int16, bool) {
 		return int16(val), true
 	}
 	if val, ok := i.(int16); ok {
-		return int16(val), true
+		return val, true
 	}
 	if val, ok := i.(int32); ok {
 		return int16(val), true
@@ -117,7 +117,7 @@ func Int32Val(i interface{}) (int32, bool) {
 		return int32(val), true
 	}
 	if val, ok := i.(int32); ok {
-		return int32(val), true
+		return val, true
 	}
 	if val, ok := i.(int64); ok {
 		return int32(val), true
@@ -160,7 +160,7 @@ func Int64Val(i interface{}) (int64, bool) {
 		return int64(val), true
 	}
 	if val, ok := i.(int64); ok {
-		return int64(val), true
+		return val, true
 	}
 	if val, ok := i.(uint8); ok {
 		return int64(val), true
@@ -207,7 +207,7 @@ func Uint16Val(i interface{}) (uint16, bool) {
 		return uint16(val), true
 	}
 	if val, ok := i.(uint16); ok {
-		return uint16(val), true
+		return val, true
 	}
 	if val, ok := i.(uint32); ok {
 		return uint16(val), true
@@ -251,7 +251,7 @@ func Uint32Val(i interface{}) (uint32, bool) {
 		return uint32(val), true
 	}
 	if val, ok := i.(uint32); ok {
-		return uint32(val), true
+		return val, true
 	}
 	if val, ok := i.(uint64); ok {
 		return uint32(val), true
@@ -295,7 +295,7 @@ func UInt64Val(i interface{}) (uint64, bool) {
 		return uint64(val), true
 	}
 	if val, ok := i.(uint64); ok {
-		return uint64(val), true
+		return val, true
 	}
 	if val, ok := i.(float32); ok {
 		return uint64(val), true
@@ -339,7 +339,7 @@ func Float32Val(i interface{}) (float32, bool) {
 		return float32(val), true
 	}
 	if val, ok := i.(float32); ok {
-		return float32(val), true
+		return val, true
 	}
 	if val, ok := i.(float64); ok {
 		return float32(val), true
@@ -383,7 +383,7 @@ func Float64Val(i interface{}) (float64, bool) {
 		return float64(val), true
 	}
 	if val, ok := i.(float64); ok {
-		return float64(val), true
+		return val, true
 	}
 
 	return 0, false

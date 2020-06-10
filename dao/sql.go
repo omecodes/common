@@ -19,7 +19,7 @@ const (
 	VarAutoIncrement = "$auto_increment$"
 	VarLocate        = "$locate$"
 
-	ScannerIndex = "scanner_index"
+	// ScannerIndex = "scanner_index"
 )
 
 type SQlv2Result struct {
@@ -465,7 +465,7 @@ func (dao *SQL) rowToMap(rows *sql.Rows) (map[string]interface{}, error) {
 	cols, _ := rows.Columns()
 	columns := make([]interface{}, len(cols))
 	columnPointers := make([]interface{}, len(cols))
-	for i, _ := range columns {
+	for i := range columns {
 		columnPointers[i] = &columns[i]
 	}
 

@@ -31,20 +31,23 @@ func Serve(l net.Listener, handler pb.MessageHandler) (doers.Stopper, error) {
 
 type server struct {
 	broadcastMutex     sync.Mutex
+	stopMutex          sync.Mutex
 	keyCounter         int
 	messages           pb.Messages
 	stopRequested      bool
-	stoppers           []doers.Stopper
+	stoppers           map[int]doers.Stopper
 	broadcastReceivers map[int]chan *pb.SyncMessage
 	messageHandler     pb.MessageHandler
 }
 
 func (s *server) Sync(stream pb.Nodes_SyncServer) error {
 	broadcastReceiver := make(chan *pb.SyncMessage, 30)
-	id := s.saveBroadcastReceiver(broadcastReceiver)
-	defer s.deleteBroadcastReceiver(id)
-
 	sess := NewServerStreamSession(stream, broadcastReceiver, s.messages, pb.MessageHandlerFunc(s.Handle))
+	id := s.saveBroadcastReceiver(broadcastReceiver)
+	s.saveStopper(id, sess)
+
+	defer s.deleteBroadcastReceiver(id)
+	defer s.stop(id)
 	sess.sync()
 	return nil
 }
@@ -73,11 +76,38 @@ func (s *server) deleteBroadcastReceiver(key int) {
 	delete(s.broadcastReceivers, key)
 }
 
-func (s *server) broadcast(msg *pb.SyncMessage) {
+func (s *server) broadcast(msg *pb.SyncMessage, except int) {
+	s.broadcastMutex.Lock()
+	defer s.broadcastMutex.Unlock()
 
+	for id, receiver := range s.broadcastReceivers {
+		if id == except {
+			continue
+		}
+		receiver <- msg
+	}
+}
+
+func (s *server) saveStopper(id int, stopper doers.Stopper) {
+	s.stopMutex.Lock()
+	defer s.stopMutex.Unlock()
+	s.stoppers[id] = stopper
+}
+
+func (s *server) stop(id int) {
+	s.stopMutex.Lock()
+	defer s.stopMutex.Unlock()
+	stopper, found := s.stoppers[id]
+	if found {
+		err := stopper.Stop()
+		log.Error("grpc::msg stopped session with error", err)
+		delete(s.stoppers, id)
+	}
 }
 
 func (s *server) Stop() error {
+	s.stopMutex.Lock()
+	defer s.stopMutex.Unlock()
 	for _, stopper := range s.stoppers {
 		err := stopper.Stop()
 		if err != nil {

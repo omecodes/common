@@ -1,17 +1,8 @@
 package messaging
 
 import (
-	"context"
-	"crypto/tls"
-	"github.com/google/uuid"
-	"github.com/omecodes/common/codec"
-	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/log"
 	pb "github.com/omecodes/common/messaging/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/status"
 	"io"
 	"sync"
 	"time"

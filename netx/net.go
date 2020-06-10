@@ -1,4 +1,4 @@
-package network
+package netx
 
 import (
 	"github.com/omecodes/common/log"

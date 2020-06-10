@@ -40,16 +40,6 @@ func GobEncode(o interface{}) ([]byte, error) {
 	return buff.Bytes(), err
 }
 
-func JSONDecode(data []byte, o interface{}) error {
-	return json.NewDecoder(bytes.NewReader(data)).Decode(o)
-}
-
-func JSONEncode(o interface{}) ([]byte, error) {
-	buff := bytes.NewBuffer(nil)
-	err := json.NewEncoder(buff).Encode(o)
-	return buff.Bytes(), err
-}
-
 type gobCodec struct{}
 
 func (g *gobCodec) Encode(o interface{}) ([]byte, error) {
@@ -58,10 +48,6 @@ func (g *gobCodec) Encode(o interface{}) ([]byte, error) {
 
 func (g *gobCodec) Decode(data []byte, o interface{}) error {
 	return GobDecode(data, o)
-}
-
-func NewGSONCodec() Codec {
-	return &gobCodec{}
 }
 
 type jsonc struct{}
