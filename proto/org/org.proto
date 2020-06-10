@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package orgpb;
+
+import "google/api/annotations.proto";
+
+enum Type {
+  Files = 0;
+  Productivity = 1;
+}
+
+message Resource {
+  string id = 1;
+  Type type = 2;
+  string label = 3;
+  string description = 4;
+  string logo_URL = 5;
+  string web_url = 6;
+  bool enabled = 7;
+}
+
+service Resources {
+  rpc AddResource(AddResourceRequest) returns (AddResourceResponse) {
+    option(google.api.http) = {
+        post: "/resource";
+        body: "*";
+    };
+  };
+
+  rpc EnableResource(EnableResourceRequest) returns (EnableResourceResponse) {
+    option(google.api.http).get = "/resource/{id}/enable";
+  };
+
+  rpc DisableResource(DisableResourceRequest) returns (DisableResourceResponse) {
+    option(google.api.http).get = "/resource/{id}/disable";
+  };
+
+  rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
+      option(google.api.http).delete = "/resource/{id}";
+  };
+
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
+    option(google.api.http).get = "/resources";
+  };
+
+  rpc GetResources(GetResourcesRequest) returns (GetResourcesResponse) {
+    option(google.api.http) = {
+      post: "/resources";
+      body: "*";
+    };
+  };
+}
+
+message AddResourceRequest {
+  Resource resource = 1;
+}
+message AddResourceResponse {}
+
+message EnableResourceRequest {
+  string id = 1;
+}
+message EnableResourceResponse {}
+
+message DisableResourceRequest {
+  string id = 1;
+}
+message DisableResourceResponse {}
+
+message DeleteResourceRequest{
+  string id = 1;
+}
+message DeleteResourceResponse{}
+
+message ListResourcesRequest{}
+message ListResourcesResponse{
+  repeated Resource resources = 1;
+}
+
+message GetResourcesRequest{
+  repeated string names = 1;
+}
+message GetResourcesResponse{
+  repeated Resource resources = 1;
+}
