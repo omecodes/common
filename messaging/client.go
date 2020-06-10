@@ -204,6 +204,14 @@ func (c *Client) SendMsg(msg *pb.SyncMessage) error {
 	return nil
 }
 
+func (c *Client) Stop() error {
+	c.stopRequested = true
+	if c.conn != nil {
+		return c.conn.Close()
+	}
+	return nil
+}
+
 func newClientStreamSession(address string, tlsConfig *tls.Config) *Client {
 	sc := &Client{
 		tlsConfig:       tlsConfig,
