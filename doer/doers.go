@@ -1,4 +1,4 @@
-package doers
+package doer
 
 type StopFunc func() error
 

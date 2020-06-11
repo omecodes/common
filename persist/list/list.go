@@ -7,7 +7,7 @@ import (
 	filespb "github.com/omecodes/common/proto/files"
 )
 
-// List is a convenience for persistence list
+// State is a convenience for persistence list
 type List interface {
 	Append(o interface{}) error
 	GetAt(index int64, o interface{}) error

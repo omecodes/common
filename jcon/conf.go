@@ -203,7 +203,7 @@ func (item Map) GetFloat64(key string) (float64, bool) {
 	return types.Float64Val(i)
 }
 
-//Save configs as JSON content in file
+//Handle configs as JSON content in file
 func (item Map) Save(filename string, mode os.FileMode) error {
 	bytes, err := json.MarshalIndent(item, " ", "  ")
 	if err != nil {

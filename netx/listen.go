@@ -64,11 +64,11 @@ func Listen(address string, opts ...ListenOption) (net.Listener, error) {
 	if lopts.certFilename != "" && lopts.keyFilename != "" {
 
 		cert, err := crypto2.LoadCertificate(lopts.certFilename)
-		if err == nil {
+		if err != nil {
 			return nil, err
 		}
 
-		key, err := crypto2.LoadPrivateKey(lopts.keyPassword, lopts.certFilename)
+		key, err := crypto2.LoadPrivateKey(lopts.keyPassword, lopts.keyFilename)
 		if err != nil {
 			return nil, err
 		}

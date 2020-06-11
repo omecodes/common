@@ -100,12 +100,12 @@ const (
 
 var EventAction_name = map[int32]string{
 	0: "Delete",
-	1: "Save",
+	1: "Handle",
 }
 
 var EventAction_value = map[string]int32{
 	"Delete": 0,
-	"Save":   1,
+	"Handle": 1,
 }
 
 func (x EventAction) String() string {

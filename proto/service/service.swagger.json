@@ -183,10 +183,7 @@
         "type": {
           "$ref": "#/definitions/pbEventType"
         },
-        "namespace": {
-          "type": "string"
-        },
-        "name": {
+        "service_id": {
           "type": "string"
         },
         "info": {
@@ -219,10 +216,7 @@
     "pbInfo": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
-        "namespace": {
+        "id": {
           "type": "string"
         },
         "type": {
@@ -259,7 +253,7 @@
     "pbNode": {
       "type": "object",
       "properties": {
-        "Name": {
+        "id": {
           "type": "string"
         },
         "protocol": {

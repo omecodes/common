@@ -3,8 +3,8 @@ package app
 import (
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/futils"
+	"github.com/omecodes/common/httpx"
 	"github.com/omecodes/common/lang"
-	"github.com/omecodes/common/xhttp"
 	"io"
 	"net/http"
 	"os"
@@ -99,10 +99,10 @@ func (s *Webapp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	contentType, content, size, err := s.Serve(locale, appName, filename)
 	if err != nil {
-		xhttp.WriteError(w, err)
+		httpx.WriteError(w, err)
 		return
 	}
 
 	defer content.Close()
-	xhttp.WriteContent(w, contentType, size, content)
+	httpx.WriteContent(w, contentType, size, content)
 }

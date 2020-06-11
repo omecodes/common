@@ -62,7 +62,7 @@ message ConnectionInfo {
 }
 
 message Node {
-    string Name = 1;
+    string id = 1;
     Protocol protocol = 2;
     string address = 3;
     Security security = 4;
@@ -71,20 +71,18 @@ message Node {
 }
 
 message Info {
-    string name = 1;
-    string namespace = 2;
-    Type type = 3;
-    string label = 4;
-    repeated Node nodes = 5;
-    map<string, string> meta = 7;
+    string id = 1;
+    Type type = 2;
+    string label = 3;
+    repeated Node nodes = 4;
+    map<string, string> meta = 5;
 }
 
 message Event {
     EventType type = 1;
-    string namespace = 2;
-    string name = 3;
-    Info info = 4;
-    ActionOnRegisterExistingService on_register_existing = 5;
+    string service_id = 2;
+    Info info = 3;
+    ActionOnRegisterExistingService on_register_existing = 4;
 }
 
 message RegisterRequest {
