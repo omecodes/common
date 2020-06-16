@@ -17,8 +17,12 @@ type Tree interface {
 	ReadNode(nodePath string, o interface{}) error
 	Children(nodePath string) (Cursor, error)
 	Leaves(nodePath string) (Cursor, error)
-	SubTrees(nodePath string) (Cursor, error)
-	CountChildren(nodePath string) (int64, error)
+	LeavesRange(nodePath string, offset, count int) (Cursor, error)
+	Subtrees(nodePath string) (Cursor, error)
+	SubtreesRange(nodePath string, offset, count int) (Cursor, error)
+	CountChildren(nodePath string) (int, error)
+	CountLeaves(nodePath string) (int, error)
+	CountSubtrees(nodePath string) (int, error)
 	Clear() error
 }
 
@@ -59,9 +63,13 @@ func NewSQL(dbCfg jcon.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		AddStatement("select_tree_path_id", `SELECT * FROM $prefix$_trees WHERE path=?;`).
 		AddStatement("select_encoded", `SELECT * FROM $prefix$_encoded WHERE parent=? AND node_name=?;`).
 		AddStatement("select_all_encoded", `SELECT * FROM $prefix$_encoded WHERE parent=? ORDER BY node_name;`).
-		AddStatement("select_sub_trees", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=0 ORDER BY node_name;`).
-		AddStatement("select_leaves", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=1  ORDER BY node_name;`).
+		AddStatement("select_subtrees", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=0 ORDER BY node_name;`).
+		AddStatement("select_subtrees_range", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=0 ORDER BY node_name limit ? offset ?;`).
+		AddStatement("select_leaves", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=1  ORDER BY node_name limit ? offset ?;`).
+		AddStatement("select_leaves_range", `SELECT * FROM $prefix$_encoded WHERE parent=? AND is_leaf=1  ORDER BY node_name;`).
 		AddStatement("children_count", `SELECT count(*) FROM $prefix$_encoded WHERE parent=?;`).
+		AddStatement("subtrees_count", `SELECT count(*) FROM $prefix$_encoded WHERE parent=? AND is_leaf=0;`).
+		AddStatement("leaves_count", `SELECT count(*) FROM $prefix$_encoded WHERE parent=? AND is_leaf=1;`).
 		RegisterScanner("tree", dao.NewScannerFunc(scanTreeRow)).
 		RegisterScanner("count", dao.NewScannerFunc(func(row dao.Row) (interface{}, error) {
 			var count int64
@@ -261,13 +269,17 @@ func (t *sqlTree) Leaves(nodePath string) (Cursor, error) {
 	return newCursor(c, t.codec), nil
 }
 
-func (t *sqlTree) SubTrees(nodePath string) (Cursor, error) {
+func (t *sqlTree) LeavesRange(nodePath string, offset, count int) (Cursor, error) {
+	if offset+count <= offset {
+		return nil, errors.BadInput
+	}
+
 	dirInfo, e := t.getTreeByPath(nodePath)
 	if e != nil {
 		return nil, e
 	}
 
-	c, err := t.Query("select_sub_trees", "encoded", dirInfo.id)
+	c, err := t.Query("select_leaves_range", "encoded", dirInfo.id, count, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +287,39 @@ func (t *sqlTree) SubTrees(nodePath string) (Cursor, error) {
 	return newCursor(c, t.codec), nil
 }
 
-func (t *sqlTree) CountChildren(nodePath string) (int64, error) {
+func (t *sqlTree) Subtrees(nodePath string) (Cursor, error) {
+	dirInfo, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return nil, e
+	}
+
+	c, err := t.Query("select_subtrees", "encoded", dirInfo.id)
+	if err != nil {
+		return nil, err
+	}
+
+	return newCursor(c, t.codec), nil
+}
+
+func (t *sqlTree) SubtreesRange(nodePath string, offset, count int) (Cursor, error) {
+	if offset+count <= offset {
+		return nil, errors.BadInput
+	}
+
+	dirInfo, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return nil, e
+	}
+
+	c, err := t.Query("select_subtrees_range", "encoded", dirInfo.id, count, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return newCursor(c, t.codec), nil
+}
+
+func (t *sqlTree) CountChildren(nodePath string) (int, error) {
 	var e error
 	parentRow, e := t.getTreeByPath(nodePath)
 	if e != nil {
@@ -287,7 +331,37 @@ func (t *sqlTree) CountChildren(nodePath string) (int64, error) {
 		return 0, err
 	}
 
-	return o.(int64), nil
+	return o.(int), nil
+}
+
+func (t *sqlTree) CountLeaves(nodePath string) (int, error) {
+	var e error
+	parentRow, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return 0, e
+	}
+
+	o, err := t.QueryOne("leaves_count", "count", parentRow.id)
+	if err != nil {
+		return 0, err
+	}
+
+	return o.(int), nil
+}
+
+func (t *sqlTree) CountSubtrees(nodePath string) (int, error) {
+	var e error
+	parentRow, e := t.getTreeByPath(nodePath)
+	if e != nil {
+		return 0, e
+	}
+
+	o, err := t.QueryOne("subtrees_count", "count", parentRow.id)
+	if err != nil {
+		return 0, err
+	}
+
+	return o.(int), nil
 }
 
 func (t *sqlTree) deleteEncoded(nodePath string) error {
