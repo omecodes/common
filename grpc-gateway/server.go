@@ -85,7 +85,7 @@ func (s *Server) listenGRPC() error {
 	if err != nil {
 		return err
 	}
-	s.httpListener = l
+	s.grpcListener = l
 
 	if s.options.GRPC > 0 {
 		s.grpcAddress = address
@@ -122,7 +122,9 @@ func (s *Server) startGRPC() {
 		s.errorChannel <- errors.New("Init method must me called at least once")
 		return
 	}
-	err := s.grpcServer.Serve(s.grpcListener)
+
+	server := s.GRPCServer()
+	err := server.Serve(s.grpcListener)
 	if err != nil {
 		if !s.stopped {
 			s.errorChannel <- err
@@ -283,6 +285,7 @@ func (s *Server) Errors() chan error {
 
 func New(host string, opts ...Option) *Server {
 	s := &Server{
+		host:         host,
 		errorChannel: make(chan error, 2),
 	}
 
