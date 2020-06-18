@@ -10,9 +10,11 @@ type DoubleMap interface {
 	Set(firstKey, secondKey string, o interface{}) error
 	Get(firstKey, secondKey string, o interface{}) error
 	GetForFirst(firstKey string) (MapCursor, error)
+	GetForSecond(secondKey string) (MapCursor, error)
 	GetAll() (Cursor, error)
 	Delete(firstKey, secondKey string) error
-	DeleteAll(firstKey string) error
+	DeleteAllMatchingFirstKey(firstKey string) error
+	DeleteAllMatchingSecondKey(secondKey string) error
 	Clear() error
 	Close() error
 }
@@ -44,8 +46,16 @@ func (s *sqlPairMap) Get(firstKey, secondKey string, o interface{}) error {
 	return s.codec.Decode([]byte(row.encoded), o)
 }
 
-func (s *sqlPairMap) GetForFirst(primaryKey string) (MapCursor, error) {
-	c, err := s.Query("select_by_first_key", "pair_scanner", primaryKey)
+func (s *sqlPairMap) GetForFirst(firstKey string) (MapCursor, error) {
+	c, err := s.Query("select_by_first_key", "pair_scanner", firstKey)
+	if err != nil {
+		return nil, err
+	}
+	return newMapCursor(c, s.codec), nil
+}
+
+func (s *sqlPairMap) GetForSecond(secondKey string) (MapCursor, error) {
+	c, err := s.Query("select_by_second_key", "pair_scanner", secondKey)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +74,12 @@ func (s *sqlPairMap) Delete(firstKey, secondKey string) error {
 	return s.Exec("delete", firstKey, secondKey).Error
 }
 
-func (s *sqlPairMap) DeleteAll(firstKey string) error {
+func (s *sqlPairMap) DeleteAllMatchingFirstKey(firstKey string) error {
 	return s.Exec("delete_by_first_key", firstKey).Error
+}
+
+func (s *sqlPairMap) DeleteAllMatchingSecondKey(secondKey string) error {
+	return s.Exec("delete_by_first_key", secondKey).Error
 }
 
 func (s *sqlPairMap) Clear() error {
@@ -84,9 +98,11 @@ func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (DoubleMap, error
 		AddStatement("update", "update $prefix$_mapping set val=? where first_key=? and second_key=?;").
 		AddStatement("select", "select * from $prefix$_mapping where first_key=? and second_key=?;").
 		AddStatement("select_by_first_key", "select second_key, val from $prefix$_mapping where first_key=?;").
+		AddStatement("select_by_second_key", "select first_key, val from $prefix$_mapping where second_key=?;").
 		AddStatement("select_all", "select * from $prefix$_mapping;").
 		AddStatement("delete", "delete from $prefix$_mapping where first_key=?;").
 		AddStatement("delete_by_first_key", "delete from $prefix$_mapping where first_key=?;").
+		AddStatement("delete_by_second_key", "delete from $prefix$_mapping where second_key=?;").
 		AddStatement("clear", "delete from $prefix$_mapping;").
 		RegisterScanner("scanner", dao.NewScannerFunc(sqlScanRow)).
 		RegisterScanner("pair_scanner", dao.NewScannerFunc(sqlScanPair))
