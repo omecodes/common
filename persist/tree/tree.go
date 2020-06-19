@@ -82,7 +82,12 @@ func NewSQL(dbCfg jcon.Map, prefix string, codec codec.Codec) (*sqlTree, error) 
 		return nil, err
 	}
 
-	_ = db.AddUniqueIndex(dao.SQLIndex{}, false)
+	_ = db.AddUniqueIndex(dao.SQLIndex{Name: "unique_parent_child", Table: "$prefix$_encoded", Fields: []string{
+		"parent", "node_name",
+	}}, false)
+	_ = db.AddUniqueIndex(dao.SQLIndex{Name: "unique_parent_path", Table: "$prefix$_trees", Fields: []string{
+		"path",
+	}}, false)
 
 	return db, db.init()
 }
@@ -113,6 +118,9 @@ func (t *sqlTree) getTreeByPath(p string) (*TreeRow, error) {
 
 func (t *sqlTree) CreateNode(nodePath string, o interface{}, isLeaf bool) error {
 	parent := path.Dir(nodePath)
+	if parent == "" {
+		parent = "/"
+	}
 	name := path.Base(nodePath)
 
 	var e error
@@ -136,7 +144,7 @@ func (t *sqlTree) CreateNode(nodePath string, o interface{}, isLeaf bool) error 
 		return err
 	}
 
-	if !isLeaf {
+	if !isLeaf && parent != "/" && parent != "" {
 		fullPath := path.Join(parent, name)
 		return t.Exec("insert_tree_path", fullPath).Error
 	}
