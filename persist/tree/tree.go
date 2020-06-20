@@ -9,6 +9,7 @@ import (
 )
 
 type Tree interface {
+	CreateRoot() error
 	CreateNode(nodePath string, o interface{}, isLeaf bool) error
 	MoveNode(nodePath string, newPath string) error
 	RenameNode(nodePath string, newName string) error
@@ -114,6 +115,10 @@ func (t *sqlTree) getTreeByPath(p string) (*TreeRow, error) {
 		return nil, err
 	}
 	return i.(*TreeRow), err
+}
+
+func (t *sqlTree) CreateRoot() error {
+	return t.init()
 }
 
 func (t *sqlTree) CreateNode(nodePath string, o interface{}, isLeaf bool) error {
