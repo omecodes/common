@@ -6,10 +6,12 @@ import (
 )
 
 type options struct {
-	listenOptions []netx.ListenOption
-	GRPC          int
-	*gatewayConfigs
-	grpcOpts []grpc.ServerOption
+	listenOptions   []netx.ListenOption
+	gRPCPort        int
+	httpPort        int
+	grpcOpts        []grpc.ServerOption
+	endpointMappers map[string]endpointMapping
+	muxWrappers     []MuxWrapper
 }
 
 type Option func(opts *options)
@@ -22,23 +24,31 @@ func ListenOptions(no ...netx.ListenOption) Option {
 
 func Grpc(port int) Option {
 	return func(opts *options) {
-		opts.GRPC = port
+		opts.gRPCPort = port
 	}
 }
 
 func Http(port int) Option {
 	return func(opts *options) {
-		opts.port = port
+		opts.httpPort = port
 	}
 }
 
-func Gateway(mapper Mapper, wrappers ...MuxWrapper) Option {
+func EndpointMap(name string, mapper Mapper) Option {
 	return func(opts *options) {
-		if opts.gatewayConfigs == nil {
-			opts.gatewayConfigs = new(gatewayConfigs)
+		if opts.endpointMappers == nil {
+			opts.endpointMappers = map[string]endpointMapping{}
 		}
-		opts.gatewayConfigs.muxWrappers = wrappers
-		opts.gatewayConfigs.mapper = mapper
+		opts.endpointMappers[name] = endpointMapping{
+			Name:   name,
+			Mapper: mapper,
+		}
+	}
+}
+
+func MuxWrappers(wrappers ...MuxWrapper) Option {
+	return func(opts *options) {
+		opts.muxWrappers = wrappers
 	}
 }
 

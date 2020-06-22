@@ -25,14 +25,8 @@ import (
 	"strings"
 )
 
-type Mapper func(context.Context, *runtime.ServeMux, string, []grpc.DialOption) error
-
-type MuxWrapper func(mux *runtime.ServeMux) http.Handler
-
 type gatewayConfigs struct {
-	port        int
-	mapper      Mapper
-	muxWrappers []MuxWrapper
+	port int
 }
 
 type Server struct {
@@ -52,11 +46,11 @@ type Server struct {
 }
 
 func (s *Server) listenHttp() error {
-	if s.options.gatewayConfigs != nil {
+	if s.options.endpointMappers != nil {
 
 		address := fmt.Sprintf("%s:", s.host)
-		if s.options.port > 0 {
-			address = fmt.Sprintf("%s%d", address, s.options.port)
+		if s.options.httpPort > 0 {
+			address = fmt.Sprintf("%s%d", address, s.options.httpPort)
 		}
 		l, err := netx.Listen(address, s.options.listenOptions...)
 		if err != nil {
@@ -64,7 +58,7 @@ func (s *Server) listenHttp() error {
 		}
 		s.httpListener = l
 
-		if s.options.port > 0 {
+		if s.options.httpPort > 0 {
 			s.httpAddress = address
 		} else {
 			s.httpAddress = address + strings.Split(l.Addr().String(), ":")[1]
@@ -78,8 +72,8 @@ func (s *Server) listenHttp() error {
 func (s *Server) listenGRPC() error {
 
 	address := fmt.Sprintf("%s:", s.host)
-	if s.options.GRPC > 0 {
-		address = fmt.Sprintf("%s%d", address, s.options.GRPC)
+	if s.options.gRPCPort > 0 {
+		address = fmt.Sprintf("%s%d", address, s.options.gRPCPort)
 	}
 	l, err := netx.Listen(address, s.options.listenOptions...)
 	if err != nil {
@@ -87,7 +81,7 @@ func (s *Server) listenGRPC() error {
 	}
 	s.grpcListener = l
 
-	if s.options.GRPC > 0 {
+	if s.options.gRPCPort > 0 {
 		s.grpcAddress = address
 	} else {
 		s.grpcAddress = address + strings.Split(l.Addr().String(), ":")[1]
@@ -134,11 +128,13 @@ func (s *Server) startGRPC() {
 }
 
 func (s *Server) startHTTP() {
-	if s.options.gatewayConfigs != nil {
+
+	if s.options.endpointMappers != nil {
 		if !s.initialized {
 			s.handleError(errors.New("Init method must me called at least once"))
 			return
 		}
+
 		s.mux = runtime.NewServeMux(
 			runtime.WithForwardResponseOption(gs.SetCookieFromGRPCMetadata),
 		)
@@ -167,10 +163,12 @@ func (s *Server) startHTTP() {
 			opts = append(opts, grpc.WithInsecure())
 		}
 
-		err := s.options.mapper(context.Background(), s.mux, s.grpcAddress, opts)
-		if err != nil {
-			s.handleError(err)
-			return
+		for _, m := range s.options.endpointMappers {
+			err := m.Mapper(context.Background(), s.mux, s.grpcAddress, opts)
+			if err != nil {
+				s.handleError(err)
+				return
+			}
 		}
 
 		var handler http.Handler
@@ -182,7 +180,7 @@ func (s *Server) startHTTP() {
 			handler = s.mux
 		}
 
-		err = http.Serve(s.httpListener, handler)
+		err := http.Serve(s.httpListener, handler)
 		if err != nil {
 			if !s.stopped {
 				s.handleError(err)
