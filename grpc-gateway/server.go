@@ -103,6 +103,7 @@ func (s *Server) init() error {
 		return nil
 	}
 	s.initialized = true
+	s.errorChannel = make(chan error, 4)
 
 	err := s.listenGRPC()
 	if err != nil {
@@ -119,7 +120,7 @@ func (s *Server) init() error {
 
 func (s *Server) startGRPC() {
 	if !s.initialized {
-		s.errorChannel <- errors.New("Init method must me called at least once")
+		s.handleError(errors.New("Init method must me called at least once"))
 		return
 	}
 
@@ -127,7 +128,7 @@ func (s *Server) startGRPC() {
 	err := server.Serve(s.grpcListener)
 	if err != nil {
 		if !s.stopped {
-			s.errorChannel <- err
+			s.handleError(err)
 		}
 	}
 }
@@ -135,7 +136,7 @@ func (s *Server) startGRPC() {
 func (s *Server) startHTTP() {
 	if s.options.gatewayConfigs != nil {
 		if !s.initialized {
-			s.errorChannel <- errors.New("Init method must me called at least once")
+			s.handleError(errors.New("Init method must me called at least once"))
 			return
 		}
 		s.mux = runtime.NewServeMux(
@@ -157,16 +158,18 @@ func (s *Server) startHTTP() {
 			} else {
 				c, err := credentials.NewClientTLSFromFile(lopts.CertFilename, "")
 				if err != nil {
-					s.errorChannel <- err
+					s.handleError(err)
 					return
 				}
 				opts = append(opts, grpc.WithTransportCredentials(c))
 			}
+		} else {
+			opts = append(opts, grpc.WithInsecure())
 		}
 
 		err := s.options.mapper(context.Background(), s.mux, s.grpcAddress, opts)
 		if err != nil {
-			s.errorChannel <- err
+			s.handleError(err)
 			return
 		}
 
@@ -182,7 +185,7 @@ func (s *Server) startHTTP() {
 		err = http.Serve(s.httpListener, handler)
 		if err != nil {
 			if !s.stopped {
-				s.errorChannel <- err
+				s.handleError(err)
 			}
 		}
 	}
@@ -279,7 +282,15 @@ func (s *Server) GRPCAddress() string {
 	return s.grpcAddress
 }
 
+func (s *Server) handleError(err error) {
+	c := s.Errors()
+	c <- err
+}
+
 func (s *Server) Errors() chan error {
+	if s.errorChannel == nil {
+		s.errorChannel = make(chan error, 4)
+	}
 	return s.errorChannel
 }
 
