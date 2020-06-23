@@ -10,6 +10,7 @@ import (
 	"github.com/omecodes/common/jcon"
 	"github.com/omecodes/common/netx"
 	"github.com/omecodes/common/prompt"
+	"strings"
 )
 
 type configItem struct {
@@ -702,7 +703,7 @@ func configureOme(description string, defaults jcon.Map) (jcon.Map, error) {
 		return nil, err
 	}
 
-	accessKey, _ := defaults.GetString("credentials/key")
+	accessKey, _ := defaults.GetString("oauth2/client_id")
 	accessKey, err = prompt.TextWithDefault("client ID", accessKey, false)
 	if err != nil {
 		return nil, err
@@ -713,11 +714,37 @@ func configureOme(description string, defaults jcon.Map) (jcon.Map, error) {
 		return nil, err
 	}
 
+	tokenEndpoint, _ := defaults.GetString("oauth2/token_endpoint")
+	if tokenEndpoint == "" {
+		tokenEndpoint = "/token"
+	}
+	tokenEndpoint, err = prompt.TextWithDefault("token endpoint", tokenEndpoint, false)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.HasPrefix(tokenEndpoint, "/") {
+		tokenEndpoint = "/" + tokenEndpoint
+	}
+
+	authorizeEndpoint, _ := defaults.GetString("oauth2/authorize_endpoint")
+	if authorizeEndpoint == "" {
+		authorizeEndpoint = "/authorize"
+	}
+	authorizeEndpoint, err = prompt.TextWithDefault("authorize endpoint", authorizeEndpoint, false)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.HasPrefix(authorizeEndpoint, "/") {
+		authorizeEndpoint = "/" + authorizeEndpoint
+	}
+
 	return jcon.Map{
-		"server_url": url,
-		"credentials": jcon.Map{
-			"client_id": accessKey,
-			"secret":    secret,
+		"oauth2": jcon.Map{
+			"server_url":         url,
+			"client_id":          accessKey,
+			"secret":             secret,
+			"token_endpoint":     tokenEndpoint,
+			"authorize_endpoint": authorizeEndpoint,
 		},
 	}, nil
 }
