@@ -172,9 +172,10 @@ func (s *Server) startHTTP() {
 		}
 
 		var handler http.Handler
-		if len(s.options.muxWrappers) > 0 {
-			for _, wrapFunc := range s.options.muxWrappers {
-				handler = wrapFunc(s.mux)
+		if len(s.options.middlewareList) > 0 {
+			handler = s.mux
+			for _, middleware := range s.options.middlewareList {
+				handler = middleware(handler)
 			}
 		} else {
 			handler = s.mux

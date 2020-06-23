@@ -3,6 +3,7 @@ package grpc_gateway
 import (
 	"github.com/omecodes/common/netx"
 	"google.golang.org/grpc"
+	"net/http"
 )
 
 type options struct {
@@ -11,7 +12,7 @@ type options struct {
 	httpPort        int
 	grpcOpts        []grpc.ServerOption
 	endpointMappers map[string]endpointMapping
-	muxWrappers     []MuxWrapper
+	middlewareList  []func(handler http.Handler) http.Handler
 }
 
 type Option func(opts *options)
@@ -46,9 +47,9 @@ func EndpointMap(name string, mapper Mapper) Option {
 	}
 }
 
-func MuxWrappers(wrappers ...MuxWrapper) Option {
+func Middleware(middleware func(handler http.Handler) http.Handler) Option {
 	return func(opts *options) {
-		opts.muxWrappers = wrappers
+		opts.middlewareList = append(opts.middlewareList, middleware)
 	}
 }
 
