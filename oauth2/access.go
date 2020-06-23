@@ -14,12 +14,10 @@ func ExtractJwtFromAccessToken(name, value string, codecs ...securecookie.Codec)
 	if err != nil {
 		return "", err
 	}
-
 	o := values[jwtKey]
 	if o == nil {
 		return "", nil
 	}
-
 	return o.(string), nil
 }
 

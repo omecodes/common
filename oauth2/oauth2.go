@@ -68,13 +68,32 @@ type Provider interface {
 }
 
 type Config struct {
-	ClientID              string
-	Secret                string
-	Scope                 []string
-	State                 string
-	CallbackURL           string
-	AuthorizationEndpoint string
-	TokenEndpoint         string
+	ClientID              string `json:"client_id"`
+	Secret                string `json:"secret"`
+	Scope                 string `json:"scope"`
+	State                 string `json:"state"`
+	CallbackURL           string `json:"callback_url"`
+	AuthorizationEndpoint string `json:"authorize_endpoint"`
+	TokenEndpoint         string `json:"token_endpoint"`
+}
+
+func ParseConfig(m jcon.Map) *Config {
+	serverURL, _ := m.GetString("server_url")
+	scope, _ := m.GetString("scope")
+	secret, _ := m.GetString("secret")
+	clientID, _ := m.GetString("client_id")
+	tokenEndpoint, _ := m.GetString("token_endpoint")
+	authorizeEndpoint, _ := m.GetString("authorize_endpoint")
+	callbackURL, _ := m.GetString("callback_url")
+
+	return &Config{
+		ClientID:              clientID,
+		Secret:                secret,
+		Scope:                 scope,
+		CallbackURL:           callbackURL,
+		AuthorizationEndpoint: fmt.Sprintf("%s%s", serverURL, authorizeEndpoint),
+		TokenEndpoint:         fmt.Sprintf("%s%s", serverURL, tokenEndpoint),
+	}
 }
 
 // Client
@@ -92,7 +111,7 @@ func (c *Client) GetURLAuthorizationURL() (string, error) {
 		ParamState,
 		c.cfg.State,
 		ParamScope,
-		strings.Join(c.cfg.Scope, " "),
+		c.cfg.Scope,
 		ParamClientID,
 		c.cfg.ClientID,
 		ParamResponseType,
