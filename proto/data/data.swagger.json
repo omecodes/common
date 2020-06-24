@@ -111,8 +111,7 @@
           "type": "string"
         },
         "uri": {
-          "type": "string",
-          "format": "byte"
+          "type": "string"
         }
       }
     },

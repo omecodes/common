@@ -13,7 +13,7 @@ enum Scope {
 message Data {
     string context = 1;
     string name = 2;
-    bytes uri = 3;
+    string uri = 3;
 }
 
 service DataStore {
