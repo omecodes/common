@@ -32,16 +32,11 @@ type middleware struct {
 
 func (m *middleware) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		if r.URL.Path == m.triggerEndpoint {
-			m.login(w, r)
-			return
-		}
-
 		if r.URL.Path == m.authorizedEndpoint {
 			m.authorized(w, r)
 			return
 		}
+
 		cookie, _ := r.Cookie(m.cookieName)
 		if cookie != nil && cookie.Value != "" {
 			token := &Token{}
@@ -53,6 +48,11 @@ func (m *middleware) middleware(next http.Handler) http.Handler {
 				ctx := ContextWithToken(r.Context(), token)
 				r = r.WithContext(ctx)
 			}
+		}
+
+		if r.URL.Path == m.triggerEndpoint {
+			m.login(w, r)
+			return
 		}
 
 		next.ServeHTTP(w, r)
@@ -120,6 +120,16 @@ func (m *middleware) authorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *middleware) login(w http.ResponseWriter, r *http.Request) {
+	token := TokenFromContext(r.Context())
+	if token != nil {
+		httpx.Redirect(w, &httpx.RedirectURL{
+			URL:         m.continueURL,
+			Code:        http.StatusOK,
+			ContentType: "text/html",
+		})
+		return
+	}
+
 	q := r.URL.Query()
 	m.continueURL = q.Get("continue")
 
