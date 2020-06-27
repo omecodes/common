@@ -66,10 +66,10 @@ func (g *gRPCProxyBasic) RequireTransportSecurity() bool {
 	return true
 }
 
-func NewGRPCProxy(user, password string) *gRPCProxyBasic {
+func NewGRPCProxy(key, secret string) *gRPCProxyBasic {
 	return &gRPCProxyBasic{
-		key:    user,
-		secret: password,
+		key:    key,
+		secret: secret,
 	}
 }
 

@@ -465,8 +465,8 @@
             "$ref": "#/definitions/apppbCategory"
           }
         },
-        "credentials": {
-          "$ref": "#/definitions/apppbCredentials"
+        "secret": {
+          "type": "string"
         },
         "info": {
           "$ref": "#/definitions/apppbInfo"
@@ -555,17 +555,6 @@
         "exists": {
           "type": "boolean",
           "format": "boolean"
-        }
-      }
-    },
-    "apppbCredentials": {
-      "type": "object",
-      "properties": {
-        "key": {
-          "type": "string"
-        },
-        "secret": {
-          "type": "string"
         }
       }
     },
