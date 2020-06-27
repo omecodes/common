@@ -1,6 +1,8 @@
 package ga
 
-type CredentialsVerifyFunc func (cred *Credentials) (bool, error)
+type CredentialsVerifyFunc func(cred *Credentials) (bool, error)
+
+type ProxyCredentialsVerifyFunc func(cred *ProxyCredentials) (bool, error)
 
 type Credentials struct {
 	Username string
