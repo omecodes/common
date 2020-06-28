@@ -11,9 +11,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/omecodes/common/crypto"
-	"github.com/omecodes/common/jcon"
 	"github.com/omecodes/common/log"
 	"github.com/omecodes/common/system"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -78,25 +78,6 @@ type Config struct {
 	TokenEndpoint         string `json:"token_endpoint"`
 }
 
-func ParseConfig(m jcon.Map) *Config {
-	serverURL, _ := m.GetString("server_url")
-	scope, _ := m.GetString("scope")
-	secret, _ := m.GetString("secret")
-	clientID, _ := m.GetString("client_id")
-	tokenEndpoint, _ := m.GetString("token_endpoint")
-	authorizeEndpoint, _ := m.GetString("authorize_endpoint")
-	callbackURL, _ := m.GetString("callback_url")
-
-	return &Config{
-		ClientID:              clientID,
-		Secret:                secret,
-		Scope:                 scope,
-		CallbackURL:           callbackURL,
-		AuthorizationEndpoint: fmt.Sprintf("%s%s", serverURL, authorizeEndpoint),
-		TokenEndpoint:         fmt.Sprintf("%s%s", serverURL, tokenEndpoint),
-	}
-}
-
 // Client
 type Client struct {
 	cfg *Config
@@ -149,11 +130,11 @@ func (c *Client) GetAccessToken(code string) (*Token, error) {
 		var token Token
 		err = json.NewDecoder(rsp.Body).Decode(&token)
 		return &token, err
-	} else {
-		m := jcon.Map{}
-		err = json.NewDecoder(rsp.Body).Decode(&m)
-		return nil, errors.New(m.String())
 	}
+
+	data, _ := ioutil.ReadAll(rsp.Body)
+	return nil, errors.New(string(data))
+
 }
 
 // Params
