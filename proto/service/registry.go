@@ -20,5 +20,6 @@ type Registry interface {
 	RegisterEventHandler(h EventHandler) string
 	DeregisterEventHandler(string)
 	GetOfType(t Type) ([]*Info, error)
+	FirstOfType(t Type) (*Info, error)
 	Stop() error
 }

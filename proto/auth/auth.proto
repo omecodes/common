@@ -82,7 +82,7 @@ service TokenStoreService {
     rpc SaveToken(SaveTokenRequest) returns (SaveTokenResponse);
     rpc RevokeToken (RevokeTokenRequest) returns (RevokeTokenResponse);
     rpc FindToken (FindJWTRequest) returns (FindJWTResponse) {
-        option (google.api.http).get = "/jwt/find/{jti}";
+        option (google.api.http).get = "/jwt/match/{jti}";
     };
 }
 
