@@ -35,6 +35,7 @@ const (
 	ParamErrorDescription = "error_description"
 	// ParamErrorUri          = "error_uri"
 	ParamGrantType = "grant_type"
+	ParamToken     = "token"
 	// ParamCodeVerifier      = "code_verifier"
 
 	ResponseTypeCode = "code"
