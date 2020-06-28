@@ -11,7 +11,7 @@
     "application/json"
   ],
   "paths": {
-    "/jwt/find/{jti}": {
+    "/jwt/match/{jti}": {
       "get": {
         "operationId": "FindToken",
         "responses": {

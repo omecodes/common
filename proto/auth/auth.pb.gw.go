@@ -190,7 +190,7 @@ func RegisterTokenStoreServiceHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_TokenStoreService_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"jwt", "find", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_TokenStoreService_FindToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"jwt", "match", "jti"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
