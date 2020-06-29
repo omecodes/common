@@ -16,18 +16,14 @@ import (
 	"github.com/omecodes/common/errors"
 	ga "github.com/omecodes/common/grpc-authentication"
 	gs "github.com/omecodes/common/grpc-session"
+	"github.com/omecodes/common/log"
 	"github.com/omecodes/common/netx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"log"
 	"net"
 	"net/http"
 	"strings"
 )
-
-type gatewayConfigs struct {
-	port int
-}
 
 type Server struct {
 	host         string
@@ -64,7 +60,7 @@ func (s *Server) listenHttp() error {
 			s.httpAddress = address + strings.Split(l.Addr().String(), ":")[1]
 		}
 
-		log.Printf("listening to HTTP traffic at %s", s.httpAddress)
+		log.Info("[gRPC-http] starting HTTP server", log.Field("at", s.httpAddress))
 	}
 	return nil
 }
@@ -86,8 +82,7 @@ func (s *Server) listenGRPC() error {
 	} else {
 		s.grpcAddress = address + strings.Split(l.Addr().String(), ":")[1]
 	}
-
-	log.Printf("listening to gRPC traffic at %s", s.grpcAddress)
+	log.Info("[gRPC-http] starting gRPC server", log.Field("at", s.grpcAddress))
 
 	return nil
 }

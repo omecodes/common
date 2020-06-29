@@ -3,14 +3,15 @@ package oauth2
 import (
 	"encoding/gob"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/omecodes/common/httpx"
 	"github.com/omecodes/common/log"
 	"github.com/zoenion/common/oauth2"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
-	"time"
 )
 
 func init() {
@@ -19,38 +20,26 @@ func init() {
 
 var states = &sync.Map{}
 
-type AuthorizedHandleFunc func(state string, t *Token, w http.ResponseWriter, r *http.Request)
+type AuthorizedHandleFunc func(t *Token, continueURL string, w http.ResponseWriter, r *http.Request)
 
-type middleware struct {
+type AuthenticationRequiredFunc func(r *http.Request) bool
+
+type workflow struct {
 	config             *Config
-	triggerEndpoint    string
-	authorizedEndpoint string
-	codecs             []securecookie.Codec
-	cookieName         string
 	continueURL        string
+	authorizedEndpoint string
+	authRequiredFunc   AuthenticationRequiredFunc
+	handlerFunc        AuthorizedHandleFunc
 }
 
-func (m *middleware) middleware(next http.Handler) http.Handler {
+func (m *workflow) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == m.authorizedEndpoint {
 			m.authorized(w, r)
 			return
 		}
 
-		cookie, _ := r.Cookie(m.cookieName)
-		if cookie != nil && cookie.Value != "" {
-			token := &Token{}
-			err := securecookie.DecodeMulti("", cookie.Value, token, m.codecs...)
-			if err != nil {
-				log.Error("could not decode cookie", err)
-
-			} else {
-				ctx := ContextWithToken(r.Context(), token)
-				r = r.WithContext(ctx)
-			}
-		}
-
-		if r.URL.Path == m.triggerEndpoint {
+		if m.authRequiredFunc(r) {
 			m.login(w, r)
 			return
 		}
@@ -59,7 +48,7 @@ func (m *middleware) middleware(next http.Handler) http.Handler {
 	})
 }
 
-func (m *middleware) authorized(w http.ResponseWriter, r *http.Request) {
+func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
 	authError := q.Get(ParamError)
@@ -97,44 +86,15 @@ func (m *middleware) authorized(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookieValue, err := securecookie.EncodeMulti("", token, m.codecs...)
-	if err != nil {
-		log.Error("could not encode token to cookie", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	cookie := http.Cookie{
-		Name:     m.cookieName,
-		Value:    cookieValue,
-		Expires:  time.Now().Add(time.Hour * 30),
-		HttpOnly: true,
-	}
-	http.SetCookie(w, &cookie)
-
-	httpx.Redirect(w, &httpx.RedirectURL{
-		URL:         m.continueURL,
-		Code:        http.StatusOK,
-		ContentType: "text/html",
-	})
+	m.handlerFunc(token, m.continueURL, w, r)
 }
 
-func (m *middleware) login(w http.ResponseWriter, r *http.Request) {
-	token := TokenFromContext(r.Context())
-	if token != nil {
-		httpx.Redirect(w, &httpx.RedirectURL{
-			URL:         m.continueURL,
-			Code:        http.StatusOK,
-			ContentType: "text/html",
-		})
-		return
-	}
+func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
+	state := uuid.New().String()
+	m.config.State = state
 
 	q := r.URL.Query()
 	m.continueURL = q.Get("continue")
-
-	state := uuid.New().String()
-	m.config.State = state
 
 	states.Store(state, m.config)
 
@@ -153,12 +113,11 @@ func (m *middleware) login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func WebAuthenticator(config *Config, triggerEndpoint string, cookieName string, codecs ...securecookie.Codec) (func(http.Handler) http.Handler, error) {
-	m := &middleware{
-		config:          config,
-		triggerEndpoint: triggerEndpoint,
-		cookieName:      cookieName,
-		codecs:          codecs,
+func Workflow(config *Config, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) (mux.MiddlewareFunc, error) {
+	m := &workflow{
+		config:           config,
+		authRequiredFunc: authRequiredFunc,
+		handlerFunc:      handlerFunc,
 	}
 	u, err := url.Parse(config.CallbackURL)
 	if err != nil {
@@ -166,4 +125,32 @@ func WebAuthenticator(config *Config, triggerEndpoint string, cookieName string,
 	}
 	m.authorizedEndpoint = u.Path
 	return m.middleware, nil
+}
+
+type bearerDecoder struct {
+	codecs []securecookie.Codec
+}
+
+func (bc bearerDecoder) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authorization := r.Header.Get("Authorization")
+		if authorization != "" {
+			accessToken := strings.TrimLeft(authorization, "Bearer ")
+			var token Token
+			err := securecookie.DecodeMulti("", accessToken, &token, bc.codecs...)
+			if err != nil {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+
+			ctx := r.Context()
+			ctx = ContextWithToken(ctx, &token)
+			r = r.WithContext(ctx)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func BearerHeaderDecoder(codecs ...securecookie.Codec) *bearerDecoder {
+	return &bearerDecoder{codecs: codecs}
 }
