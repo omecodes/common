@@ -43,7 +43,8 @@ func Key(filename string, password []byte) PoolOption {
 
 func NewConnectionPool(registry Registry, opts ...PoolOption) ConnectionPool {
 	p := &pool{
-		defaultOptions: map[string][]grpc.DialOption{},
+		registry: registry,
+		dialer:   map[string]Dialer{},
 	}
 
 	p.options = new(poolOptions)
@@ -66,9 +67,8 @@ type pool struct {
 	cert    *x509.Certificate
 	key     crypto.PrivateKey
 
-	defaultOptions map[string][]grpc.DialOption
-	dialer         map[string]Dialer
-	registry       Registry
+	dialer   map[string]Dialer
+	registry Registry
 }
 
 func (p *pool) Dialer(name string) (Dialer, error) {
@@ -94,6 +94,8 @@ func (p *pool) Dialer(name string) (Dialer, error) {
 
 				if tc != nil {
 					opts = append(opts, grpc.WithTransportCredentials(credentials.NewTLS(tc)))
+				} else {
+					opts = append(opts, grpc.WithInsecure())
 				}
 
 				dialer := NewDialer(node.Address, opts...)
