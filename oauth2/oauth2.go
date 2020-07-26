@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -76,6 +77,7 @@ type Config struct {
 	CallbackURL           string `json:"callback_url"`
 	AuthorizationEndpoint string `json:"authorize_endpoint"`
 	TokenEndpoint         string `json:"token_endpoint"`
+	AuthorityCertFilename string `json:"authority_certificate"`
 }
 
 // Client
@@ -107,6 +109,20 @@ func (c *Client) GetURLAuthorizationURL() (string, error) {
 
 func (c *Client) GetAccessToken(code string) (*Token, error) {
 	client := &http.Client{}
+	if c.cfg.AuthorityCertFilename != "" {
+		cert, err := crypto2.LoadCertificate(c.cfg.AuthorityCertFilename)
+		if err != nil {
+			return nil, err
+		}
+
+		pool := x509.NewCertPool()
+		pool.AddCert(cert)
+
+		tc := &tls.Config{
+			RootCAs: pool,
+		}
+		client.Transport = &http.Transport{TLSClientConfig: tc}
+	}
 
 	form := url.Values{}
 	form.Add(ParamCode, code)

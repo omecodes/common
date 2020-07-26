@@ -10,6 +10,7 @@ type options struct {
 	listenOptions   []netx.ListenOption
 	gRPCPort        int
 	httpPort        int
+	grpcSession     bool
 	grpcOpts        []grpc.ServerOption
 	endpointMappers map[string]endpointMapping
 	middlewareList  []func(handler http.Handler) http.Handler
@@ -50,6 +51,12 @@ func EndpointMap(name string, mapper Mapper) Option {
 func Middleware(middleware func(handler http.Handler) http.Handler) Option {
 	return func(opts *options) {
 		opts.middlewareList = append(opts.middlewareList, middleware)
+	}
+}
+
+func GRPCSession(enable bool) Option {
+	return func(opts *options) {
+		opts.grpcSession = true
 	}
 }
 

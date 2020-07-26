@@ -20,6 +20,7 @@ import (
 	"github.com/omecodes/common/netx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/status"
 	"net"
 	"net/http"
 	"strings"
@@ -130,9 +131,12 @@ func (s *Server) startHTTP() {
 			return
 		}
 
-		s.mux = runtime.NewServeMux(
-			runtime.WithForwardResponseOption(gs.SetCookieFromGRPCMetadata),
-		)
+		var serverOpts []runtime.ServeMuxOption
+		if s.options.grpcSession {
+			serverOpts = append(serverOpts, runtime.WithForwardResponseOption(gs.SetCookieFromGRPCMetadata))
+		}
+		serverOpts = append(serverOpts, runtime.WithProtoErrorHandler(s.HandlerError))
+		s.mux = runtime.NewServeMux(serverOpts...)
 
 		var opts []grpc.DialOption
 
@@ -286,6 +290,16 @@ func (s *Server) Errors() chan error {
 		s.errorChannel = make(chan error, 4)
 	}
 	return s.errorChannel
+}
+
+func (s *Server) HandlerError(ctx context.Context, mux *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+	log.Info("caught error", log.Field("err", err))
+	st, ok := status.FromError(err)
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(errors.HttpStatus(errors.New(st.Message())))
 }
 
 func New(host string, opts ...Option) *Server {
