@@ -34,6 +34,7 @@ type App struct {
 	dataDir         string
 	cacheDir        string
 	wwwDir          string
+	webAppsDir      string
 	templatesDir    string
 	Resources       *Resources
 	configs         jcon.Map
@@ -229,7 +230,16 @@ func (a *App) initResources() error {
 				return err
 			}
 		}
-		a.Resources.web = app.NewFolder(a.wwwDir, a.Resources.i18n)
+		a.Resources.staticsDir = a.wwwDir
+
+		if a.webAppsDir == "" {
+			a.webAppsDir = filepath.Join(a.dataDir, "res", "webapps")
+			err := os.MkdirAll(a.webAppsDir, os.ModePerm)
+			if err != nil {
+				return err
+			}
+		}
+		a.Resources.web = app.NewFolder(a.webAppsDir, a.Resources.i18n)
 	}
 	return nil
 }
@@ -276,6 +286,10 @@ func (a *App) InitDirs() error {
 func (a *App) LoadConfigs() error {
 	cfgFilename := filepath.Join(a.dataDir, "configs.json")
 	return jcon.Load(cfgFilename, &a.configs)
+}
+
+func (a *App) InitResources() error {
+	return a.initResources()
 }
 
 func (a *App) DataDir() string {
