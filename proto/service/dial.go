@@ -213,7 +213,8 @@ func (g *dialer) Dial(opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 			_ = g.wrapped.Close()
 		}
 		var err error
-		g.wrapped, err = grpc.Dial(g.address, g.defaultOptions...)
+		mergedOptions := append(g.defaultOptions, opts...)
+		g.wrapped, err = grpc.Dial(g.address, mergedOptions...)
 		if err != nil {
 			return nil, err
 		}

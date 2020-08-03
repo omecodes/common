@@ -2,7 +2,6 @@ package oauth2
 
 import (
 	"encoding/gob"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/omecodes/common/httpx"
@@ -13,6 +12,8 @@ import (
 	"strings"
 	"sync"
 )
+
+type ConfigProvider func() (*Config, error)
 
 func init() {
 	gob.Register(Token{})
@@ -25,16 +26,29 @@ type AuthorizedHandleFunc func(t *Token, continueURL string, w http.ResponseWrit
 type AuthenticationRequiredFunc func(r *http.Request) bool
 
 type workflow struct {
-	config             *Config
-	continueURL        string
-	authorizedEndpoint string
-	authRequiredFunc   AuthenticationRequiredFunc
-	handlerFunc        AuthorizedHandleFunc
+	configProvider   ConfigProvider
+	continueURL      string
+	authRequiredFunc AuthenticationRequiredFunc
+	handlerFunc      AuthorizedHandleFunc
 }
 
 func (m *workflow) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == m.authorizedEndpoint {
+		config, err := m.configProvider()
+		if err != nil {
+			log.Error("could not get OAUTH2 config", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		u, err := url.Parse(config.CallbackURL)
+		if err != nil {
+			log.Error("config wrong callback uri format", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if r.URL.Path == u.Path {
 			m.authorized(w, r)
 			return
 		}
@@ -90,15 +104,19 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
-	state := uuid.New().String()
-	m.config.State = state
+	config, err := m.configProvider()
+	if err != nil {
+		log.Error("could not get", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	q := r.URL.Query()
 	m.continueURL = q.Get("continue")
 
-	states.Store(state, m.config)
+	states.Store(config.State, config)
 
-	client := NewClient(m.config)
+	client := NewClient(config)
 	authorizeURL, err := client.GetURLAuthorizationURL()
 	if err != nil {
 		log.Error("failed to construct OAuth authorize URL", err)
@@ -113,18 +131,13 @@ func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Workflow(config *Config, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) (mux.MiddlewareFunc, error) {
+func Workflow(configProvider ConfigProvider, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) mux.MiddlewareFunc {
 	m := &workflow{
-		config:           config,
+		configProvider:   configProvider,
 		authRequiredFunc: authRequiredFunc,
 		handlerFunc:      handlerFunc,
 	}
-	u, err := url.Parse(config.CallbackURL)
-	if err != nil {
-		return nil, err
-	}
-	m.authorizedEndpoint = u.Path
-	return m.middleware, nil
+	return m.middleware
 }
 
 type bearerDecoder struct {

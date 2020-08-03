@@ -59,23 +59,49 @@ func (dao *SQL) Init(cfg jcon.Map) error {
 	switch d {
 	case "mysql", "sqlite3":
 		dao.dialect = d
-		dao.DB = dbi.(*sql.DB)
+		db := dbi.(*sql.DB)
 		if d == "mysql" {
-			dao.SetVariable(VarLocate, "locate")
-			dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
+			return dao.InitWithMySQLDB(db)
 		} else {
-			dao.isSQLite = true
-			dao.SetVariable(VarLocate, "instr")
-			dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
-			if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
-				log.Error("failed to enable foreign key feature", err)
-			}
-			dao.mux = new(sync.RWMutex)
+			return dao.InitSQLite(db)
 		}
 	default:
 		return errors.New("database dialect is not supported")
 	}
+}
 
+func (dao *SQL) InitWithSqlDB(dialect string, db *sql.DB) error {
+	if dialect == "mysql" {
+		return dao.InitWithMySQLDB(db)
+	}
+
+	if dialect == "sqlite3" {
+		return dao.InitSQLite(db)
+	}
+
+	return errors.NotSupported
+}
+
+func (dao *SQL) InitWithMySQLDB(db *sql.DB) error {
+	dao.DB = db
+	dao.SetVariable(VarLocate, "locate")
+	dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
+	return dao.init()
+}
+
+func (dao *SQL) InitSQLite(db *sql.DB) error {
+	dao.DB = db
+	dao.isSQLite = true
+	dao.SetVariable(VarLocate, "instr")
+	dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
+	if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
+		log.Error("failed to enable foreign key feature", err)
+	}
+	dao.mux = new(sync.RWMutex)
+	return dao.init()
+}
+
+func (dao *SQL) init() error {
 	dao.RegisterScanner(MySQLIndexScanner, NewScannerFunc(dao.mysqlIndexScan))
 	dao.RegisterScanner(SQLiteIndexScanner, NewScannerFunc(dao.sqliteIndexScan))
 

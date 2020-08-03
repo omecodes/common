@@ -1,6 +1,7 @@
 package mapping
 
 import (
+	"database/sql"
 	"github.com/omecodes/common/codec"
 	"github.com/omecodes/common/dao"
 	"github.com/omecodes/common/jcon"
@@ -112,6 +113,33 @@ func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (DoubleMap, error
 		return nil, err
 	}
 	d.codec = codec
+
+	err = d.AddUniqueIndex(dao.SQLIndex{Name: "unique_keys", Table: "$prefix$_mapping", Fields: []string{"first_key", "second_key"}}, false)
+	return d, err
+}
+
+func NewFromSQLDB(dialect string, db *sql.DB, prefix string, cdc codec.Codec) (DoubleMap, error) {
+	d := new(sqlPairMap)
+	d.SetTablePrefix(prefix).
+		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_mapping (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").
+		AddStatement("insert", "insert into $prefix$_mapping values (?, ?, ?);").
+		AddStatement("update", "update $prefix$_mapping set val=? where first_key=? and second_key=?;").
+		AddStatement("select", "select * from $prefix$_mapping where first_key=? and second_key=?;").
+		AddStatement("select_by_first_key", "select second_key, val from $prefix$_mapping where first_key=?;").
+		AddStatement("select_by_second_key", "select first_key, val from $prefix$_mapping where second_key=?;").
+		AddStatement("select_all", "select * from $prefix$_mapping;").
+		AddStatement("delete", "delete from $prefix$_mapping where first_key=?;").
+		AddStatement("delete_by_first_key", "delete from $prefix$_mapping where first_key=?;").
+		AddStatement("delete_by_second_key", "delete from $prefix$_mapping where second_key=?;").
+		AddStatement("clear", "delete from $prefix$_mapping;").
+		RegisterScanner("scanner", dao.NewScannerFunc(sqlScanRow)).
+		RegisterScanner("pair_scanner", dao.NewScannerFunc(sqlScanPair))
+
+	err := d.InitWithSqlDB(dialect, db)
+	if err != nil {
+		return nil, err
+	}
+	d.codec = cdc
 
 	err = d.AddUniqueIndex(dao.SQLIndex{Name: "unique_keys", Table: "$prefix$_mapping", Fields: []string{"first_key", "second_key"}}, false)
 	return d, err
