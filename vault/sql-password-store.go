@@ -2,6 +2,7 @@ package vault
 
 import (
 	"crypto/sha256"
+	"database/sql"
 	"encoding/hex"
 	"github.com/omecodes/common/codec"
 	"github.com/omecodes/common/errors"
@@ -59,9 +60,17 @@ func (p *passwordStore) Verify(username, password string) (bool, error) {
 }
 
 func NewPasswordStore(cfg jcon.Map, tableNamePrefix string) (*passwordStore, error) {
-	db, err := dict.NewSQL(cfg, tableNamePrefix, codec.Default)
+	db, err := dict.New(cfg, tableNamePrefix, codec.Default)
 	if err != nil {
 		return nil, err
 	}
 	return &passwordStore{db: db}, nil
+}
+
+func NewSQLPasswordStore(db *sql.DB, tableNamePrefix string) (*passwordStore, error) {
+	d, err := dict.NewSQL(db, tableNamePrefix, codec.Default)
+	if err != nil {
+		return nil, err
+	}
+	return &passwordStore{db: d}, nil
 }

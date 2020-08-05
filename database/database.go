@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/omecodes/common/jcon"
@@ -53,7 +54,7 @@ func Connect(c jcon.Map) (string, interface{}, error) {
 			Password: "",
 			DB:       0,
 		})
-		_, err := client.Ping().Result()
+		_, err := client.Ping(context.Background()).Result()
 		if err != nil {
 			return "", nil, err
 		}

@@ -1,6 +1,7 @@
 package dict
 
 import (
+	"database/sql"
 	"github.com/omecodes/common/codec"
 	"github.com/omecodes/common/dao"
 	"github.com/omecodes/common/errors"
@@ -75,7 +76,7 @@ func (s *sqlObjects) Close() error {
 	return s.DB.Close()
 }
 
-func NewSQL(cfg jcon.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
+func New(cfg jcon.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
 	d := new(sqlObjects)
 	d.SetTablePrefix(tablePrefix).
 		AddTableDefinition("map", "create table if not exists $prefix$_mapping (name varchar(255) not null primary key, val longblob not null);").
@@ -92,4 +93,22 @@ func NewSQL(cfg jcon.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
 	err := d.Init(cfg)
 	d.objectCodec = codec
 	return d, err
+}
+
+func NewSQL(db *sql.DB, tablePrefix string, cdc codec.Codec) (Dict, error) {
+	d := new(sqlObjects)
+	d.SetTablePrefix(tablePrefix).
+		AddTableDefinition("map", "create table if not exists $prefix$_mapping (name varchar(255) not null primary key, val longblob not null);").
+		AddStatement("insert", "insert into $prefix$_mapping values (?, ?);").
+		AddStatement("update", "update $prefix$_mapping set val=? where name=?;").
+		AddStatement("select", "select * from $prefix$_mapping where name=?;").
+		AddStatement("select_all", "select * from $prefix$_mapping;").
+		AddStatement("contains", "select 1 from $prefix$_mapping where name=?;").
+		AddStatement("delete", "delete from $prefix$_mapping where name=?;").
+		AddStatement("clear", "delete from $prefix$_mapping;").
+		RegisterScanner("scanner", dao.NewScannerFunc(scanRow)).
+		RegisterScanner("bool", dao.NewScannerFunc(scanBool))
+
+	d.objectCodec = cdc
+	return d, d.InitWithMySQLDB(db)
 }
