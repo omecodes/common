@@ -323,7 +323,7 @@ func (dao *SQL) RawQuery(query string, scannerName string, params ...interface{}
 	for name, value := range dao.vars {
 		query = strings.Replace(query, name, value, -1)
 	}
-	rows, err := dao.DB.Query(query)
+	rows, err := dao.DB.Query(query, params...)
 	if err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ func (dao *SQL) RawQueryOne(query string, scannerName string, params ...interfac
 		query = strings.Replace(query, name, value, -1)
 	}
 
-	rows, err := dao.DB.Query(query)
+	rows, err := dao.DB.Query(query, params...)
 	if err != nil {
 		return nil, err
 	}
