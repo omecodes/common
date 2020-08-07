@@ -67,8 +67,8 @@ func NewPasswordStore(cfg jcon.Map, tableNamePrefix string) (*passwordStore, err
 	return &passwordStore{db: db}, nil
 }
 
-func NewSQLPasswordStore(db *sql.DB, tableNamePrefix string) (*passwordStore, error) {
-	d, err := dict.NewSQL(db, tableNamePrefix, codec.Default)
+func NewMySQLPasswordStore(db *sql.DB, tableNamePrefix string) (*passwordStore, error) {
+	d, err := dict.NewSQL("mysql", db, tableNamePrefix, codec.Default)
 	if err != nil {
 		return nil, err
 	}

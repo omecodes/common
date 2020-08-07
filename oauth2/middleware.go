@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/omecodes/common/httpx"
 	"github.com/omecodes/common/log"
-	"github.com/zoenion/common/oauth2"
 	"net/http"
 	"net/url"
 	"strings"
@@ -67,14 +66,14 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 
 	authError := q.Get(ParamError)
 	if authError != "" {
-		authErrorDesc := q.Get(oauth2.ParamErrorDescription)
+		authErrorDesc := q.Get(ParamErrorDescription)
 		log.Info("failed to authenticate user with Ome", log.Field("error", authError), log.Field("description", authErrorDesc))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	state := q.Get(oauth2.ParamState)
-	code := q.Get(oauth2.ParamCode)
+	state := q.Get(ParamState)
+	code := q.Get(ParamCode)
 
 	if state == "" || code == "" {
 		log.Info("OAuth incomplete Ome response: expected code and state")
