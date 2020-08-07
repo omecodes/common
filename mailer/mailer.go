@@ -4,7 +4,9 @@ import (
 	"crypto/tls"
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/jcon"
+	"github.com/xo/dburl"
 	"gopkg.in/gomail.v2"
+	"strconv"
 )
 
 type Mailer interface {
@@ -61,6 +63,25 @@ func Get(cfg jcon.Map) (Mailer, error) {
 		}, nil
 	}
 
+	return dm, nil
+}
+
+func Parse(dsn string) (Mailer, error) {
+	u, err := dburl.Parse(dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	dm := &defaultMailer{}
+
+	dm.user = u.User.Username()
+	dm.password, _ = u.User.Password()
+	dm.server = u.Host
+	port, err := strconv.Atoi(u.Port())
+	if err != nil {
+		return nil, err
+	}
+	dm.port = int32(port)
 	return dm, nil
 }
 
