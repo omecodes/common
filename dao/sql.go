@@ -84,6 +84,7 @@ func (dao *SQL) InitWithSqlDB(dialect string, db *sql.DB) error {
 
 func (dao *SQL) InitWithMySQLDB(db *sql.DB) error {
 	dao.DB = db
+	dao.dialect = "mysql"
 	dao.SetVariable(VarLocate, "locate")
 	dao.SetVariable(VarAutoIncrement, "AUTO_INCREMENT")
 	return dao.init()
@@ -92,6 +93,7 @@ func (dao *SQL) InitWithMySQLDB(db *sql.DB) error {
 func (dao *SQL) InitSQLite(db *sql.DB) error {
 	dao.DB = db
 	dao.isSQLite = true
+	dao.dialect = "sqlite3"
 	dao.SetVariable(VarLocate, "instr")
 	dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
 	if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {

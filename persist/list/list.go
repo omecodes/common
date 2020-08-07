@@ -1,6 +1,7 @@
 package list
 
 import (
+	"database/sql"
 	"github.com/omecodes/common/codec"
 	"github.com/omecodes/common/dao"
 	"github.com/omecodes/common/jcon"
@@ -120,7 +121,7 @@ func (l *listDB) scanInt(row dao.Row) (interface{}, error) {
 	return v, row.Scan(&v)
 }
 
-func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (List, error) {
+func New(dbConf jcon.Map, prefix string, codec codec.Codec) (List, error) {
 	d := new(listDB)
 	d.SetTablePrefix(prefix).
 		AddTableDefinition("map", "create table if not exists $prefix$_list (ind int not null primary key $auto_increment$, encoded longblob not null);").
@@ -135,6 +136,25 @@ func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (List, error) {
 		RegisterScanner("encoded", dao.NewScannerFunc(scanRow)).
 		RegisterScanner("index", dao.NewScannerFunc(scanInt))
 	err := d.Init(dbConf)
+	d.codec = codec
+	return d, err
+}
+
+func NewSQL(dialect string, db *sql.DB, prefix string, codec codec.Codec) (List, error) {
+	d := new(listDB)
+	d.SetTablePrefix(prefix).
+		AddTableDefinition("map", "create table if not exists $prefix$_list (ind int not null primary key $auto_increment$, encoded longblob not null);").
+		AddStatement("insert", "insert into $prefix$_list (encoded) values (?);").
+		AddStatement("select", "select * from $prefix$_list where ind=?;").
+		AddStatement("select_min_index", "select min(ind) from $prefix$_list;").
+		AddStatement("select_max_index", "select max(ind) from $prefix$_list;").
+		AddStatement("select_count", "select count(ind) from $prefix$_list;").
+		AddStatement("select_from", "select * from $prefix$_list where ind>? order by ind;").
+		AddStatement("delete_by_seq", "delete from $prefix$_list where ind=?;").
+		AddStatement("clear", "delete from $prefix$_list;").
+		RegisterScanner("encoded", dao.NewScannerFunc(scanRow)).
+		RegisterScanner("index", dao.NewScannerFunc(scanInt))
+	err := d.InitWithSqlDB(dialect, db)
 	d.codec = codec
 	return d, err
 }

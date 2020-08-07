@@ -3,8 +3,7 @@
 package futils
 
 import (
-	"fmt"
-	"github.com/jaypipes/ghw"
+	//"github.com/jaypipes/ghw"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,7 +31,7 @@ func DiskStatus(path string) (disk DiskUsage, err error) {
 	return
 }
 
-func DriveList() []string {
+/* func DriveList() []string {
 	var drives []string
 
 	block, err := ghw.Block()
@@ -44,4 +43,4 @@ func DriveList() []string {
 		drives = append(drives, disk.Name)
 	}
 	return drives
-}
+} */

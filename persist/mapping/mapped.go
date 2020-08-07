@@ -91,7 +91,7 @@ func (s *sqlPairMap) Close() error {
 	return s.DB.Close()
 }
 
-func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (DoubleMap, error) {
+func New(dbConf jcon.Map, prefix string, codec codec.Codec) (DoubleMap, error) {
 	d := new(sqlPairMap)
 	d.SetTablePrefix(prefix).
 		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_mapping (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").
@@ -118,7 +118,7 @@ func NewSQL(dbConf jcon.Map, prefix string, codec codec.Codec) (DoubleMap, error
 	return d, err
 }
 
-func NewFromSQLDB(dialect string, db *sql.DB, prefix string, cdc codec.Codec) (DoubleMap, error) {
+func NewSQL(dialect string, db *sql.DB, prefix string, cdc codec.Codec) (DoubleMap, error) {
 	d := new(sqlPairMap)
 	d.SetTablePrefix(prefix).
 		AddTableDefinition("mapped_pairs", "create table if not exists $prefix$_mapping (first_key varchar(255) not null, second_key varchar(255) not null, val longblob not null);").

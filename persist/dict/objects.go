@@ -95,7 +95,7 @@ func New(cfg jcon.Map, tablePrefix string, codec codec.Codec) (Dict, error) {
 	return d, err
 }
 
-func NewSQL(db *sql.DB, tablePrefix string, cdc codec.Codec) (Dict, error) {
+func NewSQL(dialect string, db *sql.DB, tablePrefix string, cdc codec.Codec) (Dict, error) {
 	d := new(sqlObjects)
 	d.SetTablePrefix(tablePrefix).
 		AddTableDefinition("map", "create table if not exists $prefix$_mapping (name varchar(255) not null primary key, val longblob not null);").
@@ -110,5 +110,5 @@ func NewSQL(db *sql.DB, tablePrefix string, cdc codec.Codec) (Dict, error) {
 		RegisterScanner("bool", dao.NewScannerFunc(scanBool))
 
 	d.objectCodec = cdc
-	return d, d.InitWithMySQLDB(db)
+	return d, d.InitWithSqlDB(dialect, db)
 }
