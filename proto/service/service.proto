@@ -26,7 +26,8 @@ enum Type {
 enum Security {
     None = 0;
     TLS = 1;
-    MutualTLS = 2;
+    ACME = 2;
+    MutualTLS = 3;
 }
 
 enum Status {

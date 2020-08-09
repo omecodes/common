@@ -321,6 +321,7 @@
       "enum": [
         "None",
         "TLS",
+        "ACME",
         "MutualTLS"
       ],
       "default": "None"
