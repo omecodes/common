@@ -1,7 +1,7 @@
 package netx
 
 import (
-	"github.com/omecodes/common/log"
+	"github.com/omecodes/common/utils/log"
 	"net"
 	"sort"
 	"strconv"

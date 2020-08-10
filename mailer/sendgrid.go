@@ -2,7 +2,7 @@ package mailer
 
 import (
 	"fmt"
-	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/utils/jcon"
 	"github.com/sendgrid/sendgrid-go"
 )
 

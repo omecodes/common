@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	crypto2 "github.com/omecodes/common/crypto"
-	apppb "github.com/omecodes/common/proto/app"
-	authpb "github.com/omecodes/common/proto/auth"
+	apppb "github.com/omecodes/common/ome/proto/app"
+	authpb "github.com/omecodes/common/ome/proto/auth"
+	crypto2 "github.com/omecodes/common/security/crypto"
 	"net/http"
 )
 

@@ -3,7 +3,7 @@ package mailer
 import (
 	"crypto/tls"
 	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/utils/jcon"
 	"github.com/xo/dburl"
 	"gopkg.in/gomail.v2"
 	"strconv"

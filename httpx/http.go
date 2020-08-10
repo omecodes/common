@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/types"
+	"github.com/omecodes/common/utils/jcon"
 	"io"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	CtxResponseWriter = types.String("response_writer")
+	CtxResponseWriter = jcon.String("response_writer")
 )
 
 type (

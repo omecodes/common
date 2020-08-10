@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/omecodes/common/jcon"
+	"github.com/omecodes/common/utils/jcon"
 	"time"
 
 	"github.com/boltdb/bolt"

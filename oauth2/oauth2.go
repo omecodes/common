@@ -11,9 +11,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/omecodes/common/crypto"
-	"github.com/omecodes/common/log"
-	"github.com/omecodes/common/system"
+	"github.com/omecodes/common/security/crypto"
+	"github.com/omecodes/common/utils/log"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -432,7 +431,7 @@ func GetToken(cfg *Config) (*Token, error) {
 		log.Error("could not construct authorization URL", err)
 	}
 
-	cmd := system.OpenBrowserCMD(authorizationURL)
+	cmd := OpenBrowserCMD(authorizationURL)
 	if cmd == nil {
 		return nil, errors.New("could not open browser")
 	}

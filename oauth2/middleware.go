@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/omecodes/common/httpx"
-	"github.com/omecodes/common/log"
+	"github.com/omecodes/common/utils/log"
 	"net/http"
 	"net/url"
 	"strings"

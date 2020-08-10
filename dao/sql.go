@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/omecodes/common/database"
 	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/jcon"
-	"github.com/omecodes/common/log"
+	"github.com/omecodes/common/utils/jcon"
+	"github.com/omecodes/common/utils/log"
 	"strings"
 	"sync"
 )

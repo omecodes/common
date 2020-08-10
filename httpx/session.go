@@ -3,7 +3,7 @@ package httpx
 import (
 	"context"
 	"github.com/gorilla/sessions"
-	"github.com/omecodes/common/codec"
+	"github.com/omecodes/common/utils/codec"
 	"net/http"
 )
 
