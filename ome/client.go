@@ -8,7 +8,6 @@ import (
 	"fmt"
 	crypto2 "github.com/omecodes/common/crypto"
 	apppb "github.com/omecodes/common/proto/app"
-	"github.com/omecodes/ome/common"
 	"net/http"
 )
 
@@ -21,14 +20,14 @@ type Config struct {
 
 type Client struct {
 	config *Config
-	info   *common.Info
+	info   *Info
 }
 
 func New(c Config) *Client {
 	return &Client{config: &c}
 }
 
-func (c Client) Info() (*common.Info, error) {
+func (c Client) Info() (*Info, error) {
 	if c.info == nil {
 
 		infoEndpoint := fmt.Sprintf("%s/info", c.config.Address)
@@ -65,7 +64,7 @@ func (c Client) Info() (*common.Info, error) {
 		}
 
 		if rsp.StatusCode == 200 {
-			info := new(common.Info)
+			info := new(Info)
 			err = json.NewDecoder(rsp.Body).Decode(&info)
 			if err != nil {
 				return nil, err
