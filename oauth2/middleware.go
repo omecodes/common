@@ -25,29 +25,17 @@ type AuthorizedHandleFunc func(t *Token, continueURL string, w http.ResponseWrit
 type AuthenticationRequiredFunc func(r *http.Request) bool
 
 type workflow struct {
-	configProvider   ConfigProvider
-	continueURL      string
-	authRequiredFunc AuthenticationRequiredFunc
-	handlerFunc      AuthorizedHandleFunc
+	callbackURL        string
+	callbackRequestURI string
+	configProvider     ConfigProvider
+	continueURL        string
+	authRequiredFunc   AuthenticationRequiredFunc
+	handlerFunc        AuthorizedHandleFunc
 }
 
 func (m *workflow) middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		config, err := m.configProvider()
-		if err != nil {
-			log.Error("could not get OAUTH2 config", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		u, err := url.Parse(config.CallbackURL)
-		if err != nil {
-			log.Error("config wrong callback uri format", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if r.URL.Path == u.Path {
+		if r.RequestURI == m.callbackURL {
 			m.authorized(w, r)
 			return
 		}
@@ -109,6 +97,7 @@ func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	config.CallbackURL = m.callbackURL
 
 	q := r.URL.Query()
 	m.continueURL = q.Get("continue")
@@ -130,13 +119,20 @@ func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Workflow(configProvider ConfigProvider, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) mux.MiddlewareFunc {
-	m := &workflow{
-		configProvider:   configProvider,
-		authRequiredFunc: authRequiredFunc,
-		handlerFunc:      handlerFunc,
+func Workflow(callbackURI string, configProvider ConfigProvider, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) (mux.MiddlewareFunc, error) {
+	u, err := url.Parse(callbackURI)
+	if err != nil {
+		return nil, err
 	}
-	return m.middleware
+
+	m := &workflow{
+		callbackURL:        callbackURI,
+		callbackRequestURI: u.RequestURI(),
+		configProvider:     configProvider,
+		authRequiredFunc:   authRequiredFunc,
+		handlerFunc:        handlerFunc,
+	}
+	return m.middleware, nil
 }
 
 type bearerDecoder struct {
