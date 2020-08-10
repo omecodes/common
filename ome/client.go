@@ -1,6 +1,8 @@
 package ome
 
 import (
+	"context"
+	"crypto/ecdsa"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -8,6 +10,7 @@ import (
 	"fmt"
 	crypto2 "github.com/omecodes/common/crypto"
 	apppb "github.com/omecodes/common/proto/app"
+	authpb "github.com/omecodes/common/proto/auth"
 	"net/http"
 )
 
@@ -29,7 +32,6 @@ func New(c Config) *Client {
 
 func (c Client) Info() (*Info, error) {
 	if c.info == nil {
-
 		infoEndpoint := fmt.Sprintf("%s/info", c.config.Address)
 		var (
 			rsp *http.Response
@@ -78,11 +80,21 @@ func (c Client) Info() (*Info, error) {
 	return c.info, nil
 }
 
-func (c *Client) RegisterUserAttributeDefinition(attrDefs []*apppb.UserAttributeDefinition) error {
-	/* info, err := c.Info()
+func (c Client) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTState, error) {
+	info, err := c.Info()
 	if err != nil {
-		return err
-	} */
+		return 0, err
+	}
 
+	key, _, err := crypto2.PEMDecodePublicKey([]byte(info.Oauth2.SignatureKey))
+	if err != nil {
+		return 0, err
+	}
+
+	verifier := authpb.NewTokenVerifier(key.(*ecdsa.PublicKey))
+	return verifier.Verify(ctx, t)
+}
+
+func (c *Client) RegisterUserAttributeDefinition(attrDefs []*apppb.UserAttributeDefinition) error {
 	return nil
 }
