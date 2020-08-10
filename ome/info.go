@@ -18,7 +18,7 @@ type Oauth2Config struct {
 }
 
 type Info struct {
-	CACert string       `json:"ca_cert"`
+	CSR    string       `json:"csr"`
 	Data   DataService  `json:"data"`
-	Oauth2 Oauth2Config `json:"oauth_2"`
+	Oauth2 Oauth2Config `json:"oauth2"`
 }
