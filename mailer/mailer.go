@@ -72,17 +72,29 @@ func Parse(dsn string) (Mailer, error) {
 		return nil, err
 	}
 
-	dm := &defaultMailer{}
+	switch u.Scheme {
+	case "sendgrid":
+		sg := &sendGrid{
+			host:     "https://api.sendgrid.com",
+			endpoint: "/v3/mail/send",
+			key:      u.User.Username(),
+		}
+		return sg, nil
+	case "smtp":
+		dm := &defaultMailer{}
 
-	dm.user = u.User.Username()
-	dm.password, _ = u.User.Password()
-	dm.server = u.Host
-	port, err := strconv.Atoi(u.Port())
-	if err != nil {
-		return nil, err
+		dm.user = u.User.Username()
+		dm.password, _ = u.User.Password()
+		dm.server = u.Host
+		port, err := strconv.Atoi(u.Port())
+		if err != nil {
+			return nil, err
+		}
+		dm.port = int32(port)
+		return dm, nil
+	default:
+		return nil, errors.NotSupported
 	}
-	dm.port = int32(port)
-	return dm, nil
 }
 
 func sendToSMTPServer(server string, port int, user, password, to, subject, contentType, content string, files ...string) error {
