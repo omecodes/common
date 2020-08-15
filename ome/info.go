@@ -18,7 +18,8 @@ type Oauth2Config struct {
 }
 
 type Info struct {
-	CSR    string       `json:"csr"`
-	Data   DataService  `json:"data"`
-	Oauth2 Oauth2Config `json:"oauth2"`
+	Registration string       `json:"registration"`
+	CSR          string       `json:"csr"`
+	Data         DataService  `json:"data"`
+	Oauth2       Oauth2Config `json:"oauth2"`
 }
