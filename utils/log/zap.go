@@ -45,27 +45,31 @@ func newZap() *zap.Logger {
 	}
 
 	cfgConsole := zapcore.EncoderConfig{
-		MessageKey:     "msg",
-		LevelKey:       "level",
-		TimeKey:        "time",
-		CallerKey:      "source",
-		EncodeLevel:    CustomEncodeLevel,
-		EncodeTime:     SyslogTimeEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-		EncodeDuration: zapcore.MillisDurationEncoder,
-		EncodeName:     zapcore.FullNameEncoder,
+		MessageKey:   "msg",
+		LevelKey:     "level",
+		TimeKey:      "time",
+		CallerKey:    "source",
+		EncodeLevel:  CustomEncodeLevel,
+		EncodeTime:   SyslogTimeEncoder,
+		EncodeCaller: zapcore.ShortCallerEncoder,
+		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
+			enc.AppendInt64(d.Nanoseconds() / 1e6)
+		},
+		EncodeName: zapcore.FullNameEncoder,
 	}
 
 	cfgFile := zapcore.EncoderConfig{
-		MessageKey:     "msg",
-		LevelKey:       "level",
-		TimeKey:        "time",
-		CallerKey:      "source",
-		EncodeLevel:    CustomLevelFileEncoder,
-		EncodeTime:     SyslogTimeEncoder,
-		EncodeDuration: zapcore.MillisDurationEncoder,
-		EncodeCaller:   zapcore.ShortCallerEncoder,
-		EncodeName:     zapcore.FullNameEncoder,
+		MessageKey:  "msg",
+		LevelKey:    "level",
+		TimeKey:     "time",
+		CallerKey:   "source",
+		EncodeLevel: CustomLevelFileEncoder,
+		EncodeTime:  SyslogTimeEncoder,
+		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
+			enc.AppendInt64(d.Nanoseconds() / 1e6)
+		},
+		EncodeCaller: zapcore.ShortCallerEncoder,
+		EncodeName:   zapcore.FullNameEncoder,
 	}
 	consoleDebugging := zapcore.Lock(os.Stdout)
 
