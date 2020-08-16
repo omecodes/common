@@ -1223,7 +1223,7 @@ func (x *usersServiceStreamSubGroupsClient) Recv() (*Group, error) {
 
 func (c *usersServiceClient) ListSubGroup(ctx context.Context, in *ListSubGroupRequest, opts ...grpc.CallOption) (*ListSubGroupResponse, error) {
 	out := new(ListSubGroupResponse)
-	err := c.cc.Invoke(ctx, "/userspb.UsersService/AllSubGroups", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userspb.UsersService/ListSubGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1377,7 +1377,7 @@ func (*UnimplementedUsersServiceServer) StreamSubGroups(req *StreamSubGroupsRequ
 	return status.Errorf(codes.Unimplemented, "method StreamSubGroups not implemented")
 }
 func (*UnimplementedUsersServiceServer) ListSubGroup(ctx context.Context, req *ListSubGroupRequest) (*ListSubGroupResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AllSubGroups not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method ListSubGroup not implemented")
 }
 func (*UnimplementedUsersServiceServer) DeleteGroup(ctx context.Context, req *DeleteGroupRequest) (*DeleteGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroup not implemented")
@@ -1475,7 +1475,7 @@ func _UsersService_ListSubGroup_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userspb.UsersService/AllSubGroups",
+		FullMethod: "/userspb.UsersService/ListSubGroup",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UsersServiceServer).ListSubGroup(ctx, req.(*ListSubGroupRequest))
@@ -1651,7 +1651,7 @@ var _UsersService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _UsersService_GetGroup_Handler,
 		},
 		{
-			MethodName: "AllSubGroups",
+			MethodName: "ListSubGroup",
 			Handler:    _UsersService_ListSubGroup_Handler,
 		},
 		{

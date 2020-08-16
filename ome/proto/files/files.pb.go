@@ -2768,7 +2768,7 @@ func (x *filesSyncClient) Recv() (*Event, error) {
 
 func (c *filesClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
 	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/filespb.Files/State", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/filespb.Files/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2944,7 +2944,7 @@ func (*UnimplementedFilesServer) Sync(req *SyncMessage, srv Files_SyncServer) er
 	return status.Errorf(codes.Unimplemented, "method Sync not implemented")
 }
 func (*UnimplementedFilesServer) List(ctx context.Context, req *ListRequest) (*ListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method State not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 func (*UnimplementedFilesServer) GetListStream(req *GetListStreamRequest, srv Files_GetListStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetListStream not implemented")
@@ -3015,7 +3015,7 @@ func _Files_List_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/filespb.Files/State",
+		FullMethod: "/filespb.Files/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FilesServer).List(ctx, req.(*ListRequest))
@@ -3237,7 +3237,7 @@ var _Files_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*FilesServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "State",
+			MethodName: "List",
 			Handler:    _Files_List_Handler,
 		},
 		{
