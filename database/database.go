@@ -1,14 +1,12 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/omecodes/common/utils/jcon"
 	"time"
 
 	"github.com/boltdb/bolt"
-	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -43,22 +41,22 @@ func Connect(c jcon.Map) (string, interface{}, error) {
 		s.SetMode(mgo.Monotonic, true)
 		return t, s.DB(c["name"].(string)), nil
 
-	case "redis":
-		port, ok := c.GetInt32("port")
-		if !ok {
-			port = 27017
-		}
+	/* case "redis":
+	port, ok := c.GetInt32("port")
+	if !ok {
+		port = 27017
+	}
 
-		client := redis.NewClient(&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", c["host"], port),
-			Password: "",
-			DB:       0,
-		})
-		_, err := client.Ping(context.Background()).Result()
-		if err != nil {
-			return "", nil, err
-		}
-		return t, client, nil
+	client := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", c["host"], port),
+		Password: "",
+		DB:       0,
+	})
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		return "", nil, err
+	}
+	return t, client, nil */
 
 	case "sql":
 		var host string
