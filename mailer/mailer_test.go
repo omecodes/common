@@ -12,7 +12,7 @@ var html = `
 `
 
 func TestSendMail(t *testing.T) {
-	err := sendToSMTPServer("", 0, "", "", "", "Ome test 1-2", html, "")
+	err := sendToSMTPServer("", 0, "", "", "", "", "Ome test 1-2", html, "")
 	if err != nil {
 		t.Error(err.Error())
 	}

@@ -4,13 +4,13 @@ import (
 	"crypto/tls"
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/utils/jcon"
-	"github.com/xo/dburl"
 	"gopkg.in/gomail.v2"
+	"net/url"
 	"strconv"
 )
 
 type Mailer interface {
-	Send(to, subject, contentType, content string, files ...string) error
+	Send(email *Email) error
 }
 
 func Get(cfg jcon.Map) (Mailer, error) {
@@ -67,7 +67,7 @@ func Get(cfg jcon.Map) (Mailer, error) {
 }
 
 func Parse(dsn string) (Mailer, error) {
-	u, err := dburl.Parse(dsn)
+	u, err := url.Parse(dsn)
 	if err != nil {
 		return nil, err
 	}
@@ -97,12 +97,12 @@ func Parse(dsn string) (Mailer, error) {
 	}
 }
 
-func sendToSMTPServer(server string, port int, user, password, to, subject, contentType, content string, files ...string) error {
+func sendToSMTPServer(server string, port int, user, password, from, to, subject, plain, content string, files ...string) error {
 	m := gomail.NewMessage()
-	m.SetHeader("From", "zoenion.services@gmail.com")
+	m.SetHeader("From", from)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", subject)
-	m.SetBody(contentType, content)
+	m.SetBody("text/html", content)
 
 	for i := range files {
 		m.Attach(files[i])

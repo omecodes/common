@@ -2,45 +2,31 @@ package mailer
 
 import (
 	"fmt"
-	"github.com/omecodes/common/utils/jcon"
 	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type sendGrid struct {
 	host     string
 	endpoint string
 	key      string
+	from     string
+	fromName string
 }
 
-func (s *sendGrid) Send(to, subject, contentType string, content string, files ...string) error {
-	request := sendgrid.GetRequest(s.key, s.endpoint, s.host)
-	request.Method = "POST"
+func (s *sendGrid) Send(email *Email) error {
+	from := mail.NewEmail(s.fromName, s.from)
+	receiver := mail.NewEmail(email.To.Name, email.To.Email)
+	message := mail.NewSingleEmail(from, email.Subject, receiver, email.Plain, email.Html)
+	client := sendgrid.NewSendClient(s.key)
+	response, err := client.Send(message)
 
-	body := jcon.Map{
-		"personalizations": []jcon.Map{
-			{"to": []jcon.Map{{"email": to}}, "subject": subject},
-		},
-		"from": jcon.Map{
-			"email": "",
-		},
-		"content": []jcon.Map{{"type": contentType, "value": content}},
-	}
-
-	bodyBytes, err := body.Bytes()
 	if err != nil {
 		return err
+	} else {
+		fmt.Println(response.StatusCode)
+		fmt.Println(response.Body)
+		fmt.Println(response.Headers)
 	}
-
-	request.Body = bodyBytes
-	response, err := sendgrid.API(request)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(response.StatusCode)
-	fmt.Println(response.Body)
-	fmt.Println(response.Headers)
 	return nil
 }
-
-func NewSendGrid(key, endpoint, host string) {}

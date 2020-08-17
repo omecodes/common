@@ -4,6 +4,6 @@ type hogClient struct {
 	*defaultMailer
 }
 
-func (h *hogClient) Send(to, subject, contentType, content string, files ...string) error {
-	return h.defaultMailer.Send(to, subject, contentType, content, files...)
+func (h *hogClient) Send(email *Email) error {
+	return h.defaultMailer.Send(email)
 }
