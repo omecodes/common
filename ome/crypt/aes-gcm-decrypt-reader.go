@@ -1,8 +1,7 @@
-package streams
+package crypt
 
 import (
 	"bytes"
-	crypto2 "github.com/omecodes/common/security/crypto"
 	"io"
 )
 
@@ -60,7 +59,7 @@ func (reader *aesGCMDecryptReader) Read(b []byte) (int, error) {
 		}
 
 		if count > 0 {
-			data, err := crypto2.AESGCMDecryptWithNonce(reader.encryptionKey, b.Header.Nonce, b.Payload)
+			data, err := AESGCMDecryptWithNonce(reader.encryptionKey, b.Header.Nonce, b.Payload)
 			if err != nil {
 				return 0, err
 			}

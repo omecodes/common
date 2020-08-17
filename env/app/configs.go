@@ -4,10 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/omecodes/common/database"
 	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/netx"
-	"github.com/omecodes/common/security/crypto/key"
 	"github.com/omecodes/common/utils/jcon"
 	"github.com/omecodes/common/utils/prompt"
 	"strings"
@@ -29,8 +26,6 @@ const (
 	ConfigSecrets
 	ConfigCredentialsTable
 	ConfigDirs
-	ConfigSecretKeys
-	ConfigNetwork
 	ConfigMySQLDatabase
 	ConfigSQLiteDatabase
 	ConfigRedisDatabase
@@ -54,17 +49,11 @@ func (ci ConfigType) String() string {
 	case ConfigDirs:
 		return "dirs"
 
-	case ConfigSecretKeys:
-		return "secret-keys"
-
 	case ConfigSecrets:
 		return "secrets"
 
 	case ConfigCredentialsTable:
 		return "credentials"
-
-	case ConfigNetwork:
-		return "network"
 
 	case ConfigSQLiteDatabase:
 		return "databases/file"
@@ -104,14 +93,8 @@ func (ci configItem) create(description string, defaults jcon.Map) (jcon.Map, er
 	case ConfigDirs:
 		return configureDirs(description, defaults, ci.entries...)
 
-	case ConfigSecretKeys:
-		return configureSecretKeys(description, defaults, ci.entries...)
-
 	case ConfigCredentialsTable:
 		return configureCredentialsTable(description, defaults)
-
-	case ConfigNetwork:
-		return configureNetwork(description, defaults)
 
 	case ConfigMySQLDatabase:
 		return configureMySQLDatabase(description, defaults)
@@ -397,79 +380,6 @@ func configureDirs(description string, defaults jcon.Map, names ...string) (jcon
 	return cfg, err
 }
 
-func configureSecretKeys(description string, defaults jcon.Map, names ...string) (jcon.Map, error) {
-	header("Secret keys", description)
-
-	var err error
-	if defaults == nil {
-		defaults = jcon.Map{}
-	}
-
-	cfg := jcon.Map{}
-
-	passPhrase, err := prompt.Password("pass phrase")
-	if err != nil {
-		return nil, err
-	}
-
-	passPhraseConfirm, err := prompt.Password("confirm")
-	if err != nil {
-		return nil, err
-	}
-
-	if passPhrase != passPhraseConfirm {
-		return nil, errors.New("pass phrases differ")
-	}
-
-	for _, name := range names {
-		_, info, err := key.Generate(passPhrase, 32)
-		if err != nil {
-			return nil, err
-		}
-		cfg[name] = info
-		// fmt.Println()
-	}
-	return cfg, err
-}
-
-func configureNetwork(description string, defaults jcon.Map) (jcon.Map, error) {
-	if defaults == nil {
-		defaults = jcon.Map{}
-	}
-	header("Network", description)
-
-	var err error
-	domain, _ := defaults.GetString("domain")
-	internalIP, _ := defaults.GetString("internal_ip")
-	externalIP, _ := defaults.GetString("external_ip")
-
-	addrList := netx.LocalAddresses()
-	internalIP, err = prompt.Selection("internal IP", addrList...)
-	if err != nil {
-		return nil, err
-	}
-
-	domain, err = prompt.TextWithDefault("domain", domain, true)
-	if err != nil {
-		return nil, err
-	}
-
-	selection, err := prompt.Selection("Computer has external IP different from bind ip?", "yes", "no")
-	if err != nil {
-		return nil, err
-	}
-
-	if selection == "yes" {
-		externalIP, err = prompt.TextWithDefault("external IP", externalIP, false)
-	}
-
-	return jcon.Map{
-		"domain":      domain,
-		"internal_ip": internalIP,
-		"external_ip": externalIP,
-	}, err
-}
-
 func configureMySQLDatabase(description string, defaults jcon.Map) (jcon.Map, error) {
 	header("MySQL DB", description)
 	var (
@@ -530,7 +440,7 @@ func configureMySQLDatabase(description string, defaults jcon.Map) (jcon.Map, er
 		cfg["wrapper"] = wrapper
 	}
 
-	return cfg, database.Create(cfg)
+	return cfg, Create(cfg)
 }
 
 func configureSQLiteDatabase(description string, defaults jcon.Map) (jcon.Map, error) {

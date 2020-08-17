@@ -1,4 +1,4 @@
-package streams
+package crypt
 
 type ReadOption func(*readOptions)
 

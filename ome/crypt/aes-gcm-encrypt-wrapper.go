@@ -1,4 +1,4 @@
-package streams
+package crypt
 
 import (
 	"bytes"
@@ -35,7 +35,7 @@ func (d *AESGCMEncryptWrapper) WithOutputSize(inputSize int64) int64 {
 	}
 
 	var header header
-	header.Options = new(options)
+	// header.Options = new(options)
 	header.Nonce = make([]byte, 12)
 
 	buffer := bytes.NewBuffer([]byte{})

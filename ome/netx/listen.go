@@ -3,7 +3,7 @@ package netx
 import (
 	"crypto/tls"
 	"crypto/x509"
-	crypto2 "github.com/omecodes/common/security/crypto"
+	crypto2 "github.com/omecodes/common/ome/crypt"
 	"net"
 )
 

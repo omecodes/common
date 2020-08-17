@@ -1,4 +1,4 @@
-package key
+package crypt
 
 import (
 	"crypto/rand"
@@ -6,8 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/base64"
-	crypto2 "github.com/omecodes/common/security/crypto"
-	"github.com/omecodes/common/utils/jcon"
+	// "github.com/omecodes/common/utils/jcon"
 	"golang.org/x/crypto/pbkdf2"
 	"hash"
 )
@@ -25,17 +24,6 @@ type Info struct {
 	Hash         string `json:"hash"`
 	Alg          string `json:"alg"`
 	EncryptedKey string `json:"encrypted_key"`
-}
-
-func ParseInfo(m jcon.Map) *Info {
-	info := &Info{}
-	info.Alg, _ = m.GetString("alg")
-	info.Salt, _ = m.GetString("salt")
-	length, _ := m.GetInt32("length")
-	info.Length = int(length)
-	info.Hash, _ = m.GetString("hash")
-	info.EncryptedKey, _ = m.GetString("encrypted_key")
-	return info
 }
 
 // Generate generates random password of size length. Then encrypted with a key derived from password using pbkdf2.
@@ -70,7 +58,7 @@ func Generate(phrase string, length int) ([]byte, *Info, error) {
 
 	k := pbkdf2.Key([]byte(phrase), salt, PBKDF2Iterations, 32, sha512.New)
 
-	encryptedKeyBytes, err := crypto2.AESGCMEncrypt(k, bytes)
+	encryptedKeyBytes, err := AESGCMEncrypt(k, bytes)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -106,6 +94,6 @@ func Reveal(phrase string, info *Info) ([]byte, error) {
 
 	switch info.Alg {
 	default:
-		return crypto2.AESGCMDecrypt(k, encryptedKeyBytes)
+		return AESGCMDecrypt(k, encryptedKeyBytes)
 	}
 }

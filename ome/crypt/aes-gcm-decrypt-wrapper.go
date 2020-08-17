@@ -1,4 +1,4 @@
-package streams
+package crypt
 
 import (
 	"io"

@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"github.com/omecodes/common/database"
+	"github.com/omecodes/common/env/app"
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/utils/jcon"
 	"github.com/omecodes/common/utils/log"
@@ -51,7 +51,7 @@ type SQL struct {
 }
 
 func (dao *SQL) Init(cfg jcon.Map) error {
-	d, dbi, err := database.Connect(cfg)
+	d, dbi, err := app.Connect(cfg)
 	if err != nil {
 		return err
 	}

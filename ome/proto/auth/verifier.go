@@ -5,12 +5,11 @@ import (
 	"crypto/ecdsa"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/omecodes/common/errors"
 )
 
 type TokenVerifier interface {
@@ -45,12 +44,12 @@ func (v *tokenVerifier) verifyToken(t *JWT) (JWTState, error) {
 
 func (v *tokenVerifier) Verify(ctx context.Context, t *JWT) (JWTState, error) {
 	if t == nil {
-		return JWTState_NOT_VALID, errors.Forbidden
+		return JWTState_NOT_VALID, errors.New("forbidden")
 	}
 
 	state, err := v.verifyToken(t)
 	if err != nil {
-		return JWTState_NOT_VALID, errors.Forbidden
+		return JWTState_NOT_VALID, errors.New("forbidden")
 	}
 	return state, nil
 }

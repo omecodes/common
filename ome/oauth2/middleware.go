@@ -2,10 +2,10 @@ package oauth2
 
 import (
 	"encoding/gob"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
-	"github.com/omecodes/common/httpx"
-	"github.com/omecodes/common/utils/log"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -55,7 +55,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 	authError := q.Get(ParamError)
 	if authError != "" {
 		authErrorDesc := q.Get(ParamErrorDescription)
-		log.Info("failed to authenticate user with Ome", log.Field("error", authError), log.Field("description", authErrorDesc))
+		log.Println("failed to authenticate user with Ome", authError, authErrorDesc)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -64,7 +64,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 	code := q.Get(ParamCode)
 
 	if state == "" || code == "" {
-		log.Info("OAuth incomplete Ome response: expected code and state")
+		log.Println("OAuth incomplete Ome response: expected code and state")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -82,7 +82,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 
 	token, err := client.GetAccessToken(code)
 	if err != nil {
-		log.Error("failed to get JWT from Ome server", log.Err(err))
+		log.Println("failed to get JWT from Ome server", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -93,7 +93,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	config, err := m.configProvider()
 	if err != nil {
-		log.Error("could not get", log.Err(err))
+		log.Println("could not get", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -107,16 +107,21 @@ func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	client := NewClient(config)
 	authorizeURL, err := client.GetURLAuthorizationURL()
 	if err != nil {
-		log.Error("failed to construct OAuth authorize URL", log.Err(err))
+		log.Println("failed to construct OAuth authorize URL", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	httpx.Redirect(w, &httpx.RedirectURL{
-		URL:         authorizeURL,
-		Code:        http.StatusUnauthorized,
-		ContentType: "text/html",
-	})
+	b := strings.Builder{}
+	b.WriteString(fmt.Sprintf("<head>\n"))
+	b.WriteString(fmt.Sprintf("\t<meta http-equiv=\"refresh\" content=\"0; URL=%s\" />\n", authorizeURL))
+	b.WriteString(fmt.Sprintf("</head>"))
+	contentBytes := []byte(b.String())
+
+	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Location", authorizeURL)
+	w.WriteHeader(http.StatusUnauthorized)
+	_, _ = w.Write(contentBytes)
 }
 
 func Workflow(callbackURI string, configProvider ConfigProvider, authRequiredFunc AuthenticationRequiredFunc, handlerFunc AuthorizedHandleFunc) (mux.MiddlewareFunc, error) {

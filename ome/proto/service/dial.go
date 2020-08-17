@@ -4,9 +4,8 @@ import (
 	"crypto"
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/omecodes/common/errors"
-	crypto2 "github.com/omecodes/common/security/crypto"
-	"github.com/omecodes/common/utils/log"
+	"errors"
+	crypto2 "github.com/omecodes/common/ome/crypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
@@ -88,7 +87,6 @@ func (p *pool) Dialer(name string) (Dialer, error) {
 				var opts []grpc.DialOption
 				tc, err := p.getTLSConfig(node)
 				if err != nil {
-					log.Error("failed to get TLS config", log.Err(err))
 					return nil, err
 				}
 
@@ -103,7 +101,7 @@ func (p *pool) Dialer(name string) (Dialer, error) {
 				return dialer, nil
 			}
 		}
-		return nil, errors.NotFound
+		return nil, errors.New("not found")
 
 	} else {
 		return dialer, nil

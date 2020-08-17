@@ -11,13 +11,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/omecodes/common/security/crypto"
-	"github.com/omecodes/common/utils/log"
+	"github.com/omecodes/common/ome/crypt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
-	"syscall"
 )
 
 const (
@@ -109,7 +107,7 @@ func (c *Client) GetURLAuthorizationURL() (string, error) {
 func (c *Client) GetAccessToken(code string) (*Token, error) {
 	client := &http.Client{}
 	if c.cfg.AuthorityCertFilename != "" {
-		cert, err := crypto2.LoadCertificate(c.cfg.AuthorityCertFilename)
+		cert, err := crypt.LoadCertificate(c.cfg.AuthorityCertFilename)
 		if err != nil {
 			return nil, err
 		}
@@ -277,7 +275,7 @@ func (c *CodeChallenge) ProcessChallenge(secret string) ([]byte, error) {
 			return nil, err
 		}
 
-		codeDataBytes, err := crypto2.AESGCMDecrypt(keyBytes, challengeData)
+		codeDataBytes, err := crypt.AESGCMDecrypt(keyBytes, challengeData)
 		if err != nil {
 			return nil, err
 		}
@@ -285,7 +283,7 @@ func (c *CodeChallenge) ProcessChallenge(secret string) ([]byte, error) {
 		salt := codeDataBytes[:12]
 		codeBytes := codeDataBytes[12:]
 
-		return crypto2.AESGCMEncryptWithSalt(keyBytes, salt, codeBytes)
+		return crypt.AESGCMEncryptWithSalt(keyBytes, salt, codeBytes)
 	}
 	return nil, errors.New("unsupported algorithm")
 }
@@ -314,7 +312,7 @@ func CreateCodeChallenge(secret string) (*CodeChallenge, string, error) {
 		return nil, "", err
 	}
 
-	encryptedCode, err := crypto2.AESGCMEncryptWithSalt(key, salt, append(clientSalt, codeBytes...))
+	encryptedCode, err := crypt.AESGCMEncryptWithSalt(key, salt, append(clientSalt, codeBytes...))
 	if err != nil {
 		return nil, "", err
 	}
@@ -344,7 +342,7 @@ func (c *CodeChallengeResult) GetCode(secret string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return crypto2.AESGCMDecrypt(keyBytes, encryptedCodeData)
+		return crypt.AESGCMDecrypt(keyBytes, encryptedCodeData)
 	}
 	return nil, errors.New("unsupported algorithm")
 }
@@ -422,34 +420,4 @@ func NewRedirectURIHandler(redirectURI string, tc *tls.Config) *RedirectURIHandl
 		errorChan:   make(chan error, 1),
 		code:        make(chan string, 1),
 	}
-}
-
-func GetToken(cfg *Config) (*Token, error) {
-	client := NewClient(cfg)
-	authorizationURL, err := client.GetURLAuthorizationURL()
-	if err != nil {
-		log.Error("could not construct authorization URL", log.Err(err))
-	}
-
-	cmd := OpenBrowserCMD(authorizationURL)
-	if cmd == nil {
-		return nil, errors.New("could not open browser")
-	}
-
-	go func() {
-		err := cmd.Start()
-		if err != nil {
-			log.Error("run browser command failed", log.Err(err))
-		}
-	}()
-
-	redHandler := NewRedirectURIHandler("http://localhost:9876/handle", nil)
-	code, err := redHandler.GetCode()
-	if err != nil {
-		return nil, err
-	}
-
-	_ = cmd.Process.Signal(syscall.SIGTERM)
-	_ = cmd.Process.Kill()
-	return client.GetAccessToken(code)
 }

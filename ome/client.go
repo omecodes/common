@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/omecodes/common/ome/crypt"
 	apppb "github.com/omecodes/common/ome/proto/app"
 	authpb "github.com/omecodes/common/ome/proto/auth"
-	crypto2 "github.com/omecodes/common/security/crypto"
 	"net/http"
 )
 
@@ -40,7 +40,7 @@ func (c Client) Info() (*Info, error) {
 
 		if c.config.CertificateFilename != "" {
 			hc := http.Client{}
-			cert, err := crypto2.LoadCertificate(c.config.CertificateFilename)
+			cert, err := crypt.LoadCertificate(c.config.CertificateFilename)
 			if err != nil {
 				return nil, err
 			}
@@ -86,7 +86,7 @@ func (c Client) Verify(ctx context.Context, t *authpb.JWT) (authpb.JWTState, err
 		return 0, err
 	}
 
-	key, _, err := crypto2.PEMDecodePublicKey([]byte(info.Oauth2.SignatureKey))
+	key, _, err := crypt.PEMDecodePublicKey([]byte(info.Oauth2.SignatureKey))
 	if err != nil {
 		return 0, err
 	}

@@ -1,4 +1,4 @@
-package crypto2
+package crypt
 
 import (
 	"crypto/rand"

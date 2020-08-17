@@ -1,4 +1,4 @@
-package crypto2
+package crypt
 
 import (
 	"bytes"
@@ -12,15 +12,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/big"
 	"net"
 	"os"
 	"time"
-
-	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/utils/log"
 )
 
 //CertificateTemplate specs for generating a certificate
@@ -118,8 +116,7 @@ func GenerateCACertificate(t *CertificateTemplate) (*x509.Certificate, error) {
 
 	certBytes, err := x509.CreateCertificate(rand.Reader, template, template, t.PublicKey, t.SignerPrivateKey)
 	if err != nil {
-		log.Error("failed to generate CA certificate", log.Err(err))
-		return nil, errors.BadInput
+		return nil, errors.New("")
 	}
 	return x509.ParseCertificate(certBytes)
 }
@@ -186,20 +183,17 @@ func LoadPrivateKey(password []byte, file string) (crypto.PrivateKey, error) {
 
 	block, _ := pem.Decode(keyBytes)
 	if block == nil {
-		log.Error("failed to decide private key", log.Err(err))
-		return nil, errors.BadInput
+		return nil, errors.New("bad input")
 	}
 
 	if block.Type != "RSA PRIVATE KEY" && block.Type != "ECDSA PRIVATE KEY" {
-		log.Error("key type is not supported", log.Err(err), log.Field("key type", block.Type))
-		return nil, errors.NotSupported
+		return nil, errors.New("key not supported")
 	}
 
 	if password != nil && len(password) > 0 {
 		keyBytes, err = x509.DecryptPEMBlock(block, password)
 		if err != nil {
-			log.Error("failed to decrypt CA key", log.Err(err))
-			return nil, errors.BadInput
+			return nil, errors.New("bad input")
 		}
 	} else {
 		keyBytes = block.Bytes
@@ -228,8 +222,7 @@ func StorePrivateKey(key crypto.PrivateKey, password []byte, file string) error 
 		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: privateKeyBytes}
 
 	} else {
-		log.Error("key type is not supported", log.Err(err))
-		return errors.NotSupported
+		return errors.New("not supported")
 	}
 
 	if password != nil && len(password) > 0 {
@@ -294,7 +287,7 @@ func PEMEncodeKey(key crypto.PrivateKey) ([]byte, error) {
 		}
 		block = &pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: privateKeyBytes}
 	} else {
-		return nil, errors.NotSupported
+		return nil, errors.New("not supported")
 	}
 	return pem.EncodeToMemory(block), nil
 }

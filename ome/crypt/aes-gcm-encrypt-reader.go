@@ -1,9 +1,8 @@
-package streams
+package crypt
 
 import (
 	"bytes"
 	"crypto/rand"
-	crypto2 "github.com/omecodes/common/security/crypto"
 	"io"
 )
 
@@ -54,7 +53,7 @@ func (reader *aesGCMEncryptReader) Read(b []byte) (int, error) {
 			nonce := make([]byte, AESGCMNonceSize)
 			_, _ = rand.Read(nonce)
 
-			data, err := crypto2.AESGCMEncryptWithSalt(reader.encryptionKey, nonce, buff[:count])
+			data, err := AESGCMEncryptWithSalt(reader.encryptionKey, nonce, buff[:count])
 			if err != nil {
 				return 0, err
 			}
