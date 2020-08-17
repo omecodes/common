@@ -14,7 +14,7 @@ import (
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/omecodes/common/errors"
-	"github.com/omecodes/common/ome/netx"
+	"github.com/omecodes/common/netx"
 	"github.com/omecodes/common/utils/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

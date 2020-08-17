@@ -3,9 +3,9 @@ package list
 import (
 	"database/sql"
 	"github.com/omecodes/common/dao"
-	filespb "github.com/omecodes/common/ome/proto/files"
 	"github.com/omecodes/common/utils/codec"
 	"github.com/omecodes/common/utils/jcon"
+	filespb "github.com/omecodes/libome/proto/files"
 )
 
 // State is a convenience for persistence list

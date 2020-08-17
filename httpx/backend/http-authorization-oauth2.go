@@ -2,8 +2,8 @@ package backend
 
 import (
 	"github.com/gorilla/securecookie"
-	authpb "github.com/omecodes/common/ome/proto/auth"
 	"github.com/omecodes/common/utils/log"
+	authpb "github.com/omecodes/libome/proto/auth"
 	"net/http"
 	"strings"
 )

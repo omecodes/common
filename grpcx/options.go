@@ -1,7 +1,7 @@
 package grpcx
 
 import (
-	"github.com/omecodes/common/ome/netx"
+	"github.com/omecodes/common/netx"
 	"google.golang.org/grpc"
 	"net/http"
 )
