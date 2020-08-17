@@ -65,21 +65,21 @@ func (a *App) init() {
 
 				err = a.initResources()
 				if err != nil {
-					log2.Fatal("resources init", err)
+					log2.Fatal("resources init", log2.Err(err))
 				}
 
 				if len(a.options.configItems) > 0 {
 					cfgFilename := filepath.Join(a.dataDir, "configs.json")
 					err = jcon.Load(cfgFilename, &a.configs)
 					if err != nil {
-						log2.Error("configs loading", err)
+						log2.Error("configs loading", log2.Err(err))
 					}
 				}
 
 				a.options.startCMDFunc()
 			} else {
 				if err := cmd.Help(); err != nil {
-					log2.Fatal("cmd", err)
+					log2.Fatal("cmd", log2.Err(err))
 				}
 			}
 		},
@@ -108,18 +108,18 @@ func (a *App) init() {
 
 				err = a.configure(configFilename, os.ModePerm, a.options.configItems...)
 				if err != nil {
-					log2.Fatal("configure failed", err)
+					log2.Fatal("configure failed", log2.Err(err))
 				}
 
 				if a.options.afterConfigure != nil {
 					err = a.options.afterConfigure(a.configs)
 					if err != nil {
-						log2.Fatal("post configure failed", err)
+						log2.Fatal("post configure failed", log2.Err(err))
 					}
 
 					err = a.configs.Save(configFilename, os.ModePerm)
 					if err != nil {
-						log2.Fatal("save configs file", err)
+						log2.Fatal("save configs file", log2.Err(err))
 					}
 				}
 			},
@@ -141,14 +141,14 @@ func (a *App) init() {
 
 				err = a.initResources()
 				if err != nil {
-					log2.Fatal("resources init", err)
+					log2.Fatal("resources init", log2.Err(err))
 				}
 
 				cfgFilename := filepath.Join(a.dataDir, "configs.json")
 				if futils.FileExists(cfgFilename) {
 					err = jcon.Load(cfgFilename, &a.configs)
 					if err != nil {
-						log2.Error("configs loading", err)
+						log2.Error("configs loading", log2.Err(err))
 					}
 				}
 

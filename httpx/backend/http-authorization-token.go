@@ -24,7 +24,7 @@ func (atv *authorizationJWT) Middleware(next http.Handler) http.Handler {
 
 			state, err := atv.verifier.Verify(r.Context(), t)
 			if err != nil {
-				log.Error("could not verify JWT", err, log.Field("jwt", strJWT))
+				log.Error("could not verify JWT", log.Err(err), log.Field("jwt", strJWT))
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

@@ -82,7 +82,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 
 	token, err := client.GetAccessToken(code)
 	if err != nil {
-		log.Error("failed to get JWT from Ome server", err)
+		log.Error("failed to get JWT from Ome server", log.Err(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -93,7 +93,7 @@ func (m *workflow) authorized(w http.ResponseWriter, r *http.Request) {
 func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	config, err := m.configProvider()
 	if err != nil {
-		log.Error("could not get", err)
+		log.Error("could not get", log.Err(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -107,7 +107,7 @@ func (m *workflow) login(w http.ResponseWriter, r *http.Request) {
 	client := NewClient(config)
 	authorizeURL, err := client.GetURLAuthorizationURL()
 	if err != nil {
-		log.Error("failed to construct OAuth authorize URL", err)
+		log.Error("failed to construct OAuth authorize URL", log.Err(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

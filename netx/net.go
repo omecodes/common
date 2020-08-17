@@ -78,13 +78,13 @@ func addressPingTest(addr string) bool {
 			result <- false
 		}
 		if _, err := con.Write(buffer[:1]); err != nil {
-			log.Error("network", err)
+			log.Error("network", log.Err(err))
 		}
 	}()
 	go func() {
 		con, err := net.Dial("tcp", listenAddr)
 		if err != nil {
-			log.Error("net.ip.ping", err)
+			log.Error("net.ip.ping", log.Err(err))
 			result <- false
 			return
 		}
@@ -101,7 +101,7 @@ func addressPingTest(addr string) bool {
 
 		buffer[0] = 0
 		if _, err := con.Read(buffer); err != nil {
-			log.Error("net.ip.ping", err)
+			log.Error("net.ip.ping", log.Err(err))
 		}
 		result <- buffer[0] == 12
 	}()

@@ -88,7 +88,7 @@ func (p *pool) Dialer(name string) (Dialer, error) {
 				var opts []grpc.DialOption
 				tc, err := p.getTLSConfig(node)
 				if err != nil {
-					log.Error("failed to get TLS config", err)
+					log.Error("failed to get TLS config", log.Err(err))
 					return nil, err
 				}
 

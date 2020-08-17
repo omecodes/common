@@ -97,7 +97,7 @@ func (dao *SQL) InitSQLite(db *sql.DB) error {
 	dao.SetVariable(VarLocate, "instr")
 	dao.SetVariable(VarAutoIncrement, "AUTOINCREMENT")
 	if _, err := dao.DB.Exec("PRAGMA foreign_keys=ON"); err != nil {
-		log.Error("failed to enable foreign key feature", err)
+		log.Error("failed to enable foreign key feature", log.Err(err))
 	}
 	dao.mux = new(sync.RWMutex)
 	return dao.init()
@@ -144,7 +144,7 @@ func (dao *SQL) init() error {
 
 			compiledStmt, err := dao.DB.Prepare(stmt)
 			if err != nil {
-				log.Error("failed to compile statement", err, log.Field("name", name), log.Field("sql", stmt))
+				log.Error("failed to compile statement", log.Err(err), log.Field("name", name), log.Field("sql", stmt))
 				return err
 			}
 			dao.compiledStatements[name] = compiledStmt

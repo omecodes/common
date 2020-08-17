@@ -14,7 +14,7 @@ func ProxyAuthenticationMiddleware(next http.Handler) http.Handler {
 		if proxyAuthorizationHeader != "" {
 			decodedBytes, err := base64.StdEncoding.DecodeString(proxyAuthorizationHeader)
 			if err != nil {
-				log.Error("could not parse Proxy-Authorization", err)
+				log.Error("could not parse Proxy-Authorization", log.Err(err))
 				w.WriteHeader(http.StatusProxyAuthRequired)
 				return
 			}

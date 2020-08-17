@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func wrapServerStream(ctx context.Context, ss grpc.ServerStream) grpc.ServerStream {
+func WrapServerStream(ctx context.Context, ss grpc.ServerStream) grpc.ServerStream {
 	return &gRPCServerStreamContextWrapper{
 		wrapped: ss,
 		ctx:     ctx,

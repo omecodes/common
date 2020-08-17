@@ -21,7 +21,7 @@ func (atv *authorizationBearer) Middleware(next http.Handler) http.Handler {
 
 			strJWT, err := authpb.ExtractJwtFromAccessToken("", accessToken, atv.codecs...)
 			if err != nil {
-				log.Error("could not extract jwt from access token", err)
+				log.Error("could not extract jwt from access token", log.Err(err))
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -34,7 +34,7 @@ func (atv *authorizationBearer) Middleware(next http.Handler) http.Handler {
 
 			state, err := atv.verifier.Verify(r.Context(), jwt)
 			if err != nil {
-				log.Error("could not verify JWT", err, log.Field("jwt", strJWT))
+				log.Error("could not verify JWT", log.Err(err), log.Field("jwt", strJWT))
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}

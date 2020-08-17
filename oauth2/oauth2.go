@@ -428,7 +428,7 @@ func GetToken(cfg *Config) (*Token, error) {
 	client := NewClient(cfg)
 	authorizationURL, err := client.GetURLAuthorizationURL()
 	if err != nil {
-		log.Error("could not construct authorization URL", err)
+		log.Error("could not construct authorization URL", log.Err(err))
 	}
 
 	cmd := OpenBrowserCMD(authorizationURL)
@@ -439,7 +439,7 @@ func GetToken(cfg *Config) (*Token, error) {
 	go func() {
 		err := cmd.Start()
 		if err != nil {
-			log.Error("run browser command failed", err)
+			log.Error("run browser command failed", log.Err(err))
 		}
 	}()
 
