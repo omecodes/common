@@ -15,8 +15,11 @@ type sendGrid struct {
 }
 
 func (s *sendGrid) Send(email *Email) error {
-	from := mail.NewEmail(s.fromName, s.from)
+	from := mail.NewEmail(email.From.Name, email.From.Email)
 	receiver := mail.NewEmail(email.To.Name, email.To.Email)
+	if email.Plain == "" {
+		email.Plain = "Content:\r\n"
+	}
 	message := mail.NewSingleEmail(from, email.Subject, receiver, email.Plain, email.Html)
 	client := sendgrid.NewSendClient(s.key)
 	response, err := client.Send(message)

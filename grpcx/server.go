@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto"
 	"crypto/x509"
-	"encoding/base64"
 	"fmt"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -15,7 +14,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/omecodes/common/errors"
 	"github.com/omecodes/common/netx"
-	"github.com/omecodes/common/utils/log"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
@@ -59,7 +58,7 @@ func (s *Server) listenHttp() error {
 			s.httpAddress = address + strings.Split(l.Addr().String(), ":")[1]
 		}
 
-		log.Info("[gRPC-http] starting HTTP server", log.Field("at", s.httpAddress))
+		//log.Info("[gRPC-http] starting HTTP server", log.Field("at", s.httpAddress))
 	}
 	return nil
 }
@@ -81,7 +80,7 @@ func (s *Server) listenGRPC() error {
 	} else {
 		s.grpcAddress = address + strings.Split(l.Addr().String(), ":")[1]
 	}
-	log.Info("[gRPC-http] starting gRPC server", log.Field("at", s.grpcAddress))
+	//log.Info("[gRPC-http] starting gRPC server", log.Field("at", s.grpcAddress))
 
 	return nil
 }
@@ -187,37 +186,6 @@ func (s *Server) startHTTP() {
 	}
 }
 
-func (s *Server) gRPCInterceptAuth(ctx context.Context) (context.Context, error) {
-	basic, _ := grpc_auth.AuthFromMD(ctx, "basic")
-	if basic != "" {
-		bytes, err := base64.StdEncoding.DecodeString(basic)
-		if err != nil {
-			return nil, errors.Forbidden
-		}
-
-		parts := strings.Split(string(bytes), ":")
-		if len(parts) != 2 {
-			return nil, errors.Forbidden
-		}
-
-		user := parts[0]
-		secret := parts[1]
-
-		ctx = ContextWithCredentials(ctx, &Credentials{
-			Username: user,
-			Password: secret,
-		})
-		return ctx, nil
-	}
-
-	token, _ := grpc_auth.AuthFromMD(ctx, "bearer")
-	if token != "" {
-		ctx = ContextWithOauth2Token(ctx, token)
-	}
-
-	return ctx, nil
-}
-
 func (s *Server) Start() error {
 	err := s.init()
 	if err != nil {
@@ -237,20 +205,25 @@ func (s *Server) Key() crypto.PrivateKey {
 }
 
 func (s *Server) GRPCServer() *grpc.Server {
+	if s.options.authFunc == nil {
+		s.options.authFunc = func(ctx context.Context) (context.Context, error) {
+			return ctx, nil
+		}
+	}
 	if s.grpcServer == nil {
 		s.grpcServer = grpc.NewServer(
 			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 				grpc_ctxtags.StreamServerInterceptor(),
 				grpc_opentracing.StreamServerInterceptor(),
 				grpc_prometheus.StreamServerInterceptor,
-				grpc_auth.StreamServerInterceptor(s.gRPCInterceptAuth),
+				grpc_auth.StreamServerInterceptor(s.options.authFunc),
 				grpc_recovery.StreamServerInterceptor(),
 			)),
 			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 				grpc_ctxtags.UnaryServerInterceptor(),
 				grpc_opentracing.UnaryServerInterceptor(),
 				grpc_prometheus.UnaryServerInterceptor,
-				grpc_auth.UnaryServerInterceptor(s.gRPCInterceptAuth),
+				grpc_auth.UnaryServerInterceptor(s.options.authFunc),
 				grpc_recovery.UnaryServerInterceptor(),
 			)),
 		)
@@ -291,7 +264,7 @@ func (s *Server) Errors() chan error {
 }
 
 func (s *Server) HandlerError(ctx context.Context, mux *runtime.ServeMux, m runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
-	log.Info("caught error", log.Field("err", err))
+	//log.Info("caught error", log.Field("err", err))
 	st, ok := status.FromError(err)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)

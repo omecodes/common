@@ -1,6 +1,7 @@
 package grpcx
 
 import (
+	"context"
 	"github.com/omecodes/common/netx"
 	"google.golang.org/grpc"
 	"net/http"
@@ -14,6 +15,7 @@ type options struct {
 	grpcOpts        []grpc.ServerOption
 	endpointMappers map[string]endpointMapping
 	middlewareList  []func(handler http.Handler) http.Handler
+	authFunc        func(ctx context.Context) (context.Context, error)
 }
 
 type Option func(opts *options)
@@ -51,6 +53,12 @@ func EndpointMap(name string, mapper Mapper) Option {
 func Middleware(middleware func(handler http.Handler) http.Handler) Option {
 	return func(opts *options) {
 		opts.middlewareList = append(opts.middlewareList, middleware)
+	}
+}
+
+func Authentication(authFunc func(ctx context.Context) (context.Context, error)) Option {
+	return func(opts *options) {
+		opts.authFunc = authFunc
 	}
 }
 
