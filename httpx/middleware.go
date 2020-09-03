@@ -36,7 +36,7 @@ func (l *logger) Handle(next http.Handler) http.Handler {
 		next.ServeHTTP(l, r)
 		duration := time.Since(start)
 
-		if l.status == http.StatusOK {
+		if l.status == http.StatusOK || l.status == 0 {
 			log.Info(
 				r.Method+" "+r.RequestURI,
 				log.Field("params", r.URL.RawQuery),
