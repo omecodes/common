@@ -23,6 +23,7 @@ func (l *logger) Write(bytes []byte) (int, error) {
 
 func (l *logger) WriteHeader(statusCode int) {
 	l.status = statusCode
+	l.w.WriteHeader(statusCode)
 }
 
 func Logger(name string) *logger {
