@@ -7,23 +7,26 @@ import (
 	"time"
 )
 
-type logger struct {
-	name   string
-	w      http.ResponseWriter
+type statusCatcher struct {
 	status int
+	w      http.ResponseWriter
 }
 
-func (l *logger) Header() http.Header {
-	return l.w.Header()
+func (catcher *statusCatcher) Header() http.Header {
+	return catcher.w.Header()
 }
 
-func (l *logger) Write(bytes []byte) (int, error) {
-	return l.w.Write(bytes)
+func (catcher *statusCatcher) Write(bytes []byte) (int, error) {
+	return catcher.w.Write(bytes)
 }
 
-func (l *logger) WriteHeader(statusCode int) {
-	l.status = statusCode
-	l.w.WriteHeader(statusCode)
+func (catcher *statusCatcher) WriteHeader(statusCode int) {
+	catcher.status = statusCode
+	catcher.w.WriteHeader(statusCode)
+}
+
+type logger struct {
+	name string
 }
 
 func Logger(name string) *logger {
@@ -32,12 +35,16 @@ func Logger(name string) *logger {
 
 func (l *logger) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		l.w = w
+		c := &statusCatcher{
+			status: 0,
+			w:      w,
+		}
+
 		start := time.Now()
-		next.ServeHTTP(l, r)
+		next.ServeHTTP(c, r)
 		duration := time.Since(start)
 
-		if l.status == http.StatusOK || l.status == 0 {
+		if c.status == http.StatusOK || c.status == 0 {
 			log.Info(
 				r.Method+" "+r.RequestURI,
 				log.Field("params", r.URL.RawQuery),
@@ -46,7 +53,7 @@ func (l *logger) Handle(next http.Handler) http.Handler {
 			)
 		} else {
 			log.Error(
-				r.Method+" "+r.RequestURI+" "+http.StatusText(l.status),
+				r.Method+" "+r.RequestURI+" "+http.StatusText(c.status),
 				log.Field("params", r.URL.RawQuery),
 				log.Field("handler", l.name),
 				log.Field("duration", duration.String()),
