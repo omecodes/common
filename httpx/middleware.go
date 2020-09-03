@@ -46,7 +46,7 @@ func (l *logger) Handle(next http.Handler) http.Handler {
 			)
 		} else {
 			log.Error(
-				r.Method+" "+r.RequestURI,
+				r.Method+" "+r.RequestURI+" "+http.StatusText(l.status),
 				log.Field("params", r.URL.RawQuery),
 				log.Field("handler", l.name),
 				log.Field("duration", duration.String()),
