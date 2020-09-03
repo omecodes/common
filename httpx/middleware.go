@@ -8,7 +8,21 @@ import (
 )
 
 type logger struct {
-	name string
+	name   string
+	w      http.ResponseWriter
+	status int
+}
+
+func (l *logger) Header() http.Header {
+	return l.w.Header()
+}
+
+func (l *logger) Write(bytes []byte) (int, error) {
+	return l.w.Write(bytes)
+}
+
+func (l *logger) WriteHeader(statusCode int) {
+	l.status = statusCode
 }
 
 func Logger(name string) *logger {
@@ -17,15 +31,26 @@ func Logger(name string) *logger {
 
 func (l *logger) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		l.w = w
 		start := time.Now()
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(l, r)
 		duration := time.Since(start)
-		log.Info(
-			r.Method+" "+r.RequestURI,
-			log.Field("params", r.URL.RawQuery),
-			log.Field("handler", l.name),
-			log.Field("duration", duration.String()),
-		)
+
+		if l.status == http.StatusOK {
+			log.Info(
+				r.Method+" "+r.RequestURI,
+				log.Field("params", r.URL.RawQuery),
+				log.Field("handler", l.name),
+				log.Field("duration", duration.String()),
+			)
+		} else {
+			log.Error(
+				r.Method+" "+r.RequestURI,
+				log.Field("params", r.URL.RawQuery),
+				log.Field("handler", l.name),
+				log.Field("duration", duration.String()),
+			)
+		}
 	})
 }
 
