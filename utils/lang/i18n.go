@@ -3,10 +3,10 @@ package lang
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-yaml/yaml"
 	"github.com/omecodes/common/futils"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
