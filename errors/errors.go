@@ -89,9 +89,9 @@ func HttpStatus(e error) int {
 }
 
 func IsNotFound(e error) bool {
-	return e == NotFound || e.Error() == "not found"
+	return errors.Is(e, NotFound) || e.Error() == "not found"
 }
 
-/* func IsForbidden(e error) bool {
-	return e == Forbidden || e.Error() == "forbidden"
-} */
+func IsForbidden(e error) bool {
+	return errors.Is(e, Forbidden) || e.Error() == "forbidden"
+}
