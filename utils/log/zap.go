@@ -48,7 +48,6 @@ func newZap() *zap.Logger {
 		MessageKey:   "msg",
 		LevelKey:     "level",
 		TimeKey:      "time",
-		CallerKey:    "source",
 		EncodeLevel:  CustomEncodeLevel,
 		EncodeTime:   SyslogTimeEncoder,
 		EncodeCaller: zapcore.ShortCallerEncoder,
@@ -62,7 +61,6 @@ func newZap() *zap.Logger {
 		MessageKey:  "msg",
 		LevelKey:    "level",
 		TimeKey:     "time",
-		CallerKey:   "source",
 		EncodeLevel: CustomLevelFileEncoder,
 		EncodeTime:  SyslogTimeEncoder,
 		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
@@ -79,5 +77,5 @@ func newZap() *zap.Logger {
 	}
 
 	cores = append(cores, zapcore.NewCore(zapcore.NewConsoleEncoder(cfgConsole), consoleDebugging, zap.DebugLevel))
-	return zap.New(zapcore.NewTee(cores...)).WithOptions(zap.AddCaller(), zap.AddCallerSkip(2))
+	return zap.New(zapcore.NewTee(cores...)) //.WithOptions(zap.AddCaller(), zap.AddCallerSkip(2))
 }
