@@ -21,7 +21,7 @@ require (
 	github.com/spf13/cobra v1.1.1
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
-	golang.org/x/text v0.3.4
+	golang.org/x/text v0.3.8
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201130222003-4a0125ac5808 // indirect
 	gopkg.in/AlecAivazis/survey.v1 v1.8.8
